@@ -37,7 +37,7 @@ To do this, execute the following commands in a terminal (linux terminal, window
 If the `upstream` repository was not set before, you need to define it (one-time command). This sets a new remote called _upstream_ with the ssh-URL of the template repository:
 
 ```bash
-.../project-XX_groupNumber$ git remote add upstream git@gitlab.ti.bfh.ch:roboticsLab/Education/BTF6420/project-XX_template.git
+.../project-XX_groupNumber$ git remote add upstream git@gitlab.ti.bfh.ch:roboticsLab/Education/BTF6420/project-XX-template.git
 ```
 
 You can always display your remote repositories using:
