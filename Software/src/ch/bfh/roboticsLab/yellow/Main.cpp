@@ -8,6 +8,7 @@
 
 #include <ch/bfh/roboticsLab/yellow/Console.h>
 #include <ch/bfh/roboticsLab/yellow/Peripherals.h>
+#include <ch/bfh/roboticsLab/yellow/Controller.h>
 
 namespace ch {
 namespace bfh {
@@ -21,7 +22,8 @@ public:
 
     Main()
         : thread(osPriorityNormal, STACK_SIZE),
-          console(Console::getInstance())
+          console(Console::getInstance()),
+          controller(Controller::getInstance())
     {
         thread.start(callback(this, &Main::run));
     }
@@ -38,6 +40,8 @@ private:
 
     /** Reference to Console. */
     Console& console;
+    /** Reference to Controller. */
+    Controller& controller;
 
     /* This method will be called when the thread starts. When this method returns, the thread stops. */
     void run() {
@@ -71,6 +75,18 @@ private:
          * Read the sensors and understand what data you are receiving. (Hint: Look at the array peripherals::irSensors)
          * Turn on and off the corresponding LED to signal if an obstacle is present.
          */
+
+        /* TODO (Ex2): Complete the controller class to control the motors
+         * Look at the Controller.h class and complete it to achieve a desired linear and angular velocity.
+         */
+
+        // Start the controller thread
+        controller.start();
+
+        // Set a translational velocity [m/s].
+        controller.setTranslationalVelocity(1.5f);
+        // Set a rotational velocity [rad/s].
+        controller.setRotationalVelocity(3.0f);
     }
 };
 
