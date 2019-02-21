@@ -1,0 +1,21 @@
+# This file is used to ignore files which are generated
+# ----------------------------------------------------------------------------
+
+build/
+
+# QtCreator generated files
+*.user*
+*.config
+*.creator
+*.files
+*.includes
+
+# Mac OS X
+.DS_Store
+
+# Eclipse
+.cproject
+.project
+.settings/
+bin/
+.classpath
