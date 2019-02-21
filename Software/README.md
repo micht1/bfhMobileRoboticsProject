@@ -43,7 +43,7 @@ To get `GNU make` for Microsoft Windows (version 4.2.1):
 
 1. Uninstall any previous version of Make for Windows, if you already have it. A `uninstall.exe` file is provided with the distribution. (You will probably find this file under `C:\GNU\make\uninstall\uninstall.exe`)
 
-1. Create a new directory as `C:\GNU\Make\bin\` .
+1. Create a new directory as `C:\GNU\make\bin\` .
 
 1. Download *make 4.2.1* for Windows:  
   [https://github.com/mbuilov/gnumake-windows/blob/master/gnumake-4.2.1-x64.exe](https://github.com/mbuilov/gnumake-windows/blob/master/gnumake-4.2.1-x64.exe)
