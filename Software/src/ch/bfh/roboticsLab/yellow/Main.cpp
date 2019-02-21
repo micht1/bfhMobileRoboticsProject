@@ -59,6 +59,10 @@ private:
         // Enable the motor drivers.
         peripherals::enableMotorDriver = 1;
 
+        // Set PWM period
+        peripherals::pwmLeft.period(0.00005f);
+        peripherals::pwmRight.period(0.00005f);
+
         // NOTE: Respect the min / max allowed duty cycles defined in peripherals::MIN_DUTY_CYCLE and peripherals::MAX_DUTY_CYCLE
         peripherals::pwmLeft.write(0.5f);
         peripherals::pwmRight.write(0.5f);
