@@ -80,3 +80,9 @@ To compile your project press **`CTRL`+`B`**. You will see any compilation warni
 #### 4.2 Flash
 
 To upload your program to Yellow press **`CTRL`+`R`**. The `Yellow.bin` file will be copied to Yellow.
+
+## 5. FAQ
+
+#### 5.1 Add new source files to the project tree
+When there is a new source file inside the Software folder, you need to add them to your Qt-project, in order to display them in the `Projects` tree. To do that, right-click on the project and choose `Edit Files...` .   
+![Qt - Qt edit files](doc-files/QtEditFiles.png "QtEditFiles")
