@@ -80,6 +80,9 @@ float Controller::getAlpha() {
 
 void Controller::run() {
 
+  // Enable the motor drivers
+  peripherals::enableMotorDriver = 1;
+
   while (waitForNextPeriod()) {
 
       /** TODO (Ex2.1): Use the kinematic model to calculate the desired wheel speeds in [rpm] **/
@@ -117,6 +120,9 @@ void Controller::run() {
       // TODO: Estimate the global robot pose (x, y & alpha) by integration
       // TODO: Unwrap alpha (Make sure alpha is inside the range ]-pi,pi] )
   }
+
+  // Disable the motor drivers.
+  peripherals::enableMotorDriver = 0;
 }
 
 }
