@@ -38,7 +38,6 @@ private:
 
     /** Reference to Console. */
     Console& console;
-
     /* This method will be called when the thread starts. When this method returns, the thread stops. */
     void run() {
 
@@ -46,6 +45,8 @@ private:
          * Use the 'console' object to write messages to the serial console. Refer to the documentation of the 'Console' class.
          * On your PC, use a serial terminal (e.g. 'hterm') to read the generated messages.
          */
+        console.printf("Hello World\n");
+
 
         /* TODO (Ex1.2 & 1.3): Control wheel motors by setting PWM duty cycles.
          * Apply a duty cycle to the left and right wheel PWM outputs.
