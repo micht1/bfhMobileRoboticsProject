@@ -39,6 +39,7 @@ private:
     /** Reference to Console. */
     Console& console;
 
+
     /* This method will be called when the thread starts. When this method returns, the thread stops. */
     void run() {
 
@@ -46,6 +47,7 @@ private:
          * Use the 'console' object to write messages to the serial console. Refer to the documentation of the 'Console' class.
          * On your PC, use a serial terminal (e.g. 'hterm') to read the generated messages.
          */
+        console.printf("Hello World\n\r");
 
         /* TODO (Ex1.2 & 1.3): Control wheel motors by setting PWM duty cycles.
          * Apply a duty cycle to the left and right wheel PWM outputs.
@@ -54,6 +56,8 @@ private:
 
         // Enable the motor drivers.
         peripherals::enableMotorDriver = 1;
+        peripherals::pwmLeft.period(0.00005f);
+        peripherals::pwmRight.period(0.00005f);
 
         // NOTE: Respect the min / max allowed duty cycles defined in peripherals::MIN_DUTY_CYCLE and peripherals::MAX_DUTY_CYCLE
         peripherals::pwmLeft.write(0.5f);
@@ -71,6 +75,22 @@ private:
          * Read the sensors and understand what data you are receiving. (Hint: Look at the array peripherals::irSensors)
          * Turn on and off the corresponding LED to signal if an obstacle is present.
          */
+
+        peripherals::enableIRSensors = 1;
+
+        float sens[peripherals::N_IRs]={0};
+        for(int cnt = 0; cnt <peripherals::N_IRs; ++cnt){
+            sens[cnt]=peripherals::irSensors[cnt];  //.read();
+
+            if(sens[cnt] <= 0.5){
+                peripherals::led1.write(1);
+            }
+            else{
+                peripherals::led1.write(0);
+            }
+
+            console.printf("Sens %d: %f\n\r",cnt,sens[cnt]);
+        }
     }
 };
 

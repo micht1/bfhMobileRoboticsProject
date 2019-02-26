@@ -42,6 +42,7 @@ float IRSensor::read() {
 
   // Convert distance measurment from volts to meters
   float d = -0.58f * sqrt(distance) + 0.58f;
+  //float d = distance;
   return d;
 }
 
