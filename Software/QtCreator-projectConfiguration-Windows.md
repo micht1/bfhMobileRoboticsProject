@@ -80,3 +80,18 @@ To compile your project press **`CTRL`+`B`**. You will see any compilation warni
 #### 4.2 Flash
 
 To upload your program to Yellow press **`CTRL`+`R`**. The `Yellow.bin` file will be copied to Yellow.
+
+## 5. FAQ
+
+#### 5.1 Add new source files to the project tree
+When there is a new source file inside the Software folder, you need to add them to your Qt-project, in order to display them in the `Projects` tree. To do that, right-click on the project and choose `Edit Files...` .   
+![Qt - Qt edit files](doc-files/QtEditFiles.png "QtEditFiles")
+
+#### 5.2 Disable Clang Code Model
+It is possible you have the *Clang Code Model* Plugin enabled by default. This plugin highlights warnings and errors inside the code. To disable it follow these steps:  
+1. Go to `Help` > `About Plugins...` .
+  ![Qt - Disable Clang 1](doc-files/clang1.png "disableClang1")
+1. Disable the `ClangCodeModel` Plugin.  
+  ![Qt - Disable Clang 1](doc-files/clang2.png "disableClang2")
+1. Choose `Close`.
+1. Restart Qt-Creator.
