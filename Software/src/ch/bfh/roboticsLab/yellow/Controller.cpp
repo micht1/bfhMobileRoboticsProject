@@ -87,8 +87,8 @@ void Controller::run() {
 
       /** TODO (Ex2.1): Use the kinematic model to calculate the desired wheel speeds in [rpm] **/
 
-      float desiredSpeedLeft = 0;     // TODO: Replace with calculation
-      float desiredSpeedRight = 0;    // TODO: Replace with calculation
+      float desiredSpeedLeft = ((translationalVelocity-WHEEL_DISTANCE/2*rotationalVelocity)/(WHEEL_RADIUS*2*M_PI))*60.0f;     // TODO: Replace with calculation
+      float desiredSpeedRight = ((translationalVelocity+WHEEL_DISTANCE/2*rotationalVelocity)/(WHEEL_RADIUS*2*M_PI))*60.0f;     // TODO: Replace with calculation
 
       /** TODO (Ex2.2): Calculate the actual speed of the motors in [rpm] **/
 
@@ -96,8 +96,14 @@ void Controller::run() {
       // TODO: Calculate the encoder counts of the last period
       // TODO: Update the "previous" encoder counts
       // TODO: Calculate the current wheel motor speeds in [rpm] ('actualSpeedLeft' & 'actualSpeedRight')
-      float actualSpeedLeft = 0;
-      float actualSpeedRight = 0;
+
+      float actualSpeedLeft = ((peripherals::counterLeft-previousValueCounterLeft)/(PERIOD*peripherals::COUNTS_PER_TURN))*60.0f;
+      float actualSpeedRight = ((peripherals::counterRight-previousValueCounterRight)/(PERIOD*peripherals::COUNTS_PER_TURN))*60.0f;
+      previousValueCounterLeft = peripherals::counterLeft;
+      previousValueCounterRight = peripherals::counterRight;
+      Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
+      con.printf("speed: %f, %f\r\n", actualSpeedLeft,actualSpeedRight);
+      //Counter overflow might lead to undefined behaviour
 
       /** Calculate the voltage that needs to be applied (with closed loop P-control) **/
 
@@ -113,6 +119,16 @@ void Controller::run() {
       // TODO: Calculate duty cycle
       // TODO: Limit the PWM duty cycle
       // TODO: Set the duty cycle on the corresponding PWM
+       float desiredPwmLeft=((voltageLeft/24+0.5 > peripherals::MAX_DUTY_CYCLE ? peripherals::MAX_DUTY_CYCLE : voltageLeft/24+0.5));
+       desiredPwmLeft = ((desiredPwmLeft < peripherals::MIN_DUTY_CYCLE ? peripherals::MIN_DUTY_CYCLE : desiredPwmLeft));
+
+       float desiredPwmRight=((voltageRight/24+0.5 > peripherals::MAX_DUTY_CYCLE ? peripherals::MAX_DUTY_CYCLE : voltageRight/24+0.5));
+       desiredPwmRight = ((desiredPwmRight < peripherals::MIN_DUTY_CYCLE ? peripherals::MIN_DUTY_CYCLE : desiredPwmRight));
+
+       peripherals::pwmLeft.write(desiredPwmLeft);
+       peripherals::pwmRight.write(desiredPwmRight);
+
+
 
       /** TODO (Ex2.5): Estimate global position from odometry **/
 

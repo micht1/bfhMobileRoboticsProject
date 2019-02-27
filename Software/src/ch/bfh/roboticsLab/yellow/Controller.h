@@ -8,6 +8,7 @@
 
 #include <mbed.h>
 #include <ch/bfh/roboticsLab/yellow/RealtimeThread.h>
+#include <ch/bfh/roboticsLab/yellow/Console.h>
 
 namespace ch {
 namespace bfh {

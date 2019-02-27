@@ -67,11 +67,10 @@ private:
         peripherals::pwmRight.period(0.00005f);
 
         // NOTE: Respect the min / max allowed duty cycles defined in peripherals::MIN_DUTY_CYCLE and peripherals::MAX_DUTY_CYCLE
-        peripherals::pwmLeft.write(0.5f);
-        peripherals::pwmRight.write(0.5f);
+        //peripherals::pwmLeft.write(0.5f);
+        //peripherals::pwmRight.write(0.5f);
 
-        // Wait 1000 ms before continuing
-        Thread::wait(1000);
+
 
         // Disable the motor drivers.
         peripherals::enableMotorDriver = 0;
@@ -89,14 +88,14 @@ private:
         for(int cnt = 0; cnt <peripherals::N_IRs; ++cnt){
             sens[cnt]=peripherals::irSensors[cnt];  //.read();
 
-            if(sens[cnt] <= 0.5){
-                peripherals::led1.write(1);
+            if(sens[cnt] <= 0.2){
+                peripherals::irLEDs[cnt] = 1;
             }
             else{
-                peripherals::led1.write(0);
+                peripherals::irLEDs[cnt] = 0;
             }
 
-            console.printf("Sens %d: %f\n\r",cnt,sens[cnt]);
+            //console.printf("Sens %d: %f\n\r",cnt,sens[cnt]);
         }
         /* TODO (Ex2): Complete the controller class to control the motors
          * Look at the Controller.h class and complete it to achieve a desired linear and angular velocity.
@@ -106,9 +105,11 @@ private:
         controller.start();
 
         // Set a translational velocity [m/s].
-        controller.setTranslationalVelocity(1.5f);
+        controller.setTranslationalVelocity(0.0f);
         // Set a rotational velocity [rad/s].
-        controller.setRotationalVelocity(3.0f);
+        controller.setRotationalVelocity(1.0f);
+        // Wait 1000 ms before continuing
+        Thread::wait(1000);
     }
 };
 
