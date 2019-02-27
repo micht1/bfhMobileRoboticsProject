@@ -88,7 +88,7 @@ void Controller::run() {
       /** TODO (Ex2.1): Use the kinematic model to calculate the desired wheel speeds in [rpm] **/
 
       float desiredSpeedLeft = ((translationalVelocity-WHEEL_DISTANCE/2*rotationalVelocity)/(WHEEL_RADIUS*2*M_PI))*60.0f;     // TODO: Replace with calculation
-      float desiredSpeedRight = ((translationalVelocity+WHEEL_DISTANCE/2*rotationalVelocity)/(WHEEL_RADIUS*2*M_PI))*60.0f;     // TODO: Replace with calculation
+      float desiredSpeedRight = -((translationalVelocity+WHEEL_DISTANCE/2*rotationalVelocity)/(WHEEL_RADIUS*2*M_PI))*60.0f;     // TODO: Replace with calculation
 
       /** TODO (Ex2.2): Calculate the actual speed of the motors in [rpm] **/
 
@@ -97,33 +97,49 @@ void Controller::run() {
       // TODO: Update the "previous" encoder counts
       // TODO: Calculate the current wheel motor speeds in [rpm] ('actualSpeedLeft' & 'actualSpeedRight')
 
-      float actualSpeedLeft = ((peripherals::counterLeft-previousValueCounterLeft)/(PERIOD*peripherals::COUNTS_PER_TURN))*60.0f;
-      float actualSpeedRight = ((peripherals::counterRight-previousValueCounterRight)/(PERIOD*peripherals::COUNTS_PER_TURN))*60.0f;
+      float actualSpeedLeft = ((peripherals::counterLeft-previousValueCounterLeft)/(PERIOD*peripherals::COUNTS_PER_TURN*18.75f))*60.0f;
+      float actualSpeedRight = ((peripherals::counterRight-previousValueCounterRight)/(PERIOD*peripherals::COUNTS_PER_TURN*18.75f))*60.0f;
       previousValueCounterLeft = peripherals::counterLeft;
       previousValueCounterRight = peripherals::counterRight;
-      Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
-      con.printf("speed: %f, %f\r\n", actualSpeedLeft,actualSpeedRight);
+
       //Counter overflow might lead to undefined behaviour
 
       /** Calculate the voltage that needs to be applied (with closed loop P-control) **/
-
       // Calculate the error between the desired and the actual speed in [rpm]
       float speedErrorLeft = desiredSpeedLeft - actualSpeedLeft;
       float speedErrorRight = desiredSpeedRight - actualSpeedRight;
       // Calculate the motor phase voltages (with P-controller closed loop)
       float voltageLeft = (desiredSpeedLeft > 0.0 ? KP_POS : KP_NEG) * (speedErrorLeft) + desiredSpeedLeft / peripherals::KN;
       float voltageRight = (desiredSpeedRight > 0.0 ? KP_POS : KP_NEG) * (speedErrorRight) + desiredSpeedRight / peripherals::KN;
-
+      //Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
+      //con.printf("speed: %f, %f\r\n", voltageLeft,voltageRight);
       /** TODO (Ex2.4): Set corresponding PWM **/
 
       // TODO: Calculate duty cycle
       // TODO: Limit the PWM duty cycle
       // TODO: Set the duty cycle on the corresponding PWM
-       float desiredPwmLeft=((voltageLeft/24+0.5 > peripherals::MAX_DUTY_CYCLE ? peripherals::MAX_DUTY_CYCLE : voltageLeft/24+0.5));
-       desiredPwmLeft = ((desiredPwmLeft < peripherals::MIN_DUTY_CYCLE ? peripherals::MIN_DUTY_CYCLE : desiredPwmLeft));
+       float desiredPwmLeft=voltageLeft/24+0.5;
+       if(desiredPwmLeft>=peripherals::MAX_DUTY_CYCLE)
+       {
+           desiredPwmLeft=peripherals::MAX_DUTY_CYCLE;
+       }
+       else if(desiredPwmLeft<=peripherals::MIN_DUTY_CYCLE)
+       {
+           desiredPwmLeft=peripherals::MIN_DUTY_CYCLE;
+       }
 
-       float desiredPwmRight=((voltageRight/24+0.5 > peripherals::MAX_DUTY_CYCLE ? peripherals::MAX_DUTY_CYCLE : voltageRight/24+0.5));
-       desiredPwmRight = ((desiredPwmRight < peripherals::MIN_DUTY_CYCLE ? peripherals::MIN_DUTY_CYCLE : desiredPwmRight));
+       //desiredPwmLeft = ((desiredPwmLeft < peripherals::MIN_DUTY_CYCLE ? peripherals::MIN_DUTY_CYCLE : desiredPwmLeft));
+
+       float desiredPwmRight=voltageRight/24+0.5;
+       if(desiredPwmRight>=peripherals::MAX_DUTY_CYCLE)
+       {
+           desiredPwmRight=peripherals::MAX_DUTY_CYCLE;
+       }
+       else if(desiredPwmRight<=peripherals::MIN_DUTY_CYCLE)
+       {
+           desiredPwmRight=peripherals::MIN_DUTY_CYCLE;
+       }
+       //desiredPwmRight = ((desiredPwmRight < peripherals::MIN_DUTY_CYCLE ? peripherals::MIN_DUTY_CYCLE : desiredPwmRight));
 
        peripherals::pwmLeft.write(desiredPwmLeft);
        peripherals::pwmRight.write(desiredPwmRight);
@@ -135,6 +151,7 @@ void Controller::run() {
       // TODO: Calculate the 'actualTranslationalVelocity' and 'actualRotationalVelocity' using the kinematic model
       // TODO: Estimate the global robot pose (x, y & alpha) by integration
       // TODO: Unwrap alpha (Make sure alpha is inside the range ]-pi,pi] )
+
   }
 
   // Disable the motor drivers.
