@@ -9,17 +9,17 @@ Prof. Dr. Gabriel Gruener
 
 ## Goals
 * Install the *ARM cross-compiler*. Compile your first program, transfer and execute it on **Yellow**.
-* Get to know the available hardware and its drivers. Interact with the `Peripherals` namespace.
+* Get to know the available hardware and its drivers. Interact with the `peripherals` namespace.
 * Understand the wheel motor layout.
 * Learn to use the infrared (IR) sensors and activate the LEDs.
 * Get familiar with the serial Console.
 
 ## Procedure
-1. Update your repository from the git upstream as described in [../README](../README.md).
+1. Update your repository from the git upstream as described in [../README.md](../README.md).
 
-1. Install the necessary development tools as described in [../Software/README](../Software/README.md).
+1. Install the necessary development tools as described in [../Software/README.md](../Software/README.md).
 
-1. Inspect the [Documentation directory](../Documentation/README.md) to learn what hardware is available on **Yellow** and how it is connected to the microcontroller.
+1. Inspect the [../Documentation/](../Documentation/) directory to learn what hardware is available on **Yellow** and how it is connected to the microcontroller.
 
 1. Inspect the provided files:
 	* `Console.h` -
@@ -34,7 +34,7 @@ Prof. Dr. Gabriel Gruener
 	1. **Apply a duty cycle** to the left and right wheel **PWM outputs**.  
 	   Use the given `MIN_DUTY_CYCLE` and `MAX_DUTY_CYCLE` constants to make sure that the duty cycle will never be beyond these limits.
 	1. Understand which duty cycles make the left and right wheels turn forward and backward.
-	1. **Read the IR distance sensors** and understand what data you are receiving. Respect the minimum distance the sensor can detect.
+	1. **Read the IR distance sensors** and understand what data you are receiving. Note the minimum distance the sensor can detect.
 	1. **Control the LEDs** placed above each of the IR sensors, according to the sensors output: Turn on the LED when the distance reported by the corresponding sensor is smaller than a certain threshold.
 
 **Hint**: Look for the `TODO` comments in the C++ source code.

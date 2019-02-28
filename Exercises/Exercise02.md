@@ -9,24 +9,27 @@ Prof. Dr. Gabriel Gruener
 
 ## Goals
 * Get to know the `RealtimeThread` class.
-* Write a `Controller` class to control the motors of the robot to achieve a desired linear and angular velocity.
+* Implement a `Controller` to control the motors of the robot in order to achieve a desired linear and angular velocity.
 * Add odometry to the `Controller`.
 
 ## Procedure
-1. Update your project from the upstream remote (refer to [../README](../README.md)).
+1. Update your project from the upstream remote (refer to [../README.md](../README.md)).
 
 1. Inspect the new files
 	* `RealtimeThread.h` -
-	This class defines a real-time thread. Read the class documentation and usage example.
+		This class defines a real-time thread. Read the class documentation and usage example.
+	* `Controller.h` -
+		This class implements a RealtimeThread to control the wheels of the robot. Read the class documentation. `Main.cpp` contains the necessary code that instantiates, starts and interacts with the Controller.
 	* `driver/EncoderCounter.h` -
-	This class implements a driver to read the encoder counters on the motors. `Main.cpp` contains code example to read them.
+		This class implements a driver to read the encoder counters on the motors. The constructor of the Controller class (`Controller.cpp`) contains a code example to read them.
 
-1. Write the `Controller` class that commands the robot's wheels given a desired linear and angular velocity. The desired velocities are requested inside the `main::run()` method.
-	1. Use the kinematic model to calculate the desired wheel speeds.
-	1. Read the encoder counts to calculate the current wheel motor speeds.
-	1. Set the PWM duty cycle corresponding to the voltage that needs to be applied.
-	1. A closed loop P-controller calculates the motor phase voltages that need to applied with the help of the motor speed error. Set the PWM duty cycle corresponding to this motor phase voltage.
+1. Implement `Controller::run()` to command the robot's wheels given a desired linear and angular robot velocity. The desired velocities can be requested from `main::run()`.
+	1. Use the differential-drive kinematic model to calculate the desired wheel speeds from the desired linear and angular robot velocities.
+	1. Read the wheel encoder counts to derivate the current wheel motor speeds.
+	1. A feed-forward, closed-loop P-controller is already provided. It calculates the motor phase voltages needed, based on the motor speed errors.
+	1. Set the motor PWM duty cycle that corresponds to the motor phase voltage calculated.
 
-1. The `Controller` class has members to hold the global pose of the robot as well as methods to retrieve (`getX`) or set (`setX`) it. Estimate the global position from odometry based on encoder counter data. Refer to the **Kinematics** lecture of this course (global robot pose integrated from current speed).
+1. The `Controller` class has members to hold the global pose of the robot as well as methods to retrieve it (e.g. `getY`) or set it (`setX`, e.g. during initialization).
+	1. Estimate the global position from odometry based on encoder counter data. Refer to the **Kinematics** lecture of this course (global robot pose integrated from current speed).
 
 **Hint**: Look for the `TODO` comments inside the `Controller.cpp` file.
