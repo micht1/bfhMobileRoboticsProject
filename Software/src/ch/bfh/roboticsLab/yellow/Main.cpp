@@ -110,6 +110,9 @@ private:
 
         Thread::wait(5000);
 
+        // Go into OFF state
+        stateMachine.setDesiredState(State::OFF);
+
         // Set robot's velocities for manual operation mode
         stateMachine.setVelocities(1.5f, 3.0f);
 
