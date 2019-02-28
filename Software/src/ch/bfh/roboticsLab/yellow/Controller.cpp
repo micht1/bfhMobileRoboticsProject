@@ -29,6 +29,15 @@ Controller::Controller() :
   peripherals::pwmRight.period(0.00005f);
   peripherals::pwmRight.write(0.5f);
 
+  // Initialize motion planners
+  translationalMotion.setProfileVelocity(TRANSLATIONAL_PROFILE_VELOCITY);
+  translationalMotion.setProfileAcceleration(1.5f);
+  translationalMotion.setProfileDeceleration(3.0f);
+
+  rotationalMotion.setProfileVelocity(ROTATIONAL_PROFILE_VELOCITY);
+  rotationalMotion.setProfileAcceleration(15.0f);
+  rotationalMotion.setProfileDeceleration(15.0f);
+
   // Initialize encoder values
   previousValueCounterLeft = peripherals::counterLeft.read();
   previousValueCounterRight = peripherals::counterRight.read();
@@ -80,12 +89,14 @@ float Controller::getAlpha() {
 
 void Controller::run() {
 
-  // Enable the motor drivers
-  peripherals::enableMotorDriver = 1;
-
   while (waitForNextPeriod()) {
 
+      // Increment motion planner for translational and rotational velocities
+      translationalMotion.incrementToVelocity(translationalVelocity, period);
+      rotationalMotion.incrementToVelocity(rotationalVelocity, period);
+
       /** TODO (Ex2.1): Use the kinematic model to calculate the desired wheel speeds in [rpm] **/
+      // TODO (Ex3.1): Use the members `translationalMotion.velocity` and `rotationalMotion.velocity` to calculate the desired wheel speeds.
 
       float desiredSpeedLeft = 0;     // TODO: Replace with calculation
       float desiredSpeedRight = 0;    // TODO: Replace with calculation
@@ -120,9 +131,6 @@ void Controller::run() {
       // TODO: Estimate the global robot pose (x, y & alpha) by integration
       // TODO: Unwrap alpha (Make sure alpha is inside the range ]-pi,pi] )
   }
-
-  // Disable the motor drivers.
-  peripherals::enableMotorDriver = 0;
 }
 
 }

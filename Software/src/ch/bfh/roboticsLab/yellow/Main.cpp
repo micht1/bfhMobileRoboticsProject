@@ -9,6 +9,7 @@
 #include <ch/bfh/roboticsLab/yellow/Console.h>
 #include <ch/bfh/roboticsLab/yellow/Peripherals.h>
 #include <ch/bfh/roboticsLab/yellow/Controller.h>
+#include <ch/bfh/roboticsLab/yellow/StateMachine.h>
 
 namespace ch {
 namespace bfh {
@@ -23,7 +24,8 @@ public:
     Main()
         : thread(osPriorityNormal, STACK_SIZE),
           console(Console::getInstance()),
-          controller(Controller::getInstance())
+          controller(Controller::getInstance()),
+          stateMachine(StateMachine::getInstance())
     {
         thread.start(callback(this, &Main::run));
     }
@@ -42,6 +44,8 @@ private:
     Console& console;
     /** Reference to Controller. */
     Controller& controller;
+    /** Reference to State Machine. */
+    StateMachine& stateMachine;
 
     /* This method will be called when the thread starts. When this method returns, the thread stops. */
     void run() {
@@ -91,6 +95,54 @@ private:
         controller.setTranslationalVelocity(1.5f);
         // Set a rotational velocity [rad/s].
         controller.setRotationalVelocity(3.0f);
+
+        /* TODO (Ex3.2 to Ex3.5): State Machine
+         * Implement the State Machine for Yellow.
+         * Refer to the TODO comments inside `StateMachine.cpp`.
+         */
+
+        // Start the StateMachine thread
+        console.printf("Starting state machine...\r\n");
+        stateMachine.start();
+
+        // Go into AUTO_REACTIVE state
+        stateMachine.setDesiredState(State::AUTO_REACTIVE);
+
+        Thread::wait(5000);
+
+        // Set robot's velocities for manual operation mode
+        stateMachine.setVelocities(1.5f, 3.0f);
+
+        // Go into MANUAL state
+        stateMachine.setDesiredState(State::MANUAL);
+
+        Thread::wait(3000);
+
+        // Go into OFF state
+        stateMachine.setDesiredState(State::OFF);
+
+        // Set goal pose for auto position operation mode
+        stateMachine.setGoalPose(1.0f, 1.0f, 0.0f);
+
+        // Go into AUTO_POSITION state
+        stateMachine.setDesiredState(State::AUTO_POSITION);
+
+        // Wait until state machine goes into OFF state (goal reached)
+        while (true) {
+            Thread::wait(500);
+            State::Enum state = stateMachine.getState();
+            console.printf("State: %d\r\n", state);
+            if (state == State::OFF) break;
+        }
+
+        stateMachine.setGoalPose(0.0f, 0.0f, 0.0f);
+        stateMachine.setDesiredState(State::AUTO_POSITION);
+        while (true) {
+            Thread::wait(500);
+            State::Enum state = stateMachine.getState();
+            console.printf("State: %d\r\n", state);
+            if (state == State::OFF) break;
+        }
     }
 };
 
