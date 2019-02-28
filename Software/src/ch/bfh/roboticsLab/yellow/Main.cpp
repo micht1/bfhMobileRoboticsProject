@@ -105,7 +105,7 @@ private:
         controller.start();
 
         // Set a translational velocity [m/s].
-        controller.setTranslationalVelocity(0.2f);
+        controller.setTranslationalVelocity(0.3f);
         // Set a rotational velocity [rad/s].
         controller.setRotationalVelocity(0.0f);
         // Wait 1000 ms before continuing
