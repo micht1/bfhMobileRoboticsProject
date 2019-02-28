@@ -88,7 +88,7 @@ void Controller::run() {
       /** TODO (Ex2.1): Use the kinematic model to calculate the desired wheel speeds in [rpm] **/
 
       float desiredSpeedLeft = ((translationalVelocity-WHEEL_DISTANCE/2*rotationalVelocity)/(WHEEL_RADIUS*2*M_PI))*60.0f;     // TODO: Replace with calculation
-      float desiredSpeedRight = -((translationalVelocity+WHEEL_DISTANCE/2*rotationalVelocity)/(WHEEL_RADIUS*2*M_PI))*60.0f;     // TODO: Replace with calculation
+      float desiredSpeedRight = ((translationalVelocity+WHEEL_DISTANCE/2*rotationalVelocity)/(WHEEL_RADIUS*2*M_PI))*60.0f;     // TODO: Replace with calculation
 
       /** TODO (Ex2.2): Calculate the actual speed of the motors in [rpm] **/
 
@@ -96,11 +96,12 @@ void Controller::run() {
       // TODO: Calculate the encoder counts of the last period
       // TODO: Update the "previous" encoder counts
       // TODO: Calculate the current wheel motor speeds in [rpm] ('actualSpeedLeft' & 'actualSpeedRight')
-
-      float actualSpeedLeft = ((peripherals::counterLeft-previousValueCounterLeft)/(PERIOD*peripherals::COUNTS_PER_TURN*18.75f))*60.0f;
-      float actualSpeedRight = ((peripherals::counterRight-previousValueCounterRight)/(PERIOD*peripherals::COUNTS_PER_TURN*18.75f))*60.0f;
-      previousValueCounterLeft = peripherals::counterLeft;
-      previousValueCounterRight = peripherals::counterRight;
+      float encoderCountsLeft = peripherals::counterLeft.read();
+      float encoderCountsRight = peripherals::counterRight.read();
+      float actualSpeedLeft = ((encoderCountsLeft-previousValueCounterLeft)/(PERIOD*peripherals::COUNTS_PER_TURN))*60.0f;
+      float actualSpeedRight = -((encoderCountsRight-previousValueCounterRight)/(PERIOD*peripherals::COUNTS_PER_TURN))*60.0f;
+      previousValueCounterLeft = encoderCountsLeft;
+      previousValueCounterRight = encoderCountsRight;
 
       //Counter overflow might lead to undefined behaviour
 
@@ -111,14 +112,12 @@ void Controller::run() {
       // Calculate the motor phase voltages (with P-controller closed loop)
       float voltageLeft = (desiredSpeedLeft > 0.0 ? KP_POS : KP_NEG) * (speedErrorLeft) + desiredSpeedLeft / peripherals::KN;
       float voltageRight = (desiredSpeedRight > 0.0 ? KP_POS : KP_NEG) * (speedErrorRight) + desiredSpeedRight / peripherals::KN;
-      //Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
-      //con.printf("speed: %f, %f\r\n", voltageLeft,voltageRight);
       /** TODO (Ex2.4): Set corresponding PWM **/
 
       // TODO: Calculate duty cycle
       // TODO: Limit the PWM duty cycle
       // TODO: Set the duty cycle on the corresponding PWM
-       float desiredPwmLeft=voltageLeft/24+0.5;
+       float desiredPwmLeft=voltageLeft/24.0f+0.5;
        if(desiredPwmLeft>=peripherals::MAX_DUTY_CYCLE)
        {
            desiredPwmLeft=peripherals::MAX_DUTY_CYCLE;
@@ -130,7 +129,7 @@ void Controller::run() {
 
        //desiredPwmLeft = ((desiredPwmLeft < peripherals::MIN_DUTY_CYCLE ? peripherals::MIN_DUTY_CYCLE : desiredPwmLeft));
 
-       float desiredPwmRight=voltageRight/24+0.5;
+       float desiredPwmRight=(-voltageRight)/24.0f+0.5;
        if(desiredPwmRight>=peripherals::MAX_DUTY_CYCLE)
        {
            desiredPwmRight=peripherals::MAX_DUTY_CYCLE;
@@ -149,7 +148,26 @@ void Controller::run() {
       /** TODO (Ex2.5): Estimate global position from odometry **/
 
       // TODO: Calculate the 'actualTranslationalVelocity' and 'actualRotationalVelocity' using the kinematic model
+      float actualTranslationVelocity = (0.5f*(actualSpeedLeft+actualSpeedRight)*2*WHEEL_RADIUS*M_PI)/60.0f;
+      float actualRotationVelocity = (1/(2*WHEEL_RADIUS)*((actualSpeedRight-actualSpeedLeft)*2*WHEEL_RADIUS*M_PI))/60.0f;
+
       // TODO: Estimate the global robot pose (x, y & alpha) by integration
+      x = x + cos(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;
+      y = y + sin(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;
+      alpha = alpha+actualRotationVelocity*PERIOD;
+     if(alpha%M_PI==0){
+      if((alpha/M_PI)%2==0){
+        alpha = 0;
+      }
+      else {
+         alpha = M_PI;
+      }
+     }
+     else{
+        alpha = alpha%M_PI;
+     }
+
+
       // TODO: Unwrap alpha (Make sure alpha is inside the range ]-pi,pi] )
 
   }
