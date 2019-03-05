@@ -93,7 +93,18 @@ void StateMachine::run() {
          * NOTE: Use the member variables `minDistance` / `maxDistance`.
          * NOTE: Use your code from Ex1.4 & 1.5.
          */
+        peripherals::enableIRSensors = 1;
 
+        for(int cnt = 0; cnt <peripherals::N_IRs; ++cnt){
+            distance[cnt]=peripherals::irSensors[cnt];  //.read();
+
+            if(distance[cnt] <= minDistance){
+                peripherals::irLEDs[cnt] = 1;
+            }
+            else if(distance[cnt]>=maxDistance){
+                peripherals::irLEDs[cnt] = 0;
+            }
+        }
 
         // handle state machine
         switch (state) {
@@ -187,6 +198,8 @@ void StateMachine::run() {
                 /* TODO (Ex3.3): Complete the MANUAL state
                  * Let Yellow drive at the desired translational / rotational velocities.
                  */
+                controller.setTranslationalVelocity(translationalVelocity);
+                controller.setRotationalVelocity(rotationalVelocity);
 
             }
 
@@ -213,7 +226,23 @@ void StateMachine::run() {
                  * NOTE: Again, use the member variables `minDistance` / `maxDistance`.
                  * Request desired velocities to the controller.
                  */
-
+                if(distance[0]>=maxDistance && distance[1]>=maxDistance && distance[5]>=maxDistance){
+                    controller.setTranslationalVelocity(1.0f);
+                    controller.setRotationalVelocity(0.0f);
+                }
+                else if(distance[0]<=minDistance || distance[1]<=minDistance || distance[5]<=minDistance){
+                    controller.setTranslationalVelocity(-0.5f);
+                    controller.setRotationalVelocity(0.0f);
+                }
+                else {
+                    controller.setTranslationalVelocity(1.0f*(distance[0]/maxDistance)*(distance[1]+distance[5])/(2.0f*maxDistance));
+                    if(abs(distance[1]-distance[5])>0.05){
+                        controller.setRotationalVelocity(2.0f/((distance[5]/maxDistance)-(distance[1]/maxDistance)));
+                    }
+                    else {
+                        controller.setRotationalVelocity(0.0f);
+                    }
+                }
             }
 
             buttonBefore = buttonNow;

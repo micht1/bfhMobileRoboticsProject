@@ -98,8 +98,8 @@ void Controller::run() {
       /** TODO (Ex2.1): Use the kinematic model to calculate the desired wheel speeds in [rpm] **/
       // TODO (Ex3.1): Use the members `translationalMotion.velocity` and `rotationalMotion.velocity` to calculate the desired wheel speeds.
 
-      float desiredSpeedLeft = ((translationalVelocity-WHEEL_DISTANCE/2*rotationalVelocity)/(WHEEL_RADIUS*2*M_PI))*60.0f;     // TODO: Replace with calculation
-      float desiredSpeedRight = ((translationalVelocity+WHEEL_DISTANCE/2*rotationalVelocity)/(WHEEL_RADIUS*2*M_PI))*60.0f;     // TODO: Replace with calculation
+      float desiredSpeedLeft = ((translationalMotion.velocity-WHEEL_DISTANCE/2*rotationalMotion.velocity)/(WHEEL_RADIUS*2*M_PI))*60.0f;     // TODO: Replace with calculation
+      float desiredSpeedRight = ((translationalMotion.velocity+WHEEL_DISTANCE/2*rotationalMotion.velocity)/(WHEEL_RADIUS*2*M_PI))*60.0f;     // TODO: Replace with calculation
 
       /** TODO (Ex2.2): Calculate the actual speed of the motors in [rpm] **/
 
@@ -160,22 +160,17 @@ void Controller::run() {
 
       // TODO: Calculate the 'actualTranslationalVelocity' and 'actualRotationalVelocity' using the kinematic model
       float actualTranslationVelocity = (0.5f*(actualSpeedLeft+actualSpeedRight)*2*WHEEL_RADIUS*M_PI)/60.0f;
-      float actualRotationVelocity = (1/(2*WHEEL_RADIUS)*((actualSpeedRight-actualSpeedLeft)*2*WHEEL_RADIUS*M_PI))/60.0f;
+      float actualRotationVelocity = (1/(WHEEL_DISTANCE)*((actualSpeedRight-actualSpeedLeft)*2*WHEEL_RADIUS*M_PI))/60.0f;
 
       // TODO: Estimate the global robot pose (x, y & alpha) by integration
       x = x + cos(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;
       y = y + sin(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;
       alpha = alpha+actualRotationVelocity*PERIOD;
-     if((fmod(alpha,M_PI))==0){
-      if(fmod((alpha/M_PI),2)==0){
-        alpha = 0;
-      }
-      else {
-         alpha = M_PI;
-      }
+     if((fmod(alpha,2*M_PI))>M_PI){
+        alpha = -M_PI-(M_PI-fmod(alpha,2*M_PI));
      }
      else{
-        alpha = fmod(alpha,M_PI);
+        alpha = fmod(alpha,2*M_PI);
      }
 
 
