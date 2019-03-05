@@ -187,7 +187,8 @@ void StateMachine::run() {
                 /* TODO (Ex3.3): Complete the MANUAL state
                  * Let Yellow drive at the desired translational / rotational velocities.
                  */
-
+                controller.setTranslationalVelocity(translationalVelocity);
+                controller.setRotationalVelocity(rotationalVelocity);
             }
 
             break;
@@ -236,6 +237,13 @@ void StateMachine::run() {
                  * Translate straight ahead to the goal position.
                  * Rotate the robot to the goal orientation.
                  */
+                float distanceToTarget=sqrt((this->xDesired-controller.getX())*(this->xDesired-controller.getX())+(this->yDesired-controller.getY())*(this->yDesired-controller.getY()));
+                float angleToTargetPos=atan2(this->yDesired-controller.getY(),this->xDesired-controller.getX());
+                float angleCorrection=angleToTargetPos+controller.getAlpha()-this->alphaDesired;
+
+                controller.setTranslationalVelocity(K1*distanceToTarget*cos(angleToTargetPos));
+                controller.setRotationalVelocity(K2*angleToTargetPos+K1*sin(angleToTargetPos)*cos(angleToTargetPos)*(angleToTargetPos+K3*angleCorrection)/angleToTargetPos);
+
 
             }
 

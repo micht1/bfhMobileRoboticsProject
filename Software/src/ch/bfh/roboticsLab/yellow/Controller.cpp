@@ -98,8 +98,8 @@ void Controller::run() {
       /** TODO (Ex2.1): Use the kinematic model to calculate the desired wheel speeds in [rpm] **/
       // TODO (Ex3.1): Use the members `translationalMotion.velocity` and `rotationalMotion.velocity` to calculate the desired wheel speeds.
 
-      float desiredSpeedLeft = ((translationalVelocity-WHEEL_DISTANCE/2*rotationalVelocity)/(WHEEL_RADIUS*2*M_PI))*60.0f;     // TODO: Replace with calculation
-      float desiredSpeedRight = ((translationalVelocity+WHEEL_DISTANCE/2*rotationalVelocity)/(WHEEL_RADIUS*2*M_PI))*60.0f;     // TODO: Replace with calculation
+      float desiredSpeedLeft = ((translationalMotion.velocity-WHEEL_DISTANCE/2*rotationalMotion.velocity)/(WHEEL_RADIUS*2*M_PI))*60.0f;     // TODO: Replace with calculation
+      float desiredSpeedRight = ((translationalMotion.velocity+WHEEL_DISTANCE/2*rotationalMotion.velocity)/(WHEEL_RADIUS*2*M_PI))*60.0f;     // TODO: Replace with calculation
 
       /** TODO (Ex2.2): Calculate the actual speed of the motors in [rpm] **/
 
