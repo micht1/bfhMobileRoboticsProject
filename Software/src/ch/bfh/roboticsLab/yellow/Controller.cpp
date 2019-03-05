@@ -160,22 +160,17 @@ void Controller::run() {
 
       // TODO: Calculate the 'actualTranslationalVelocity' and 'actualRotationalVelocity' using the kinematic model
       float actualTranslationVelocity = (0.5f*(actualSpeedLeft+actualSpeedRight)*2*WHEEL_RADIUS*M_PI)/60.0f;
-      float actualRotationVelocity = (1/(2*WHEEL_RADIUS)*((actualSpeedRight-actualSpeedLeft)*2*WHEEL_RADIUS*M_PI))/60.0f;
+      float actualRotationVelocity = (1/(WHEEL_DISTANCE)*((actualSpeedRight-actualSpeedLeft)*2*WHEEL_RADIUS*M_PI))/60.0f;
 
       // TODO: Estimate the global robot pose (x, y & alpha) by integration
       x = x + cos(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;
       y = y + sin(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;
       alpha = alpha+actualRotationVelocity*PERIOD;
-     if((fmod(alpha,M_PI))==0){
-      if(fmod((alpha/M_PI),2)==0){
-        alpha = 0;
-      }
-      else {
-         alpha = M_PI;
-      }
+     if((fmod(alpha,2*M_PI))>M_PI){
+        alpha = -M_PI-(M_PI-fmod(alpha,2*M_PI));
      }
      else{
-        alpha = fmod(alpha,M_PI);
+        alpha = fmod(alpha,2*M_PI);
      }
 
 

@@ -86,26 +86,12 @@ private:
          * Turn on and off the corresponding LED to signal if an obstacle is present.
          */
 
-        peripherals::enableIRSensors = 1;
-
-        float sens[peripherals::N_IRs]={0};
-        for(int cnt = 0; cnt <peripherals::N_IRs; ++cnt){
-            sens[cnt]=peripherals::irSensors[cnt];  //.read();
-
-            if(sens[cnt] <= 0.2){
-                peripherals::irLEDs[cnt] = 1;
-            }
-            else{
-                peripherals::irLEDs[cnt] = 0;
-            }
-
-            //console.printf("Sens %d: %f\n\r",cnt,sens[cnt]);
-        }
         /* TODO (Ex2): Complete the controller class to control the motors
          * Look at the Controller.h class and complete it to achieve a desired linear and angular velocity.
          */
 
         // Start the controller thread
+        peripherals::enableMotorDriver=1;
         controller.start();
 
         // Set a translational velocity [m/s].
@@ -115,69 +101,70 @@ private:
         // Wait 1000 ms before continuing
         while (true) {
 
-            console.printf("x:%f,y%f\n",controller.getX(),controller.getY());
-        }
+            console.printf("x:%f,y:%f,a:%f\n",controller.getX(),controller.getY(),controller.getAlpha());
 
-        Thread::wait(1000);
+            Thread::wait(1000);
 
-        /* TODO (Ex3.2 to Ex3.5): State Machine
+            /* TODO (Ex3.2 to Ex3.5): State Machine
          * Implement the State Machine for Yellow.
          * Refer to the TODO comments inside `StateMachine.cpp`.
          */
 
-        // Start the StateMachine thread
-        console.printf("Starting state machine...\r\n");
-        stateMachine.start();
+            // Start the StateMachine thread
+            console.printf("Starting state machine...\r\n");
+            stateMachine.start();
 
-        // Go into AUTO_REACTIVE state
-        stateMachine.setDesiredState(State::AUTO_REACTIVE);
+            // Go into AUTO_REACTIVE state
+            stateMachine.setDesiredState(State::AUTO_REACTIVE);
 
-        Thread::wait(5000);
+            Thread::wait(5000);
 
-        // Go into OFF state
-        stateMachine.setDesiredState(State::OFF);
+            // Go into OFF state
+            stateMachine.setDesiredState(State::OFF);
 
-        // Set robot's velocities for manual operation mode
-        stateMachine.setVelocities(1.5f, 3.0f);
+            // Set robot's velocities for manual operation mode
+            stateMachine.setVelocities(1.5f, 3.0f);
 
-        // Go into MANUAL state
-        stateMachine.setDesiredState(State::MANUAL);
+            // Go into MANUAL state
+            stateMachine.setDesiredState(State::MANUAL);
 
-        Thread::wait(3000);
+            Thread::wait(3000);
 
-        // Go into OFF state
-        stateMachine.setDesiredState(State::OFF);
+            // Go into OFF state
+            stateMachine.setDesiredState(State::OFF);
 
-        // Set goal pose for auto position operation mode
-        stateMachine.setGoalPose(1.0f, 1.0f, 0.0f);
+            // Set goal pose for auto position operation mode
+            stateMachine.setGoalPose(1.0f, 1.0f, 0.0f);
 
-        // Go into AUTO_POSITION state
-        stateMachine.setDesiredState(State::AUTO_POSITION);
+            // Go into AUTO_POSITION state
+            stateMachine.setDesiredState(State::AUTO_POSITION);
 
-        // Wait until state machine goes into OFF state (goal reached)
-        while (true) {
-            Thread::wait(500);
-            State::Enum state = stateMachine.getState();
-            console.printf("State: %d\r\n", state);
-            if (state == State::OFF) break;
-        }
+            // Wait until state machine goes into OFF state (goal reached)
+            while (true) {
+                Thread::wait(500);
+                State::Enum state = stateMachine.getState();
+                console.printf("State: %d\r\n", state);
+                if (state == State::OFF) break;
+            }
 
-        stateMachine.setGoalPose(0.0f, 0.0f, 0.0f);
-        stateMachine.setDesiredState(State::AUTO_POSITION);
-        while (true) {
-            Thread::wait(500);
-            State::Enum state = stateMachine.getState();
-            console.printf("State: %d\r\n", state);
-            if (state == State::OFF) break;
+            stateMachine.setGoalPose(0.0f, 0.0f, 0.0f);
+            stateMachine.setDesiredState(State::AUTO_POSITION);
+            while (true) {
+                Thread::wait(500);
+                State::Enum state = stateMachine.getState();
+                console.printf("State: %d\r\n", state);
+                if (state == State::OFF) break;
+            }
+            peripherals::enableMotorDriver = 0;
         }
 
     }
 };
+}
+}
+}
+}
 
-}
-}
-}
-}
 
 /** This is the main program of the application. */
 int main() {
