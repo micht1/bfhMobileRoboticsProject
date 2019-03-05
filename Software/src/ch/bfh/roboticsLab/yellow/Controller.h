@@ -81,6 +81,9 @@ public:
    */
   float getAlpha();
 
+  float monitor1;
+  float monitor2;
+
 private:
 
   /** The default period of the this real-time thread [s] */

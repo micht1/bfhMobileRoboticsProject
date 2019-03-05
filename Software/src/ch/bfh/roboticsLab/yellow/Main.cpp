@@ -109,6 +109,11 @@ private:
         // Set a rotational velocity [rad/s].
         controller.setRotationalVelocity(0.0f);
         // Wait 1000 ms before continuing
+        while (true) {
+
+            console.printf("x:%f,y%f\n",controller.getX(),controller.getY());
+        }
+
         Thread::wait(1000);
     }
 };
