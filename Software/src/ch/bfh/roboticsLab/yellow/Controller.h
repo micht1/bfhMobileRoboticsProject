@@ -9,6 +9,7 @@
 #include <mbed.h>
 #include <ch/bfh/roboticsLab/yellow/RealtimeThread.h>
 #include <ch/bfh/roboticsLab/yellow/Console.h>
+#include <ch/bfh/roboticsLab/yellow/Motion.h>
 
 namespace ch {
 namespace bfh {
@@ -25,6 +26,11 @@ namespace yellow {
 class Controller: public RealtimeThread {
 
 public:
+
+  /** Translational velocity for profiled motion planner [m/s]. */
+  static constexpr float TRANSLATIONAL_PROFILE_VELOCITY = 1.5f;
+  /** Rotational velocity for profiled motion planner [rad/s]. */
+  static constexpr float ROTATIONAL_PROFILE_VELOCITY = 3.0f;
 
   static Controller& getInstance();
 
@@ -98,6 +104,10 @@ private:
   static constexpr float KP_POS = 0.2f;
   static constexpr float KP_NEG = 0.1f;
 
+  /** Motion planner for translation */
+  Motion translationalMotion;
+  /** Motion planner for rotation */
+  Motion rotationalMotion;
   /** Estimated current translational velocity [m/s] */
   float translationalVelocity;
   /** Estimated current rotational velocity [rad/s] */
