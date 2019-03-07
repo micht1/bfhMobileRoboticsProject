@@ -11,6 +11,12 @@
 #include <ch/bfh/roboticsLab/yellow/Controller.h>
 #include <ch/bfh/roboticsLab/yellow/StateMachine.h>
 
+#include <ch/bfh/roboticsLab/yellow/LidarAnalysis.h>
+
+#include <ch/bfh/roboticsLab/yellow/communication/SerialServer.h>
+#include <ch/bfh/roboticsLab/yellow/communication/ProtocolInterface.h>
+#include <ch/bfh/roboticsLab/yellow/communication/TelemetrySender.h>
+
 namespace ch {
 namespace bfh {
 namespace roboticsLab {
@@ -25,7 +31,9 @@ public:
         : thread(osPriorityNormal, STACK_SIZE),
           console(Console::getInstance()),
           controller(Controller::getInstance()),
-          stateMachine(StateMachine::getInstance())
+          stateMachine(StateMachine::getInstance()),
+          serialServer(communication::SerialServer::getInstance()),
+          telemetrySender(communication::TelemetrySender::getInstance())
     {
         thread.start(callback(this, &Main::run));
     }
@@ -46,105 +54,114 @@ private:
     Controller& controller;
     /** Reference to State Machine. */
     StateMachine& stateMachine;
+    /** Reference to Serial Server. */
+    communication::SerialServer& serialServer;
+    /** Reference to Telemetry Sender. */
+    communication::TelemetrySender& telemetrySender;
 
     /* This method will be called when the thread starts. When this method returns, the thread stops. */
     void run() {
 
-        /* TODO (Ex1.1): Write messages to the serial console.
-         * Use the 'console' object to write messages to the serial console. Refer to the documentation of the 'Console' class.
-         * On your PC, use a serial terminal (e.g. 'hterm') to read the generated messages.
-         */
-
-        /* TODO (Ex1.2 & 1.3): Control wheel motors by setting PWM duty cycles.
-         * Apply a duty cycle to the left and right wheel PWM outputs.
-         * Understand the wheel motion according to the duty cycle you apply. (Forward, backward motion?)
-         */
-
-        // Enable the motor drivers.
-        peripherals::enableMotorDriver = 1;
-
-        // Set PWM period
-        peripherals::pwmLeft.period(0.00005f);
-        peripherals::pwmRight.period(0.00005f);
-
-        // NOTE: Respect the min / max allowed duty cycles defined in peripherals::MIN_DUTY_CYCLE and peripherals::MAX_DUTY_CYCLE
-        peripherals::pwmLeft.write(0.5f);
-        peripherals::pwmRight.write(0.5f);
-
-        // Wait 1000 ms before continuing
-        Thread::wait(1000);
-
-        // Disable the motor drivers.
-        peripherals::enableMotorDriver = 0;
-
-
-        /* TODO (Ex1.4 & 1.5): Read distance sensors & activate the corresponding LED
-         * Enable the IR sensors.
-         * Read the sensors and understand what data you are receiving. (Hint: Look at the array peripherals::irSensors)
-         * Turn on and off the corresponding LED to signal if an obstacle is present.
-         */
-
-        /* TODO (Ex2): Complete the controller class to control the motors
-         * Look at the Controller.h class and complete it to achieve a desired linear and angular velocity.
-         */
-
-        // Start the controller thread
-        controller.start();
-
-        // Set a translational velocity [m/s].
-        controller.setTranslationalVelocity(1.5f);
-        // Set a rotational velocity [rad/s].
-        controller.setRotationalVelocity(3.0f);
-
-        /* TODO (Ex3.2 to Ex3.5): State Machine
-         * Implement the State Machine for Yellow.
-         * Refer to the TODO comments inside `StateMachine.cpp`.
-         */
-
-        // Start the StateMachine thread
+        // Start state machine
         console.printf("Starting state machine...\r\n");
         stateMachine.start();
 
-        // Go into AUTO_REACTIVE state
-        stateMachine.setDesiredState(State::AUTO_REACTIVE);
+        // Start LIDAR
+        console.printf("Starting LIDAR...\r\n");
+        driver::LIDAR::getInstance().start();
 
-        Thread::wait(5000);
+        // Communication
+        console.printf("Starting Telemetry Sender...\r\n");
+        communication::TelemetrySender::getInstance().start();
+        Thread::wait(1000);
 
-        // Go into OFF state
-        stateMachine.setDesiredState(State::OFF);
-
-        // Set robot's velocities for manual operation mode
-        stateMachine.setVelocities(1.5f, 3.0f);
-
-        // Go into MANUAL state
-        stateMachine.setDesiredState(State::MANUAL);
-
-        Thread::wait(3000);
-
-        // Go into OFF state
-        stateMachine.setDesiredState(State::OFF);
-
-        // Set goal pose for auto position operation mode
-        stateMachine.setGoalPose(1.0f, 1.0f, 0.0f);
-
-        // Go into AUTO_POSITION state
-        stateMachine.setDesiredState(State::AUTO_POSITION);
-
-        // Wait until state machine goes into OFF state (goal reached)
         while (true) {
-            Thread::wait(500);
-            State::Enum state = stateMachine.getState();
-            console.printf("State: %d\r\n", state);
-            if (state == State::OFF) break;
+          processIncomingTelecommand();
         }
 
-        stateMachine.setGoalPose(0.0f, 0.0f, 0.0f);
-        stateMachine.setDesiredState(State::AUTO_POSITION);
-        while (true) {
-            Thread::wait(500);
-            State::Enum state = stateMachine.getState();
-            console.printf("State: %d\r\n", state);
-            if (state == State::OFF) break;
+        console.printf("Done\r\n");
+    }
+
+    /**
+     * Process an incoming telecommand message.
+     */
+    void processIncomingTelecommand() {
+
+        console.printf("Waiting for incoming message...\r\n");
+
+        communication::Stream incoming;
+        ch_bfh_roboticsLab_yellow_communication_Telecommand telecommand = communication::ProtocolInterface::processTelecommand(serialServer.receive(incoming));
+
+        if (telecommand.has_timestamp)
+            console.printf("Received telecommand.timestamp %ld\r\n", telecommand.timestamp);
+
+        if (telecommand.has_requestLidarData && telecommand.requestLidarData > 0) {
+          console.printf("Received telecommand.requestLidarData %ld\r\n", telecommand.requestLidarData);
+          telemetrySender.requestLidar(telecommand.requestLidarData);
+        }
+
+        if (telecommand.has_requestLidarLines) {
+          console.printf("Received telecommand.requestLidarLines\r\n");
+          telemetrySender.requestLidarLines(telecommand.requestLidarLines);
+        }
+
+        if (telecommand.has_state) {
+            console.printf("Received telecommand.state %d\r\n", telecommand.state.stateName);
+            State::Enum state = communication::ProtocolInterface::getState(telecommand.state.stateName);
+            if (state != State::AUTO_POSITION || telecommand.has_desiredPose)
+                stateMachine.setDesiredState(state);
+        }
+
+        if (telecommand.has_velocities) {
+            console.printf("Received telecommand.velocities %f, %f\r\n", telecommand.velocities.linearSpeed, telecommand.velocities.angularSpeed);
+            stateMachine.setVelocities(telecommand.velocities.linearSpeed, telecommand.velocities.angularSpeed);
+        }
+
+        if (telecommand.has_desiredPose) {
+            console.printf("Received telecommand.desiredPose %f, %f, %f\r\n", telecommand.desiredPose.x, telecommand.desiredPose.y,
+                           telecommand.desiredPose.alpha);
+            stateMachine.setGoalPose(telecommand.desiredPose.x, telecommand.desiredPose.y, telecommand.desiredPose.alpha);
+        }
+
+        if (telecommand.has_correctedPose) {
+            console.printf("Received telecommand.correctedPose %f, %f, %f\r\n", telecommand.correctedPose.x, telecommand.correctedPose.y,
+                           telecommand.correctedPose.alpha);
+            // Apply the correction to the controller
+            controller.setX(telecommand.correctedPose.x);
+            controller.setY(telecommand.correctedPose.y);
+            controller.setAlpha(telecommand.correctedPose.alpha);
+        }
+
+        if (telecommand.has_reactiveParameters) {
+            ch_bfh_roboticsLab_yellow_communication_ReactiveNavigationParameters p = telecommand.reactiveParameters;
+            if (p.has_minDistance) {
+                console.printf("Received reactive param minDistance %f\r\n", p.minDistance);
+                if (p.minDistance < 0.0)
+                    stateMachine.minDistance = StateMachine::MIN_DISTANCE;
+                else
+                    stateMachine.minDistance = p.minDistance;
+            }
+            if (p.has_maxDistance) {
+                console.printf("Received reactive param maxDistance %f\r\n", p.maxDistance);
+                if (p.maxDistance < 0.0)
+                    stateMachine.maxDistance = StateMachine::MAX_DISTANCE;
+                else
+                    stateMachine.maxDistance = p.maxDistance;
+            }
+            if (p.has_rotationalVelocityGain) {
+                console.printf("Received reactive param rotationalVelocityGain %f\r\n", p.rotationalVelocityGain);
+                if (p.rotationalVelocityGain < 0.0)
+                    stateMachine.rotationalVelocityGain = StateMachine::KR;
+                else
+                    stateMachine.rotationalVelocityGain = p.rotationalVelocityGain;
+            }
+            if (p.has_translationalVelocity) {
+                console.printf("Received reactive param rotationalVelocityGain %f\r\n", p.rotationalVelocityGain);
+                if (p.translationalVelocity < 0.0)
+                    stateMachine.translationalProfileVelocity = Controller::TRANSLATIONAL_PROFILE_VELOCITY;
+                else
+                    stateMachine.translationalProfileVelocity = p.translationalVelocity;
+            }
         }
     }
 };
