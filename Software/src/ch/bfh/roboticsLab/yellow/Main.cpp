@@ -95,13 +95,11 @@ private:
         controller.start();
 
         // Set a translational velocity [m/s].
-        controller.setTranslationalVelocity(0.3f);
+        controller.setTranslationalVelocity(0.0f);
         // Set a rotational velocity [rad/s].
         controller.setRotationalVelocity(0.0f);
         // Wait 1000 ms before continuing
-        while (true) {
-
-            console.printf("x:%f,y:%f,a:%f\n",controller.getX(),controller.getY(),controller.getAlpha());
+            //console.printf("x:%f,y:%f,a:%f\n",controller.getX(),controller.getY(),controller.getAlpha());
 
             Thread::wait(1000);
 
@@ -115,26 +113,30 @@ private:
             stateMachine.start();
 
             // Go into AUTO_REACTIVE state
-            stateMachine.setDesiredState(State::AUTO_REACTIVE);
+           // stateMachine.setDesiredState(State::AUTO_REACTIVE);
 
-            Thread::wait(5000);
+           // Thread::wait(3000);
 
             // Go into OFF state
             stateMachine.setDesiredState(State::OFF);
+            Thread::wait(1000);
 
             // Set robot's velocities for manual operation mode
-            stateMachine.setVelocities(1.5f, 3.0f);
+            //stateMachine.setVelocities(1.5f, 3.0f);
 
             // Go into MANUAL state
-            stateMachine.setDesiredState(State::MANUAL);
+            //stateMachine.setDesiredState(State::MANUAL);
 
-            Thread::wait(3000);
+            //Thread::wait(3000);
 
             // Go into OFF state
             stateMachine.setDesiredState(State::OFF);
+            Thread::wait(1000);
 
             // Set goal pose for auto position operation mode
-            stateMachine.setGoalPose(1.0f, 1.0f, 0.0f);
+            Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
+            con.printf("alpha: %f\r\n", controller.getAlpha());
+            stateMachine.setGoalPose(1.0f, 0.0f, 0.0f);
 
             // Go into AUTO_POSITION state
             stateMachine.setDesiredState(State::AUTO_POSITION);
@@ -147,7 +149,7 @@ private:
                 if (state == State::OFF) break;
             }
 
-            stateMachine.setGoalPose(0.0f, 0.0f, 0.0f);
+            stateMachine.setGoalPose(2.0f, 0.5f,0.0f);
             stateMachine.setDesiredState(State::AUTO_POSITION);
             while (true) {
                 Thread::wait(500);
@@ -156,7 +158,7 @@ private:
                 if (state == State::OFF) break;
             }
             peripherals::enableMotorDriver = 0;
-        }
+            con.printf("alpha: %f\r\n", controller.getAlpha());
 
     }
 };

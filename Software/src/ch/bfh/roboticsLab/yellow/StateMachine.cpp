@@ -226,17 +226,17 @@ void StateMachine::run() {
                  * Request desired velocities to the controller.
                  */
                 if(distance[0]>=maxDistance && distance[1]>=maxDistance && distance[5]>=maxDistance){
-                    controller.setTranslationalVelocity(1.0f);
+                    controller.setTranslationalVelocity(maxForwardVelocity);
                     controller.setRotationalVelocity(0.0f);
                 }
                 else if(distance[0]<=minDistance || distance[1]<=minDistance || distance[5]<=minDistance){
-                    controller.setTranslationalVelocity(-0.5f);
+                    controller.setTranslationalVelocity(maxBackwardVelocity);
                     controller.setRotationalVelocity(0.0f);
                 }
                 else {
-                    controller.setTranslationalVelocity(1.0f*(distance[0]/maxDistance)*(distance[1]+distance[5])/(2.0f*maxDistance));
+                    controller.setTranslationalVelocity(maxForwardVelocity*(distance[0]/maxDistance)*(distance[1]+distance[5])/(2.0f*maxDistance));
                     if(abs(distance[1]-distance[5])>0.05){
-                        controller.setRotationalVelocity(2.0f/((distance[5]/maxDistance)-(distance[1]/maxDistance)));
+                        controller.setRotationalVelocity(maxRotationalVelocity*((distance[5]/maxDistance)-(distance[1]/maxDistance)));
                     }
                     else {
                         controller.setRotationalVelocity(0.0f);
@@ -265,14 +265,17 @@ void StateMachine::run() {
                  * Rotate the robot to the goal orientation.
                  */
                 float distanceToTarget=sqrt((this->xDesired-controller.getX())*(this->xDesired-controller.getX())+(this->yDesired-controller.getY())*(this->yDesired-controller.getY()));
-                float angleToTargetPos=atan2(this->yDesired-controller.getY(),this->xDesired-controller.getX());
+                float angleToTargetPos=atan2f(this->yDesired-controller.getY(),this->xDesired-controller.getX())-controller.getAlpha();
                 float angleCorrection=angleToTargetPos+controller.getAlpha()-this->alphaDesired;
 
-                controller.setTranslationalVelocity(K1*distanceToTarget*cos(angleToTargetPos));
-                controller.setRotationalVelocity(K2*angleToTargetPos+K1*sin(angleToTargetPos)*cos(angleToTargetPos)*(angleToTargetPos+K3*angleCorrection)/angleToTargetPos);
-
-
+                controller.setTranslationalVelocity(K1*distanceToTarget*cosf(angleToTargetPos));
+                controller.setRotationalVelocity(K2*angleToTargetPos+K1*sinf(angleToTargetPos)*cosf(angleToTargetPos)*((angleToTargetPos+K3*angleCorrection)/angleToTargetPos));
+                if(sqrt((this->xDesired-controller.getX())*(this->xDesired-controller.getX())+(this->yDesired-controller.getY())*(this->yDesired-controller.getY()))<this->tolerance && (abs(this->alphaDesired-controller.getAlpha())<this->tolerance))
+                {
+                    desiredState=State::OFF;
+                }
             }
+
 
             break;
 

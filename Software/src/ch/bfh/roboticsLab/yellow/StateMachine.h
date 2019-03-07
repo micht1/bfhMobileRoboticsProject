@@ -141,9 +141,9 @@ private:
     /** Position control constant K1. */
     static constexpr float K1 = 2.0f;
     /** Position control constant K2. */
-    static constexpr float K2 = 0.5f;
+    static constexpr float K2 = 1.0f;
     /** Position control constant K3. */
-    static constexpr float K3 = 0.5f;
+    static constexpr float K3 = 1.0f;
     /** Position control desired x [m]. */
     float xDesired;
     /** Position control desired y [m]. */
@@ -154,6 +154,10 @@ private:
     float velocity;
     /** Position control arrival tolerance radius [m]. */
     float tolerance;
+
+    static constexpr float maxForwardVelocity = 0.5f;
+    static constexpr float maxBackwardVelocity = -0.5f;
+    static constexpr float maxRotationalVelocity = 4.0f;
 
     /** A timer used to switch states automatically based on time delays. */
     Timer timer;
