@@ -265,7 +265,7 @@ void StateMachine::run() {
                  * Rotate the robot to the goal orientation.
                  */
                 float distanceToTarget=sqrt((this->xDesired-controller.getX())*(this->xDesired-controller.getX())+(this->yDesired-controller.getY())*(this->yDesired-controller.getY()));
-                float angleToTargetPos=atan2(this->yDesired-controller.getY(),this->xDesired-controller.getX());
+                float angleToTargetPos=atan2(this->yDesired-controller.getY(),this->xDesired-controller.getX())-controller.getAlpha();
                 float angleCorrection=angleToTargetPos+controller.getAlpha()-this->alphaDesired;
 
                 controller.setTranslationalVelocity(K1*distanceToTarget*cos(angleToTargetPos));
