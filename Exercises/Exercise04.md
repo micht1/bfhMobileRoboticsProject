@@ -8,7 +8,6 @@ Prof. Dr. Gabriel Gruener
 ## Exercise 4
 
 ### Goal
-* Filter the encoder data with a **low-pass filter**.
 * Get to know the WiFi communication and the protocol messages **Telemetry** and **Telecommand**.
 * Get to know the `LIDAR` class.
 * Transfer LIDAR scans from the robot to your PC and visualize them there.
@@ -58,12 +57,8 @@ All information regarding the communication interface on your PC is located unde
 1. Update your project from the git upstream (refer to [../README.md](../README.md)).
 <br><br>
 
-1. **Low-pass filter**  
-	Inspect the new class defined in `LowpassFilter.h`. This class implements a digital low-pass filter.  
-	The estimated wheel velocities are noisy and should be filtered.  
-	A `LowpassFilter` for each wheel velocity has been added to the controller class. See members `Controller::speedLeftFilter` and `Controller::speedRightFilter` and the filter cut-off frequency constant `Controller::LOWPASS_FILTER_FREQUENCY`. The cut-off frequency is set inside the constructor of the `Controller` class.
-	1. Filter the current wheel motor speeds, which you calculated in exercise 2.  
-	**Hint**: Look for the `TODO` Ex4.1 comment inside `Controller.cpp`.
+1. Nothing to do
+
 <br><br>
 
 1. Inspect the new classes
