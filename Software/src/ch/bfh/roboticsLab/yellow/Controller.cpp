@@ -166,7 +166,7 @@ void Controller::run() {
       x = x + cos(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;
       y = y + sin(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;
       alpha = alpha+actualRotationVelocity*PERIOD;
-     if((fmod(alpha,2*M_PI))>M_PI){
+     if(abs((fmod(alpha,2*M_PI)))>M_PI){
         alpha = -M_PI-(M_PI-fmod(alpha,2*M_PI));
      }
      else{
