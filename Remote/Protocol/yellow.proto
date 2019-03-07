@@ -1,0 +1,211 @@
+/* yellow.proto
+ * Copyright (c) 2018, BFH
+ * All rights reserved.
+ */
+
+/*
+ * yellow Protobuf communication protocol definition.
+ *
+ * Note: refer to accompanying file 'yellow.options' for size definitions of 'repeated' fields
+ *
+ * @author gabriel.gruener@bfh.ch
+ */
+
+syntax = "proto2";
+
+
+package ch.bfh.roboticsLab.yellow.communication;
+
+option java_package = "ch.bfh.roboticsLab.yellow";
+option java_outer_classname = "YellowProtoBuffer";
+
+
+/* Available robot states */
+enum StateName {
+    OFF = 1;
+    MANUAL = 2;
+    AUTO_REACTIVE = 3;
+    AUTO_POSITION = 4;
+}
+
+/* State message.
+ * This message contains the current or desired operation state.
+ */
+message State {
+    // Robot state
+    required StateName stateName = 1;
+}
+
+/* Pose message.
+ * This message contains a robot global pose.
+ */
+message Pose {
+    // Estimated global x position [m]
+    required float x = 1;
+    // Estimated global y position [m]
+    required float y = 2;
+    // Estimated global orientation [rad]
+    required float alpha = 3;
+}
+
+/* Covariance matrix message.
+ * This message contains the covariance matrix of the pose estimation.
+ * The 3x3 matrix is represented 
+ */
+message CovarianceMatrix {
+    repeated float p = 1;
+}
+
+// Odometry message
+message Odometry {
+    // Estimated global robot pose
+    required Pose pose = 1;
+    // Covariance matrix of the pose estimation
+    optional CovarianceMatrix covarianceMatrix = 2;
+}
+
+/* LIDAR point message
+ * This message contains one individual LIDAR point measurement.
+ */
+message LidarPoint {
+    // The angle of the LIDAR measurement
+    required int32 angle = 1;
+    // The distance measured
+    required int32 distance = 2;
+    // The quality level of the measurement
+    optional int32 quality = 3;
+}
+
+/* LIDAR message
+ * This message contains an array of LIDAR point measurements.
+ */
+message Lidar {
+    // Timestamp [ms]
+    optional uint32 timestamp = 1;
+    // The Lidar measurement points
+    repeated LidarPoint points = 2;
+}
+
+/* LIDAR lines message
+ * This message contains lines extracted from a LIDAR measurement analysis.
+ */
+message LidarLines {
+    /* This message contains one LIDAR line. */
+    message Line {
+        // Line start pose (note 'alpha' meaningless unless 'end' is not supplied)
+        required Pose start = 1;
+        // Line end pose
+        optional Pose end = 2;
+    }
+    // List of lines found in the LIDAR data.
+    repeated Line lines = 1;
+}
+
+/* Infrared sensor measurement message.
+ */
+message IRSensor {
+    // IR sensor measurement [m]
+    required float distance = 1;
+}
+
+/* Infrared sensor array measurement message.
+ */
+message IRSensors {
+    // Timestamp [ms]
+    optional uint32 timestamp = 1;
+    // Array of IR sensors
+    repeated IRSensor sensor = 2;
+}
+
+/* Telemetry message.
+ * This message is sent by the robot at regular intervals.
+ */
+message Telemetry {
+    // Timestamp [ms]
+    optional uint32 timestamp = 1;
+    // Current robot state
+    optional State state = 2;
+    // Current estimated odometry
+    optional Odometry odometry = 3;
+    // Latest lidar measurement. Note that sending this component will add a large vector of 360 LidarPoints to the message, use wisely
+    optional Lidar lidar = 4;
+    // Lines found by analysis of LIDA data
+    optional LidarLines lidarLines = 5;
+    // Latest IR array sensor measyrment
+    optional IRSensors ir = 6;
+}
+
+
+/*** Commands ***/
+
+/* Velocities command
+ * This command sends desired linear and angular speeds.
+ * The command is used continuously in the Manual state (e.g. joystick input) or
+ * in the AUTO states to set desired maximum speeds.
+ */
+message Velocities {
+    required float linearSpeed = 1;
+    required float angularSpeed = 2;
+}
+
+/* Reactive navigation parameters.
+ * If a parameter is set to less than 0, the default value will be reset.
+ */
+message ReactiveNavigationParameters {
+    // Minimum IR sensor distance to allow forward motion [m]. Default 0.1
+    optional float minDistance = 1;
+    // Maximum IR sensor distance for forward motion [m]. Default 0.4
+    optional float maxDistance = 2;
+    // Translational nominal (max) velocity [m/s]. Default 1.5
+    optional float translationalVelocity = 3;
+    // Rotational velocity controller gain [rad/s /m]. Default 10.0
+    optional float rotationalVelocityGain = 4;
+}
+
+message LidarLinesParameters {
+    // Minimum distance between two line regions (e.g. two opposite walls viewed from inside the corridor) [mm]
+    optional uint32 minRangeDistance = 1;
+    // Maximum distance from a point to a line, in order for that point to belong to that line [mm]
+    optional uint32 maxLineImprecision = 2;
+    // TODO document
+    optional uint32 maxAngleBetweenLines = 3;
+}
+
+/* Telecommand message
+ * This message is the main command sent to the robot
+ */
+message Telecommand {
+    // Timestamp [ms]
+    optional uint32 timestamp = 1;
+    // Desired state
+    optional State state = 2;
+    // Desired velocities
+    optional Velocities velocities = 3;
+    // Corrected pose, to correct odometry
+    optional Pose correctedPose = 4;
+    // Desired global pose, where the robot should go to (for state AUTO_POSITION)
+    optional Pose desiredPose = 5;
+    // If different between 1 and 360, request that the next telemetry packet includes Lidar data with the given angle step in degrees. E.g. requestLidarData=2: send Lidar data every 2 degrees.
+    optional uint32 requestLidarData = 6;
+    // Request LIDAR lines data
+    optional LidarLinesParameters requestLidarLines = 7;
+    // Send reactive navigation parameters 
+    optional ReactiveNavigationParameters reactiveParameters = 8;
+}
+
+/**
+ * Telecommand Acknowledge
+ */
+message TelecommandAcknowledge {
+    // Enumeration of possible acknowledge responses
+    enum Acknowledge {
+        // Command is accepted and will be executed
+        OK = 0;
+        // Command is not accepted and will not be executed
+        ERROR = 1;
+    }
+    // Command acknowledge response
+    required Acknowledge acknowledge = 2;
+    // String that may give details of the reason for an ERROR acknowledge
+    optional bytes message = 3;
+}

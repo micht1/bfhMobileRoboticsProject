@@ -24,6 +24,9 @@ This directory contains the robot's on-board software.
 
 In here you will also find a [manual on how to compile and mount](Software/README.md) your program as well as a [manual on how to configure the QtCreator IDE](Software/QtCreator-projectConfiguration-Windows.md) for editing the source code and compile and mount it inside this IDE.
 
+#### [4. Remote](Remote)  
+This directory contains all files related to remote communication to the robot from your PC. Refer to the [Remote/README.md](Remote/README.md) file for more information.
+
 ### Repository updates
 To update your repository to the current project milestone, you need to fetch the newest data from the template repository.
 To do this, execute the following commands in a terminal (linux terminal, windows git bash or other git GUI), where `XX` stands for the last 2 digits of the current year (e.g. 19 for 2019) and `groupNumber` stands for your group number (e.g. 01):
@@ -47,7 +50,7 @@ You can always display your remote repositories using:
 ```
 
 ---
-  
+
 ##### Author
   * Iris Näf <irislisa.naef@bfh.ch>
   * Gabriel Gruener <gabriel.gruener@bfh.ch>
