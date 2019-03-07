@@ -21,7 +21,7 @@ Controller& Controller::getInstance() {
 }
 
 Controller::Controller() :
-    RealtimeThread(PERIOD, osPriorityHigh, STACK_SIZE), translationalVelocity(0.0f), rotationalVelocity(0.0f), x(0.0f), y(0.0f), alpha(0.0f) {
+    RealtimeThread(PERIOD, osPriorityHigh, STACK_SIZE), translationalVelocity(0.0f), rotationalVelocity(0.0f), x(0.0f), y(0.0f), alpha(0.0f), totalErrorLeft(0),totalErrorRight(0) {
 
   // Configure PWM
   peripherals::pwmLeft.period(0.00005f);
@@ -120,9 +120,27 @@ void Controller::run() {
       // Calculate the error between the desired and the actual speed in [rpm]
       float speedErrorLeft = desiredSpeedLeft - actualSpeedLeft;
       float speedErrorRight = desiredSpeedRight - actualSpeedRight;
+      totalErrorLeft += totalErrorLeft+speedErrorLeft;
+      totalErrorRight +=totalErrorRight+speedErrorRight;
+      if(totalErrorLeft>=maxError)
+      {
+          totalErrorLeft=maxError;
+      }
+      else if(totalErrorLeft<=-maxError)
+      {
+          totalErrorLeft=-maxError;
+      }
+      if(totalErrorRight>=maxError)
+      {
+          totalErrorRight=maxError;
+      }
+      else if(totalErrorRight<=-maxError)
+      {
+          totalErrorRight=-maxError;
+      }
       // Calculate the motor phase voltages (with P-controller closed loop)
-      float voltageLeft = (desiredSpeedLeft > 0.0 ? KP_POS : KP_NEG) * (speedErrorLeft) + desiredSpeedLeft / peripherals::KN;
-      float voltageRight = (desiredSpeedRight > 0.0 ? KP_POS : KP_NEG) * (speedErrorRight) + desiredSpeedRight / peripherals::KN;
+      float voltageLeft = (desiredSpeedLeft > 0.0 ? KP_POS : KP_NEG) * (speedErrorLeft) + desiredSpeedLeft / peripherals::KN+Ki*totalErrorLeft;
+      float voltageRight = (desiredSpeedRight > 0.0 ? KP_POS : KP_NEG) * (speedErrorRight) + desiredSpeedRight / peripherals::KN+Ki*totalErrorRight;
       /** TODO (Ex2.4): Set corresponding PWM **/
 
       // TODO: Calculate duty cycle

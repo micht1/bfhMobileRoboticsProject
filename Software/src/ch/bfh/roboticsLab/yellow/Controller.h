@@ -106,6 +106,8 @@ private:
   /** Speed controller proportional gain [V/rpm] */
   static constexpr float KP_POS = 0.2f;
   static constexpr float KP_NEG = 0.1f;
+  static constexpr float Ki=0.5;
+  static constexpr float maxError=12;
 
   /** Motion planner for translation */
   Motion translationalMotion;
@@ -120,6 +122,8 @@ private:
   /** Right encoder count at previous loop [counts] */
   int16_t previousValueCounterRight;
 
+  float totalErrorLeft;
+  float totalErrorRight;
   /** Estimated global x [m]. */
   float x;
   /** Estimated global y [m]. */
