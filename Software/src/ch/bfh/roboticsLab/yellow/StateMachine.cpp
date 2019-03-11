@@ -264,16 +264,32 @@ void StateMachine::run() {
                  * Translate straight ahead to the goal position.
                  * Rotate the robot to the goal orientation.
                  */
+
                 float distanceToTarget=sqrt((this->xDesired-controller.getX())*(this->xDesired-controller.getX())+(this->yDesired-controller.getY())*(this->yDesired-controller.getY()));
                 float angleToTargetPos=atan2f(this->yDesired-controller.getY(),this->xDesired-controller.getX())-controller.getAlpha();
                 float angleCorrection=angleToTargetPos+controller.getAlpha()-this->alphaDesired;
 
+                if(abs(distanceToTarget)>0.001f){
                 controller.setTranslationalVelocity(K1*distanceToTarget*cosf(angleToTargetPos));
-                controller.setRotationalVelocity(K2*angleToTargetPos+K1*sinf(angleToTargetPos)*cosf(angleToTargetPos)*((angleToTargetPos+K3*angleCorrection)/angleToTargetPos));
-                if(sqrt((this->xDesired-controller.getX())*(this->xDesired-controller.getX())+(this->yDesired-controller.getY())*(this->yDesired-controller.getY()))<this->tolerance && (abs(this->alphaDesired-controller.getAlpha())<this->tolerance))
-                {
-                    desiredState=State::OFF;
                 }
+                if(abs(angleToTargetPos)>0.001f){
+                controller.setRotationalVelocity(K2*angleToTargetPos+K1*sinf(angleToTargetPos)*cosf(angleToTargetPos)*((angleToTargetPos+K3*angleCorrection)/angleToTargetPos));
+                }
+
+
+
+                if(sqrt((this->xDesired-controller.getX())*(this->xDesired-controller.getX())+(this->yDesired-controller.getY())*(this->yDesired-controller.getY()))<this->tolerance)
+                {
+                    if(abs(this->alphaDesired)>=M_PI-0.05){
+                        if(abs(controller.getAlpha())>=M_PI-0.05) {
+                            desiredState=State::OFF;
+                        }
+                    }
+                    else if(abs(this->alphaDesired-controller.getAlpha())<this->tolerance){
+                       desiredState=State::OFF;
+                    }
+                }
+
             }
 
 

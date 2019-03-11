@@ -136,7 +136,7 @@ private:
             // Set goal pose for auto position operation mode
             Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
             con.printf("alpha: %f\r\n", controller.getAlpha());
-            stateMachine.setGoalPose(1.0f, 0.0f, 0.0f);
+            stateMachine.setGoalPose(1.5f, 0.0f, 0.0f);
 
             // Go into AUTO_POSITION state
             stateMachine.setDesiredState(State::AUTO_POSITION);
@@ -149,7 +149,7 @@ private:
                 if (state == State::OFF) break;
             }
 
-            stateMachine.setGoalPose(2.0f, 0.5f,0.0f);
+            stateMachine.setGoalPose(3.0f, 1.0f,M_PI);
             stateMachine.setDesiredState(State::AUTO_POSITION);
             while (true) {
                 Thread::wait(500);
