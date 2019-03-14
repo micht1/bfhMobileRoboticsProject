@@ -142,11 +142,11 @@ private:
     float rotationalVelocity;
 
     /** Position control constant K1. */
-    static constexpr float K1 = 2.0f;
+    static constexpr float K1 = 8.0f;
     /** Position control constant K2. */
-    static constexpr float K2 = 5.0f;
+    static constexpr float K2 = 8.0f;
     /** Position control constant K3. */
-    static constexpr float K3 = 2.0f;
+    static constexpr float K3 = 10.0f;
     /** Position control desired x [m]. */
     float xDesired;
     /** Position control desired y [m]. */
@@ -158,7 +158,9 @@ private:
     /** Position control arrival tolerance radius [m]. */
     float tolerance;
     float yDiffPrevious;
-    float angularVelPrevious;
+    float Iangle;
+
+    unsigned int manuver;
 
 
 

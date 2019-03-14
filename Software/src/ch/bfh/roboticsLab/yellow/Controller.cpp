@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+
 #include <ch/bfh/roboticsLab/yellow/Controller.h>
 #include <ch/bfh/roboticsLab/yellow/Peripherals.h>
 #include <ch/bfh/roboticsLab/util/Util.h>
@@ -21,7 +22,7 @@ Controller& Controller::getInstance() {
 }
 
 Controller::Controller() :
-    RealtimeThread(PERIOD, osPriorityHigh, STACK_SIZE), translationalVelocity(0.0f), rotationalVelocity(0.0f), x(0.0f), y(0.0f), totalErrorLeft(0),totalErrorRight(0),alpha(0.0f) {
+    RealtimeThread(PERIOD, osPriorityHigh, STACK_SIZE), translationalVelocity(0.0f), rotationalVelocity(0.0f),totalErrorLeft(0.0f),totalErrorRight(0.0f), x(0.0f), y(0.0f),alpha(0.0f),oldTranslationalVelocity(0) {
 
   // Configure PWM
   peripherals::pwmLeft.period(0.00005f);
@@ -180,20 +181,29 @@ void Controller::run() {
 
       // TODO: Calculate the 'actualTranslationalVelocity' and 'actualRotationalVelocity' using the kinematic model
       float actualTranslationVelocity = (0.5f*(actualSpeedLeft+actualSpeedRight)*2*WHEEL_RADIUS*M_PI)/60.0f;
+      if(abs(actualTranslationVelocity)>1.5f)
+      {
+          actualTranslationVelocity=oldTranslationalVelocity;
+      }
+      else if(abs(actualTranslationVelocity)<1.5)
+      {
+        oldTranslationalVelocity=actualTranslationVelocity;
+      }
       float actualRotationVelocity = (1/(WHEEL_DISTANCE)*((actualSpeedRight-actualSpeedLeft)*2*WHEEL_RADIUS*M_PI))/60.0f;
 
       // TODO: Estimate the global robot pose (x, y & alpha) by integration
       x = x + cos(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;
       y = y + sin(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;
-      monitor1 = x;
-      monitor2 = y;
+      monitor1 = cos(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;
+      monitor2 = sin(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;
       alpha = alpha+actualRotationVelocity*PERIOD;
-     if(abs((fmod(alpha,2*M_PI)))>M_PI){
+     /*if(abs((fmod(alpha,2*M_PI)))>M_PI){
         alpha = -M_PI-(M_PI-fmod(alpha,2*M_PI));
      }
      else{
         alpha = fmod(alpha,2*M_PI);
-     }
+     }*/
+      alpha = util::unwrap(alpha);
 
 
       // TODO: Unwrap alpha (Make sure alpha is inside the range ]-pi,pi] )

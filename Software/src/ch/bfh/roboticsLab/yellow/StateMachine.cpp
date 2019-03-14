@@ -167,7 +167,7 @@ void StateMachine::run() {
                 state = State::AUTO_REACTIVE;
 
             } else if (desiredState == State::AUTO_POSITION) {
-
+                manuver=1;
                 state = State::AUTO_POSITION;
             }
 
@@ -266,8 +266,14 @@ void StateMachine::run() {
                  * Rotate the robot to the goal orientation.
                  */
 
+                /*
                 float distanceToTarget=sqrtf(((xDesired-controller.getX())*(xDesired-controller.getX()))+((yDesired-controller.getY())*(yDesired-controller.getY())));
                 float angleToTargetPos = atan2f(yDesired-controller.getY(),xDesired-controller.getX())-controller.getAlpha();
+                if(abs(controller.getAlpha()-M_PI)<0.1 && controller.getAlpha()<0)
+                {
+                    angleToTargetPos = atan2f(yDesired-controller.getY(),xDesired-controller.getX())-(-1)*controller.getAlpha();
+                }
+
                 float angleCorrection=angleToTargetPos+controller.getAlpha()-alphaDesired;
                 float vel = K1*distanceToTarget*cosf(angleToTargetPos);
                 if(abs(vel)>maxForwardVelocity)
@@ -291,11 +297,88 @@ void StateMachine::run() {
                     controller.setRotationalVelocity(angularVelPrevious);
                 }
 
-                monitor1 = (controller.getX());
-                monitor2 = (controller.getY());
+                monitor1 = angleCorrection;
+                monitor2 = 0;
+                */
+
+                float angleOfLane=atan2(yDesired-controller.getY(),xDesired-controller.getX());;
+                float distanceToTarget=0;
+                float orientatonKor=0;
+                monitor1=(float)manuver;
+                switch (manuver)
+                {
+                case 1:
+                    controller.setRotationalVelocity(((angleOfLane-controller.getAlpha())*K1));
+                    if(abs((angleOfLane-controller.getAlpha())*K1)>maxRotationalVelocity && (angleOfLane-controller.getAlpha())*K1<0)
+                    {
+                        controller.setRotationalVelocity(-maxRotationalVelocity);
+                    }
+                    else if(abs((angleOfLane-controller.getAlpha())*K1)>maxRotationalVelocity && (angleOfLane-controller.getAlpha())*K1>0)
+                    {
+                        controller.setRotationalVelocity(maxRotationalVelocity);
+                    }
+
+                    if(abs(angleOfLane-controller.getAlpha())<tolerance)
+                    {
+                        manuver=2;
+                        controller.setRotationalVelocity(0.0f);
+                    }
+                    break;
+                case 2:
+                    distanceToTarget=sqrtf(((xDesired-controller.getX())*(xDesired-controller.getX()))+((yDesired-controller.getY())*(yDesired-controller.getY())));
+
+                    controller.setTranslationalVelocity(distanceToTarget*K2);
+
+                    controller.setRotationalVelocity((angleOfLane-controller.getAlpha())*K3);
+                    if((angleOfLane-controller.getAlpha())*K3>maxRotationalVelocity*0.1 && (angleOfLane-controller.getAlpha())*K3>0)
+                    {
+                        controller.setRotationalVelocity(maxRotationalVelocity*0.1 );
+                    }
+                    if((angleOfLane-controller.getAlpha())*K3>maxRotationalVelocity*0.1 && (angleOfLane-controller.getAlpha())*K3<0)
+                    {
+                        controller.setRotationalVelocity(-maxRotationalVelocity*0.1 );
+                    }
+
+                    if(abs(distanceToTarget*K2)>maxForwardVelocity)
+                    {
+                        controller.setTranslationalVelocity(maxForwardVelocity);
+                    }
 
 
-                if(abs(distanceToTarget<this->tolerance))
+
+                    if(distanceToTarget<=tolerance)
+                    {
+                        controller.setTranslationalVelocity(0.0f);
+                        controller.setRotationalVelocity(0.0f);
+                        manuver=3;
+                        Thread::wait(1000);
+                    }
+                    break;
+
+                case 3:
+                    orientatonKor =  alphaDesired-controller.getAlpha();
+                    controller.setRotationalVelocity(orientatonKor*K1);
+                    if(abs((orientatonKor)*K1)>maxRotationalVelocity && (orientatonKor)*K1<0)
+                    {
+                        controller.setRotationalVelocity(-maxRotationalVelocity);
+                    }
+                    else if((abs(orientatonKor)*K1)>maxRotationalVelocity && (orientatonKor)*K1>0)
+                    {
+                        controller.setRotationalVelocity(maxRotationalVelocity);
+                    }
+
+                    if(abs(controller.getAlpha()-alphaDesired)<tolerance)
+                    {
+                        manuver=1;
+                        controller.setTranslationalVelocity(0.0f);
+                        controller.setRotationalVelocity(0.0f);
+                        desiredState=State::OFF;
+                    }
+
+                    break;
+                }
+
+               /* if(abs(distanceToTarget)<this->tolerance)
                 {
                     if(abs(this->alphaDesired)>=M_PI-0.01){
                         if(abs(controller.getAlpha())>=M_PI-0.01) {
@@ -305,7 +388,7 @@ void StateMachine::run() {
                     else if(abs(this->alphaDesired-controller.getAlpha())<this->tolerance){
                        desiredState=State::OFF;
                     }
-                }
+                }*/
 
             }
 

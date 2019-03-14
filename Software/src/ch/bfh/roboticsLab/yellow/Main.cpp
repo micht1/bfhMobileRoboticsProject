@@ -146,6 +146,7 @@ private:
                 Thread::wait(500);
                 State::Enum state = stateMachine.getState();
                 console.printf("State: %d\r\n", state);
+                console.printf("monitor: %f\r\n", controller.monitor1);
                 if (state == State::OFF) break;
             }
             stateMachine.setGoalPose(3.0f, 1.0f,M_PI);
@@ -153,7 +154,7 @@ private:
             while (true) {
                 Thread::wait(100);
                 State::Enum state = stateMachine.getState();
-                console.printf("Monitor1 %f Monitor2: %f\r\n",stateMachine.monitor1,stateMachine.monitor2);
+                console.printf("Monitor1 %f\r\n",stateMachine.monitor1);
                 console.printf("State: %d\r\n", state);
                 if (state == State::OFF) break;
             }
@@ -163,7 +164,7 @@ private:
             while (true) {
                 Thread::wait(100);
                 State::Enum state = stateMachine.getState();
-                console.printf("Monitor1 %f Monitor2: %f\r\n",controller.monitor1,controller.monitor2);
+                console.printf("alpha:%f Monitor1 %f\r\n",controller.getAlpha(),controller.monitor1);
                 console.printf("State: %d\r\n", state);
                 if (state == State::OFF) break;
             }

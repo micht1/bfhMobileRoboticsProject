@@ -124,6 +124,7 @@ private:
 
   float totalErrorLeft;
   float totalErrorRight;
+  float oldTranslationalVelocity;
   /** Estimated global x [m]. */
   float x;
   /** Estimated global y [m]. */
