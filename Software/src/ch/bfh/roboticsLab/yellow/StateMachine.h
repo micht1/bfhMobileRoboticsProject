@@ -107,6 +107,9 @@ public:
     /** Default rotational velocity controller gain in automatic state [rad/s /m]. */
     static constexpr float KR = 10.0f;
 
+    float monitor1;
+    float monitor2;
+
 private:
 
     /** Thread stack size, given in [bytes]. */
@@ -141,9 +144,9 @@ private:
     /** Position control constant K1. */
     static constexpr float K1 = 2.0f;
     /** Position control constant K2. */
-    static constexpr float K2 = 1.0f;
+    static constexpr float K2 = 5.0f;
     /** Position control constant K3. */
-    static constexpr float K3 = 1.0f;
+    static constexpr float K3 = 2.0f;
     /** Position control desired x [m]. */
     float xDesired;
     /** Position control desired y [m]. */
@@ -154,6 +157,10 @@ private:
     float velocity;
     /** Position control arrival tolerance radius [m]. */
     float tolerance;
+    float yDiffPrevious;
+    float angularVelPrevious;
+
+
 
     static constexpr float maxForwardVelocity = 0.5f;
     static constexpr float maxBackwardVelocity = -0.5f;

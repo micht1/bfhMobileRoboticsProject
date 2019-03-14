@@ -37,7 +37,8 @@ StateMachine::StateMachine()
       yDesired(0.0f),
       alphaDesired(0.0f),
       velocity(0.2),
-      tolerance(0.02)
+      tolerance(0.02),
+      yDiffPrevious(0)
 {
     peripherals::enableMotorDriver = 0;
 
@@ -265,23 +266,39 @@ void StateMachine::run() {
                  * Rotate the robot to the goal orientation.
                  */
 
-                float distanceToTarget=sqrt((this->xDesired-controller.getX())*(this->xDesired-controller.getX())+(this->yDesired-controller.getY())*(this->yDesired-controller.getY()));
-                float angleToTargetPos=atan2f(this->yDesired-controller.getY(),this->xDesired-controller.getX())-controller.getAlpha();
-                float angleCorrection=angleToTargetPos+controller.getAlpha()-this->alphaDesired;
+                float distanceToTarget=sqrtf(((xDesired-controller.getX())*(xDesired-controller.getX()))+((yDesired-controller.getY())*(yDesired-controller.getY())));
+                float angleToTargetPos = atan2f(yDesired-controller.getY(),xDesired-controller.getX())-controller.getAlpha();
+                float angleCorrection=angleToTargetPos+controller.getAlpha()-alphaDesired;
+                float vel = K1*distanceToTarget*cosf(angleToTargetPos);
+                if(abs(vel)>maxForwardVelocity)
+                {
+                        if(vel>0)
+                        {
+                            vel = maxForwardVelocity;
+                        }
+                        else
+                        {
+                            vel = -maxForwardVelocity;
+                        }
+                }
 
-                if(abs(distanceToTarget)>0.001f){
-                controller.setTranslationalVelocity(K1*distanceToTarget*cosf(angleToTargetPos));
+                if(abs(distanceToTarget)>0.001f)
+                {
+                    controller.setTranslationalVelocity(vel);
                 }
                 if(abs(angleToTargetPos)>0.001f){
-                controller.setRotationalVelocity(K2*angleToTargetPos+K1*sinf(angleToTargetPos)*cosf(angleToTargetPos)*((angleToTargetPos+K3*angleCorrection)/angleToTargetPos));
+                    angularVelPrevious= K2*angleToTargetPos+K1*sinf(angleToTargetPos)*cosf(angleToTargetPos)*((angleToTargetPos+K3*angleCorrection)/angleToTargetPos);
+                    controller.setRotationalVelocity(angularVelPrevious);
                 }
 
+                monitor1 = (controller.getX());
+                monitor2 = (controller.getY());
 
 
-                if(sqrt((this->xDesired-controller.getX())*(this->xDesired-controller.getX())+(this->yDesired-controller.getY())*(this->yDesired-controller.getY()))<this->tolerance)
+                if(abs(distanceToTarget<this->tolerance))
                 {
-                    if(abs(this->alphaDesired)>=M_PI-0.05){
-                        if(abs(controller.getAlpha())>=M_PI-0.05) {
+                    if(abs(this->alphaDesired)>=M_PI-0.01){
+                        if(abs(controller.getAlpha())>=M_PI-0.01) {
                             desiredState=State::OFF;
                         }
                     }

@@ -21,7 +21,7 @@ Controller& Controller::getInstance() {
 }
 
 Controller::Controller() :
-    RealtimeThread(PERIOD, osPriorityHigh, STACK_SIZE), translationalVelocity(0.0f), rotationalVelocity(0.0f), x(0.0f), y(0.0f), alpha(0.0f), totalErrorLeft(0),totalErrorRight(0) {
+    RealtimeThread(PERIOD, osPriorityHigh, STACK_SIZE), translationalVelocity(0.0f), rotationalVelocity(0.0f), x(0.0f), y(0.0f), totalErrorLeft(0),totalErrorRight(0),alpha(0.0f) {
 
   // Configure PWM
   peripherals::pwmLeft.period(0.00005f);
@@ -185,6 +185,8 @@ void Controller::run() {
       // TODO: Estimate the global robot pose (x, y & alpha) by integration
       x = x + cos(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;
       y = y + sin(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;
+      monitor1 = x;
+      monitor2 = y;
       alpha = alpha+actualRotationVelocity*PERIOD;
      if(abs((fmod(alpha,2*M_PI)))>M_PI){
         alpha = -M_PI-(M_PI-fmod(alpha,2*M_PI));

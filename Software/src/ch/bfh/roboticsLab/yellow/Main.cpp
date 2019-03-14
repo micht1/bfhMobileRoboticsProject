@@ -148,12 +148,22 @@ private:
                 console.printf("State: %d\r\n", state);
                 if (state == State::OFF) break;
             }
-
             stateMachine.setGoalPose(3.0f, 1.0f,M_PI);
             stateMachine.setDesiredState(State::AUTO_POSITION);
             while (true) {
-                Thread::wait(500);
+                Thread::wait(100);
                 State::Enum state = stateMachine.getState();
+                console.printf("Monitor1 %f Monitor2: %f\r\n",stateMachine.monitor1,stateMachine.monitor2);
+                console.printf("State: %d\r\n", state);
+                if (state == State::OFF) break;
+            }
+            con.printf("alpha: %f\r\n", controller.getAlpha());
+            stateMachine.setGoalPose(0.0f, 0.0f,0.0f);
+            stateMachine.setDesiredState(State::AUTO_POSITION);
+            while (true) {
+                Thread::wait(100);
+                State::Enum state = stateMachine.getState();
+                console.printf("Monitor1 %f Monitor2: %f\r\n",controller.monitor1,controller.monitor2);
                 console.printf("State: %d\r\n", state);
                 if (state == State::OFF) break;
             }
