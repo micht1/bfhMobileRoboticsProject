@@ -41,6 +41,12 @@ Controller::Controller() :
   // Initialize encoder values
   previousValueCounterLeft = peripherals::counterLeft.read();
   previousValueCounterRight = peripherals::counterRight.read();
+
+  // Setup speed estimation low-pass filters
+  speedLeftFilter.setPeriod(PERIOD);
+  speedLeftFilter.setFrequency(LOWPASS_FILTER_FREQUENCY);
+  speedRightFilter.setPeriod(PERIOD);
+  speedRightFilter.setFrequency(LOWPASS_FILTER_FREQUENCY);
 }
 
 Controller::~Controller() {
@@ -102,6 +108,7 @@ void Controller::run() {
       float desiredSpeedRight = 0;    // TODO: Replace with calculation
 
       /** TODO (Ex2.2): Calculate the actual speed of the motors in [rpm] **/
+      // TODO (Ex5.1): Use the `speedLeftFilter` & `speedRightFilter` members to filter the current wheel motor speeds.
 
       // TODO: Read the current encoder counts
       // TODO: Calculate the encoder counts of the last period

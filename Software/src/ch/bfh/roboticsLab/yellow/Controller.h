@@ -9,6 +9,7 @@
 #include <mbed.h>
 #include <ch/bfh/roboticsLab/yellow/RealtimeThread.h>
 #include <ch/bfh/roboticsLab/yellow/Motion.h>
+#include <ch/bfh/roboticsLab/yellow/LowpassFilter.h>
 
 namespace ch {
 namespace bfh {
@@ -98,6 +99,8 @@ private:
   static constexpr float WHEEL_DISTANCE = 0.18f;
   /** radius of wheels, given in [m] */
   static constexpr float WHEEL_RADIUS = 0.0375f;
+  /** frequency of lowpass filter for actual speed values, given in [rad/s] */
+  static constexpr float LOWPASS_FILTER_FREQUENCY = 300.0f;
 
   /** Speed controller proportional gain [V/rpm] */
   static constexpr float KP_POS = 0.2f;
@@ -115,6 +118,10 @@ private:
   int16_t previousValueCounterLeft;
   /** Right encoder count at previous loop [counts] */
   int16_t previousValueCounterRight;
+  /** Left speed estimation low-pass filter. */
+  LowpassFilter speedLeftFilter;
+  /** Right speed estimation low-pass filter. */
+  LowpassFilter speedRightFilter;
 
   /** Estimated global x [m]. */
   float x;
