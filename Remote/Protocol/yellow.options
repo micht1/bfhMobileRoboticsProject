@@ -1,0 +1,14 @@
+# yellow.options
+# Options to the yellow.proto protocol
+
+# Covariance Matrix has 9 elements
+ch.bfh.roboticsLab.yellow.communication.CovarianceMatrix.p max_count:9 fixed_length:true
+
+# Lidar measurement has 360 elements
+ch.bfh.roboticsLab.yellow.communication.Lidar.points max_count:360 fixed_length:true
+
+# Lidar lines: limit to 20 lines
+ch.bfh.roboticsLab.yellow.communication.LidarLines.lines max_count:20 fixed_length:true
+
+# IR measurement has 3 elements
+ch.bfh.roboticsLab.yellow.communication.IRSensors.sensor max_count:3 fixed_length:true

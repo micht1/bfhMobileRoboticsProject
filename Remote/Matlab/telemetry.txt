@@ -1,0 +1,1821 @@
+odometry {
+  pose {
+    x: 5.0
+    y: 0.0
+    alpha: 0.0
+  }
+  covarianceMatrix {
+    p: 0.0
+    p: 0.0
+    p: 0.0
+    p: 0.0
+    p: 0.0
+    p: 0.0
+    p: 0.0
+    p: 0.0
+    p: 0.0
+  }
+}
+lidar {
+  points {
+    angle: 0
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 1
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 2
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 3
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 4
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 5
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 6
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 7
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 8
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 9
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 10
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 11
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 12
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 13
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 14
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 15
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 16
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 17
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 18
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 19
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 20
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 21
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 22
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 23
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 24
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 25
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 26
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 27
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 28
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 29
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 30
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 31
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 32
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 33
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 34
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 35
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 36
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 37
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 38
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 39
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 40
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 41
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 42
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 43
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 44
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 45
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 46
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 47
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 48
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 49
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 50
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 51
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 52
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 53
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 54
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 55
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 56
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 57
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 58
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 59
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 60
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 61
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 62
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 63
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 64
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 65
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 66
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 67
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 68
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 69
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 70
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 71
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 72
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 73
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 74
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 75
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 76
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 77
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 78
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 79
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 80
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 81
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 82
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 83
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 84
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 85
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 86
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 87
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 88
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 89
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 90
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 91
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 92
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 93
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 94
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 95
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 96
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 97
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 98
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 99
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 100
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 101
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 102
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 103
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 104
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 105
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 106
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 107
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 108
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 109
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 110
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 111
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 112
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 113
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 114
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 115
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 116
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 117
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 118
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 119
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 120
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 121
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 122
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 123
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 124
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 125
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 126
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 127
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 128
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 129
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 130
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 131
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 132
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 133
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 134
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 135
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 136
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 137
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 138
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 139
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 140
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 141
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 142
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 143
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 144
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 145
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 146
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 147
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 148
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 149
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 150
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 151
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 152
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 153
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 154
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 155
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 156
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 157
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 158
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 159
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 160
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 161
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 162
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 163
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 164
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 165
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 166
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 167
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 168
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 169
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 170
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 171
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 172
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 173
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 174
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 175
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 176
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 177
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 178
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 179
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 180
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 181
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 182
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 183
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 184
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 185
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 186
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 187
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 188
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 189
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 190
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 191
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 192
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 193
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 194
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 195
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 196
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 197
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 198
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 199
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 200
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 201
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 202
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 203
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 204
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 205
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 206
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 207
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 208
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 209
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 210
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 211
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 212
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 213
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 214
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 215
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 216
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 217
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 218
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 219
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 220
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 221
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 222
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 223
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 224
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 225
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 226
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 227
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 228
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 229
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 230
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 231
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 232
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 233
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 234
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 235
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 236
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 237
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 238
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 239
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 240
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 241
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 242
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 243
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 244
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 245
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 246
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 247
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 248
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 249
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 250
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 251
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 252
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 253
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 254
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 255
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 256
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 257
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 258
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 259
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 260
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 261
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 262
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 263
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 264
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 265
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 266
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 267
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 268
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 269
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 270
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 271
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 272
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 273
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 274
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 275
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 276
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 277
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 278
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 279
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 280
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 281
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 282
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 283
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 284
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 285
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 286
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 287
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 288
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 289
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 290
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 291
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 292
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 293
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 294
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 295
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 296
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 297
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 298
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 299
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 300
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 301
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 302
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 303
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 304
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 305
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 306
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 307
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 308
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 309
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 310
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 311
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 312
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 313
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 314
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 315
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 316
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 317
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 318
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 319
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 320
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 321
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 322
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 323
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 324
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 325
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 326
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 327
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 328
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 329
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 330
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 331
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 332
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 333
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 334
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 335
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 336
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 337
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 338
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 339
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 340
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 341
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 342
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 343
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 344
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 345
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 346
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 347
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 348
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 349
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 350
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 351
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 352
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 353
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 354
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 355
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 356
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 357
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 358
+    distance: 1
+    quality: 2
+  }
+  points {
+    angle: 359
+    distance: 1
+    quality: 2
+  }
+}
+

@@ -11,6 +11,12 @@
 #include <ch/bfh/roboticsLab/yellow/Controller.h>
 #include <ch/bfh/roboticsLab/yellow/StateMachine.h>
 
+#include <ch/bfh/roboticsLab/yellow/LidarAnalysis.h>
+
+#include <ch/bfh/roboticsLab/yellow/communication/SerialServer.h>
+#include <ch/bfh/roboticsLab/yellow/communication/ProtocolInterface.h>
+#include <ch/bfh/roboticsLab/yellow/communication/TelemetrySender.h>
+
 namespace ch {
 namespace bfh {
 namespace roboticsLab {
@@ -25,7 +31,9 @@ public:
         : thread(osPriorityNormal, STACK_SIZE),
           console(Console::getInstance()),
           controller(Controller::getInstance()),
-          stateMachine(StateMachine::getInstance())
+          stateMachine(StateMachine::getInstance()),
+          serialServer(communication::SerialServer::getInstance()),
+          telemetrySender(communication::TelemetrySender::getInstance())
     {
         thread.start(callback(this, &Main::run));
     }
@@ -47,10 +55,13 @@ private:
     Controller& controller;
     /** Reference to State Machine. */
     StateMachine& stateMachine;
+    /** Reference to Serial Server. */
+    communication::SerialServer& serialServer;
+    /** Reference to Telemetry Sender. */
+    communication::TelemetrySender& telemetrySender;
 
     /* This method will be called when the thread starts. When this method returns, the thread stops. */
     void run() {
-
         /* TODO (Ex1.1): Write messages to the serial console.
          * Use the 'console' object to write messages to the serial console. Refer to the documentation of the 'Console' class.
          * On your PC, use a serial terminal (e.g. 'hterm') to read the generated messages.
@@ -79,98 +90,111 @@ private:
         // Disable the motor drivers.
         peripherals::enableMotorDriver = 0;
 
-
-        /* TODO (Ex1.4 & 1.5): Read distance sensors & activate the corresponding LED
-         * Enable the IR sensors.
-         * Read the sensors and understand what data you are receiving. (Hint: Look at the array peripherals::irSensors)
-         * Turn on and off the corresponding LED to signal if an obstacle is present.
-         */
-
-        /* TODO (Ex2): Complete the controller class to control the motors
-         * Look at the Controller.h class and complete it to achieve a desired linear and angular velocity.
-         */
-
         // Start the controller thread
         peripherals::enableMotorDriver=1;
         controller.start();
 
-        // Set a translational velocity [m/s].
-        controller.setTranslationalVelocity(0.0f);
-        // Set a rotational velocity [rad/s].
-        controller.setRotationalVelocity(0.0f);
-        // Wait 1000 ms before continuing
-            //console.printf("x:%f,y:%f,a:%f\n",controller.getX(),controller.getY(),controller.getAlpha());
+        // Start state machine
+        console.printf("Starting state machine...\r\n");
+        stateMachine.start();
 
-            Thread::wait(1000);
+        // Start LIDAR
+        console.printf("Starting LIDAR...\r\n");
+        driver::LIDAR::getInstance().start();
 
-            /* TODO (Ex3.2 to Ex3.5): State Machine
-         * Implement the State Machine for Yellow.
-         * Refer to the TODO comments inside `StateMachine.cpp`.
-         */
+        // Communication
+        console.printf("Starting Telemetry Sender...\r\n");
+        communication::TelemetrySender::getInstance().start();
+        Thread::wait(1000);
 
-            // Start the StateMachine thread
-            console.printf("Starting state machine...\r\n");
-            stateMachine.start();
+        while (true) {
+          processIncomingTelecommand();
+        }
 
-            // Go into AUTO_REACTIVE state
-           // stateMachine.setDesiredState(State::AUTO_REACTIVE);
+        console.printf("Done\r\n");
+    }
 
-           // Thread::wait(3000);
+    /**
+     * Process an incoming telecommand message.
+     */
+    void processIncomingTelecommand() {
 
-            // Go into OFF state
-            stateMachine.setDesiredState(State::OFF);
-            Thread::wait(1000);
+        console.printf("Waiting for incoming message...\r\n");
 
-            // Set robot's velocities for manual operation mode
-            //stateMachine.setVelocities(1.5f, 3.0f);
+        communication::Stream incoming;
+        ch_bfh_roboticsLab_yellow_communication_Telecommand telecommand = communication::ProtocolInterface::processTelecommand(serialServer.receive(incoming));
 
-            // Go into MANUAL state
-            //stateMachine.setDesiredState(State::MANUAL);
+        if (telecommand.has_timestamp)
+            console.printf("Received telecommand.timestamp %ld\r\n", telecommand.timestamp);
 
-            //Thread::wait(3000);
+        if (telecommand.has_requestLidarData && telecommand.requestLidarData > 0) {
+          console.printf("Received telecommand.requestLidarData %ld\r\n", telecommand.requestLidarData);
+          telemetrySender.requestLidar(telecommand.requestLidarData);
+        }
 
-            // Go into OFF state
-            stateMachine.setDesiredState(State::OFF);
-            Thread::wait(1000);
+        if (telecommand.has_requestLidarLines) {
+          console.printf("Received telecommand.requestLidarLines\r\n");
+          telemetrySender.requestLidarLines(telecommand.requestLidarLines);
+        }
 
-            // Set goal pose for auto position operation mode
-            Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
-            con.printf("alpha: %f\r\n", controller.getAlpha());
-            stateMachine.setGoalPose(1.5f, 0.0f, 0.0f);
+        if (telecommand.has_state) {
+            console.printf("Received telecommand.state %d\r\n", telecommand.state.stateName);
+            State::Enum state = communication::ProtocolInterface::getState(telecommand.state.stateName);
+            if (state != State::AUTO_POSITION || telecommand.has_desiredPose)
+                stateMachine.setDesiredState(state);
+        }
 
-            // Go into AUTO_POSITION state
-            stateMachine.setDesiredState(State::AUTO_POSITION);
+        if (telecommand.has_velocities) {
+            console.printf("Received telecommand.velocities %f, %f\r\n", telecommand.velocities.linearSpeed, telecommand.velocities.angularSpeed);
+            stateMachine.setVelocities(telecommand.velocities.linearSpeed, telecommand.velocities.angularSpeed);
+        }
 
-            // Wait until state machine goes into OFF state (goal reached)
-            while (true) {
-                Thread::wait(500);
-                State::Enum state = stateMachine.getState();
-                console.printf("State: %d\r\n", state);
-                console.printf("monitor: %f\r\n", controller.monitor1);
-                if (state == State::OFF) break;
+        if (telecommand.has_desiredPose) {
+            console.printf("Received telecommand.desiredPose %f, %f, %f\r\n", telecommand.desiredPose.x, telecommand.desiredPose.y,
+                           telecommand.desiredPose.alpha);
+            stateMachine.setGoalPose(telecommand.desiredPose.x, telecommand.desiredPose.y, telecommand.desiredPose.alpha);
+        }
+
+        if (telecommand.has_correctedPose) {
+            console.printf("Received telecommand.correctedPose %f, %f, %f\r\n", telecommand.correctedPose.x, telecommand.correctedPose.y,
+                           telecommand.correctedPose.alpha);
+            // Apply the correction to the controller
+            controller.setX(telecommand.correctedPose.x);
+            controller.setY(telecommand.correctedPose.y);
+            controller.setAlpha(telecommand.correctedPose.alpha);
+        }
+
+        if (telecommand.has_reactiveParameters) {
+            ch_bfh_roboticsLab_yellow_communication_ReactiveNavigationParameters p = telecommand.reactiveParameters;
+            if (p.has_minDistance) {
+                console.printf("Received reactive param minDistance %f\r\n", p.minDistance);
+                if (p.minDistance < 0.0)
+                    stateMachine.minDistance = StateMachine::MIN_DISTANCE;
+                else
+                    stateMachine.minDistance = p.minDistance;
             }
-            stateMachine.setGoalPose(3.0f, 1.0f,M_PI);
-            stateMachine.setDesiredState(State::AUTO_POSITION);
-            while (true) {
-                Thread::wait(100);
-                State::Enum state = stateMachine.getState();
-                console.printf("Monitor1 %f\r\n",stateMachine.monitor1);
-                console.printf("State: %d\r\n", state);
-                if (state == State::OFF) break;
+            if (p.has_maxDistance) {
+                console.printf("Received reactive param maxDistance %f\r\n", p.maxDistance);
+                if (p.maxDistance < 0.0)
+                    stateMachine.maxDistance = StateMachine::MAX_DISTANCE;
+                else
+                    stateMachine.maxDistance = p.maxDistance;
             }
-            con.printf("alpha: %f\r\n", controller.getAlpha());
-            stateMachine.setGoalPose(0.0f, 0.0f,0.0f);
-            stateMachine.setDesiredState(State::AUTO_POSITION);
-            while (true) {
-                Thread::wait(100);
-                State::Enum state = stateMachine.getState();
-                console.printf("alpha:%f Monitor1 %f\r\n",controller.getAlpha(),controller.monitor1);
-                console.printf("State: %d\r\n", state);
-                if (state == State::OFF) break;
+            if (p.has_rotationalVelocityGain) {
+                console.printf("Received reactive param rotationalVelocityGain %f\r\n", p.rotationalVelocityGain);
+                if (p.rotationalVelocityGain < 0.0)
+                    stateMachine.rotationalVelocityGain = StateMachine::KR;
+                else
+                    stateMachine.rotationalVelocityGain = p.rotationalVelocityGain;
             }
-            peripherals::enableMotorDriver = 0;
-            con.printf("alpha: %f\r\n", controller.getAlpha());
-
+            if (p.has_translationalVelocity) {
+                console.printf("Received reactive param rotationalVelocityGain %f\r\n", p.rotationalVelocityGain);
+                if (p.translationalVelocity < 0.0)
+                    stateMachine.translationalProfileVelocity = Controller::TRANSLATIONAL_PROFILE_VELOCITY;
+                else
+                    stateMachine.translationalProfileVelocity = p.translationalVelocity;
+            }
+        }
     }
 };
 }
