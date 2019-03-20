@@ -29,7 +29,10 @@ LidarAnalysis::LidarAnalysis() :
 
 void LidarAnalysis::getScanPoints(const uint16_t &angleSteps) {   
     /** TODO (Ex4.2): Read the scan data and transform from polar to cartesian **/
+    Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
+
     rawScanPoints.clear();
+    con.printf("Angle:%d\r\n",angleSteps);
     std::vector<int16_t> rawPoints = lidar.getDistances(angleSteps);
 
     for(unsigned int pointsCount=0;pointsCount<rawPoints.size();pointsCount++)
@@ -42,6 +45,8 @@ void LidarAnalysis::getScanPoints(const uint16_t &angleSteps) {
             rawScanPoints.push_back(tmpPoint);
         }
     }
+    //con.printf(" number of points:%d",rawPoints.size());
+
     // TODO: Clear out the member `rawScanPoints` to erase the scan data from the last iteration
     // TODO: Read the scan data from the LIDAR member (at a specified step `angleSteps`)
     // TODO: Transform the scan measurements from the polar (distance & angle) to the cartesian space (x,y) in the robot frame.
@@ -57,21 +62,23 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
     // Make a fresh scan, full resolution (updates member `rawScanPoints`)
     getScanPoints(1);
 
-    /** TODO (Ex4.5): Split scan points in regions/ranges (e.g. left and right wall inside a corridor) **/
-
+    /** TODO (Ex4.5): Split scan points+ in regions/ranges (e.g. left and right wall inside a corridor) **/
     PointRanges pointRegions;
+    PointContainer tmpContainer;
     for(unsigned int pointCount=0;pointCount<rawScanPoints.size()-1;pointCount++)
     {
-        PointContainer tmpContainer;
+
+
         if(distance(rawScanPoints[pointCount],rawScanPoints[pointCount+1])>minRangeDistance)
         {
             pointRegions.push_back(tmpContainer);
+
             tmpContainer.clear();
         }
         tmpContainer.push_back(rawScanPoints[pointCount]);
-
+        //con.printf("loop:%d size:%d\r\n",pointCount,tmpContainer.size());
     }
-
+    //con.printf("regionsize:%d\r\n",pointRegions.size());
     /*if(distance(pointRegions.front().front(),pointRegions.back().back())<minRangeDistance)
     {
         PointContainer tmpContainer = pointRegions.front();
@@ -107,25 +114,27 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
     // NOTE: Each range will represent a line segment at the end.
     for(unsigned int rangeCount=0;rangeCount<pointRegions.size();++rangeCount)
     {
-        con.printf("size:%d\r\n",pointRegions[rangeCount].size());
-        con.printf("loop1:%d\r\n",rangeCount);
+       // con.printf("size:%d\r\n",pointRegions[rangeCount].size());
+       // con.printf("loop1:%d\r\n",rangeCount);
         unsigned int farestPoint=0;
         for(unsigned int pointCount=0;pointCount<pointRegions[rangeCount].size();++pointCount)
         {
-            con.printf("loop2:%d\r\n",pointCount);
+            //con.printf("loop2:%d\r\n",pointCount);
             if(distance(pointRegions[rangeCount].front(),pointRegions[rangeCount].back(),pointRegions[rangeCount][farestPoint])<distance(pointRegions[rangeCount].front(),pointRegions[rangeCount].back(),pointRegions[rangeCount][pointCount]))
             {
                     farestPoint=pointCount;
+                    //con.printf("in if\r\n");
             }
         }
-        con.printf("x:%f\r\n",pointRegions[rangeCount].front().x);
+        //con.printf("point:%d,%d\r\n",farestPoint,pointRegions[rangeCount].size());
+
         if(distance(pointRegions[rangeCount].front(),pointRegions[rangeCount].back(),pointRegions[rangeCount][farestPoint])>maxLineImprecision)
         {
-           /* PointContainer tmpContainer;
+            PointContainer tmpContainer;
             tmpContainer.insert(tmpContainer.end(),pointRegions[rangeCount].begin()+farestPoint,pointRegions[rangeCount].end());
             pointRegions[rangeCount].erase(pointRegions[rangeCount].begin()+farestPoint+1,pointRegions[rangeCount].end());
             pointRegions.insert(pointRegions.begin()+rangeCount+1,tmpContainer);
-            tmpContainer.clear();*/
+            tmpContainer.clear();
         }
 
     }
@@ -150,6 +159,7 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
         tmpLine.first = pointRegions[regioncount].front();
         tmpLine.second = pointRegions[regioncount].back();
         lines.push_back(tmpLine);
+        con.printf("x:%f y:%f\r\n",tmpLine.first.x,tmpLine.first.y);
     }
     con.printf("stage 4 complet");
     // TODO: For each line segment inside the `pointRegions` variable you just filled..
@@ -158,7 +168,7 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
     // TODO: Add those lines to the line container `lines` to be returned at the end of this method.
 
 
-
+    con.printf("sizeoflines:%d",lines.size());
     return lines;
 }
 
@@ -167,7 +177,7 @@ inline double LidarAnalysis::distance(const Point &p1, const Point &p2) {
     /** TODO (Ex4.3): Calculate the euclidian distance [mm] between the points p1 and p2 **/
 
     double distance = 0;
-    distance = sqrtf(pow((p1.x-p2.x),2)*pow((p1.y-p2.y),2));
+    distance = sqrtf(pow((p1.x-p2.x),2)+pow((p1.y-p2.y),2));
     return distance;
 }
 
@@ -176,11 +186,11 @@ inline double LidarAnalysis::distance(const Point &lineStartPoint, const Point &
     /** TODO (Ex4.4): Calculate the orthogonal distance [mm] between a line and a point **/
 
     double distance = 0;
-    /*Point lineVector = {.x=lineEndPoint.x-lineStartPoint.x,.y=lineEndPoint.y-lineStartPoint.y};
+    Point lineVector={.x=lineEndPoint.x-lineStartPoint.x,.y=lineEndPoint.y-lineStartPoint.y};
     Point lineOrtogonalVector = {.x= lineVector.y,.y=-lineVector.x};
     Point projectionVec= {.x=(p.x-lineStartPoint.x),.y=p.y-lineStartPoint.y};
     distance = (projectionVec.x*lineOrtogonalVector.x+projectionVec.y*lineOrtogonalVector.y)/sqrt(pow(lineOrtogonalVector.x,2)+pow(lineOrtogonalVector.y,2));
-   */ return distance;
+    return distance;
 }
 
 }

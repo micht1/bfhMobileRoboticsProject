@@ -77,7 +77,7 @@ telemetry = yellow.receive;
 
 %% Example usage of getLidarLines function
 % Get Lidar lines
-for l=1:10
+for l=1:1
     tic
     [lStart, lEnd] = getLidarLines(yellow);
     toc
@@ -87,9 +87,13 @@ for l=1:10
     plot([90 90 -120 -120 90], [90 -90 -90 90 90], 'r');
     hold on
     plot([0 120], [0 0], 'r');
+    length(lStart)
+    length(lEnd)
     for k=1:length(lStart)
-        plot([lStart(k,1) lEnd(k,1)], [lStart(k,2) lEnd(k,2)])
+        plot([lStart(k,1) lEnd(k,1)], [lStart(k,2) lEnd(k,2)],'+r')
         hold on
+        lStart
+        lEnd
     end
     grid on
     axis equal
