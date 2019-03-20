@@ -64,15 +64,15 @@ telemetry = yellow.receive;
 % containing angle, distance and quality of every point.
 
 % Get lidar data and plot
-[lAngle, lDistance, lQuality] = getLidar(yellow);
-x = lDistance.*cos(lAngle*pi/180);
-y = lDistance.*sin(lAngle*pi/180);
-figure(1)
-scatter(x, y, 8, lQuality);
-colorbar
-grid on
-axis equal
-title("Lidar")
+% [lAngle, lDistance, lQuality] = getLidar(yellow);
+% x = lDistance.*cos(lAngle*pi/180);
+% y = lDistance.*sin(lAngle*pi/180);
+% figure(1)
+% scatter(x, y, 8, lQuality);
+% colorbar
+% grid on
+% axis equal
+% title("Lidar")
 
 
 %% Example usage of getLidarLines function
