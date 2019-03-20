@@ -14,6 +14,7 @@ end
 
 %% ---------- YOUR CODE HERE ---------- %%
 
+
 %% How to read telemetry from the robot:
 telemetry = yellow.receive;
 
@@ -41,7 +42,7 @@ telemetry = yellow.receive;
 % Since most commands and parameters are defined as 'optional' you only need to write the commands and parameters you want to change.
 %
 % To change the robot state:
-yellow.set('state { stateName: OFF }')
+% yellow.set('state { stateName: OFF }')
 
 % To drive manual with a given linear and angular speed:
 % > yellow.set('state { stateName: MANUAL}, velocities { linearSpeed: 0.0, angularSpeed: 0.3 }');
@@ -71,25 +72,29 @@ scatter(x, y, 8, lQuality);
 colorbar
 grid on
 axis equal
+title("Lidar")
 
 
 %% Example usage of getLidarLines function
 % Get Lidar lines
-% for l=1:10
-%     tic
-%     [lStart, lEnd] = getLidarLines(yellow);
-%     toc
-%     figure(1)
-%     clf
-%     % Draw Robot
-%     plot([90 90 -120 -120 90], [90 -90 -90 90 90], 'r');
-%     hold on
-%     plot([0 120], [0 0], 'r');
-%     for k=1:length(lStart)
-%         plot([lStart(k,1) lEnd(k,1)], [lStart(k,2) lEnd(k,2)])
-%         hold on
-%     end
-%     grid on
-%     axis equal
-%     drawnow
-% end
+for l=1:10
+    tic
+    [lStart, lEnd] = getLidarLines(yellow);
+    toc
+    figure(2)
+    clf
+    % Draw Robot
+    plot([90 90 -120 -120 90], [90 -90 -90 90 90], 'r');
+    hold on
+    plot([0 120], [0 0], 'r');
+    for k=1:length(lStart)
+        plot([lStart(k,1) lEnd(k,1)], [lStart(k,2) lEnd(k,2)])
+        hold on
+    end
+    grid on
+    axis equal
+    drawnow
+end
+
+%yellow.set('state { stateName: AUTO_REACTIVE }')
+%yellow.set('state { stateName: OFF }')
