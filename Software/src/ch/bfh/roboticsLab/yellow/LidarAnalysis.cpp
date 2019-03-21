@@ -32,19 +32,23 @@ void LidarAnalysis::getScanPoints(const uint16_t &angleSteps) {
     Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
 
     rawScanPoints.clear();
-    con.printf("Angle:%d\r\n",angleSteps);
-    std::vector<int16_t> rawPoints = lidar.getDistances(angleSteps);
+    //con.printf("Angle:%d\r\n",angleSteps);
+    auto rawPoints = lidar.getDistances();
+    //con.printf("RAWPOINTsize:%d\r\n",rawPoints.size());
 
     for(unsigned int pointsCount=0;pointsCount<rawPoints.size();pointsCount++)
     {
         Point tmpPoint;
-        if(rawPoints[pointsCount]<peripherals::LIDAR_DISTANCE_THRESHOLD)
+        //con.printf("points:%d %d\r\n",rawPoints[pointsCount],pointsCount);
+        if(rawPoints[pointsCount]<peripherals::LIDAR_DISTANCE_THRESHOLD && rawPoints[pointsCount]>0)
         {
-            tmpPoint.x = rawPoints[pointsCount]*cos(pointsCount*angleSteps);
-            tmpPoint.y = rawPoints[pointsCount]*sin(pointsCount*angleSteps);
+            tmpPoint.x = (double)rawPoints[pointsCount]*cos(pointsCount*angleSteps);
+            tmpPoint.y = (double)rawPoints[pointsCount]*sin(pointsCount*angleSteps);
             rawScanPoints.push_back(tmpPoint);
         }
+
     }
+    rawScanPoints.push_back(rawScanPoints.back());
     //con.printf(" number of points:%d",rawPoints.size());
 
     // TODO: Clear out the member `rawScanPoints` to erase the scan data from the last iteration
@@ -68,17 +72,17 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
     for(unsigned int pointCount=0;pointCount<rawScanPoints.size()-1;pointCount++)
     {
 
-
+        //con.printf("distance %f\r\n",distance(rawScanPoints[pointCount],rawScanPoints[pointCount+1]));
         if(distance(rawScanPoints[pointCount],rawScanPoints[pointCount+1])>minRangeDistance)
         {
             pointRegions.push_back(tmpContainer);
-
+           // con.printf("entered if %d\r\n",pointCount);
             tmpContainer.clear();
         }
         tmpContainer.push_back(rawScanPoints[pointCount]);
         //con.printf("loop:%d size:%d\r\n",pointCount,tmpContainer.size());
     }
-    //con.printf("regionsize:%d\r\n",pointRegions.size());
+    con.printf("regionsize:%d\r\n",pointRegions.size());
     /*if(distance(pointRegions.front().front(),pointRegions.back().back())<minRangeDistance)
     {
         PointContainer tmpContainer = pointRegions.front();
@@ -93,6 +97,7 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
             pointRegions.erase(pointRegions.begin()+rangeCount);
         }
     }
+    con.printf("regionsize2:%d\r\n",pointRegions.size());
     con.printf(" stage 2 complet ");
     // TODO: Compare scan points next to each other:
     // --> If the points are "near" (use the `minRangeDistance` parameter), put them in the same point range.
@@ -114,32 +119,47 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
     // NOTE: Each range will represent a line segment at the end.
     for(unsigned int rangeCount=0;rangeCount<pointRegions.size();++rangeCount)
     {
-       // con.printf("size:%d\r\n",pointRegions[rangeCount].size());
-       // con.printf("loop1:%d\r\n",rangeCount);
-        unsigned int farestPoint=0;
-        for(unsigned int pointCount=0;pointCount<pointRegions[rangeCount].size();++pointCount)
+        bool doSplit=false;
+        do
         {
-            //con.printf("loop2:%d\r\n",pointCount);
-            if(distance(pointRegions[rangeCount].front(),pointRegions[rangeCount].back(),pointRegions[rangeCount][farestPoint])<distance(pointRegions[rangeCount].front(),pointRegions[rangeCount].back(),pointRegions[rangeCount][pointCount]))
+           // con.printf("size:%d\r\n",pointRegions[rangeCount].size());
+           // con.printf("loop1:%d\r\n",rangeCount);
+            unsigned int farestPoint=0;
+            for(unsigned int pointCount=0;pointCount<pointRegions[rangeCount].size();++pointCount)
             {
-                    farestPoint=pointCount;
-                    //con.printf("in if\r\n");
+                //con.printf("loop2:%d\r\n",pointCount);
+                if(distance(pointRegions[rangeCount].front(),pointRegions[rangeCount].back(),pointRegions[rangeCount][farestPoint])<distance(pointRegions[rangeCount].front(),pointRegions[rangeCount].back(),pointRegions[rangeCount][pointCount]))
+                {
+                        farestPoint=pointCount;
+                        //con.printf("in if\r\n");
+                }
             }
-        }
-        //con.printf("point:%d,%d\r\n",farestPoint,pointRegions[rangeCount].size());
+            //con.printf("point:%d,%d\r\n",farestPoint,pointRegions[rangeCount].size());
 
-        if(distance(pointRegions[rangeCount].front(),pointRegions[rangeCount].back(),pointRegions[rangeCount][farestPoint])>maxLineImprecision)
-        {
-            PointContainer tmpContainer;
-            tmpContainer.insert(tmpContainer.end(),pointRegions[rangeCount].begin()+farestPoint,pointRegions[rangeCount].end());
-            pointRegions[rangeCount].erase(pointRegions[rangeCount].begin()+farestPoint+1,pointRegions[rangeCount].end());
-            pointRegions.insert(pointRegions.begin()+rangeCount+1,tmpContainer);
-            tmpContainer.clear();
-        }
+            if(distance(pointRegions[rangeCount].front(),pointRegions[rangeCount].back(),pointRegions[rangeCount][farestPoint])>maxLineImprecision)
+            {
+                PointContainer tmpContainer;
+                tmpContainer.insert(tmpContainer.end(),pointRegions[rangeCount].begin()+farestPoint,pointRegions[rangeCount].end());
+                pointRegions[rangeCount].erase(pointRegions[rangeCount].begin()+farestPoint+1,pointRegions[rangeCount].end());
+                pointRegions.insert(pointRegions.begin()+rangeCount+1,tmpContainer);
+                tmpContainer.clear();
+                doSplit=true;
+            }
+            else
+            {
+                doSplit=false;
+            }
+        }while(doSplit==true);
 
     }
     con.printf(" stage 3 complet ");
-
+    for(unsigned int rangeCount=0;rangeCount<pointRegions.size();rangeCount++)
+    {
+        if(pointRegions[rangeCount].size()<=4)
+        {
+            pointRegions.erase(pointRegions.begin()+rangeCount);
+        }
+    }
     /** TODO: (optional) 2nd part: You may want to merge consecutive line segments that are "collinear enough"(see maxAngleBetweenLines & maxLineImprecision)
      *
      * Calculate the (smallest) angle between two consecutive line segments
@@ -153,13 +173,14 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
     /** TODO (Ex4.7): Fill the line container to be returned **/
 
     LineContainer lines;
-    for(unsigned int regioncount=0;regioncount<pointRegions.size();regioncount++)
+    for(unsigned int regioncount=0;regioncount<rawScanPoints.size();regioncount++)
     {
         Line tmpLine;
-        tmpLine.first = pointRegions[regioncount].front();
-        tmpLine.second = pointRegions[regioncount].back();
+        tmpLine.first.x = rawScanPoints[regioncount].x;
+        tmpLine.first.y = rawScanPoints[regioncount].y;
+        tmpLine.second= tmpLine.first;
         lines.push_back(tmpLine);
-        con.printf("x:%f y:%f\r\n",tmpLine.first.x,tmpLine.first.y);
+        //con.printf("x:%f y:%f\r\n",tmpLine.first.x,tmpLine.first.y);
     }
     con.printf("stage 4 complet");
     // TODO: For each line segment inside the `pointRegions` variable you just filled..
@@ -177,7 +198,7 @@ inline double LidarAnalysis::distance(const Point &p1, const Point &p2) {
     /** TODO (Ex4.3): Calculate the euclidian distance [mm] between the points p1 and p2 **/
 
     double distance = 0;
-    distance = sqrtf(pow((p1.x-p2.x),2)+pow((p1.y-p2.y),2));
+    distance = sqrt(pow((p1.x-p2.x),2)+pow((p1.y-p2.y),2));
     return distance;
 }
 

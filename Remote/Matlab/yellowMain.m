@@ -90,7 +90,7 @@ for l=1:1
     length(lStart)
     length(lEnd)
     for k=1:length(lStart)
-        plot([lStart(k,1) lEnd(k,1)], [lStart(k,2) lEnd(k,2)],'+r')
+        plot([lStart(k,1) lEnd(k,1)], [lStart(k,2) lEnd(k,2)],'+-r')
         hold on
         lStart
         lEnd
