@@ -184,7 +184,6 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
 
             }
         }
-
     }
 
 
