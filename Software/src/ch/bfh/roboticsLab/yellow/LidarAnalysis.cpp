@@ -42,11 +42,10 @@ void LidarAnalysis::getScanPoints(const uint16_t &angleSteps) {
         //con.printf("points:%d %d\r\n",rawPoints[pointsCount],pointsCount);
         if(rawPoints[pointsCount]<peripherals::LIDAR_DISTANCE_THRESHOLD && rawPoints[pointsCount]>0)
         {
-            tmpPoint.x = (double)rawPoints[pointsCount]*cos(pointsCount*angleSteps);
-            tmpPoint.y = (double)rawPoints[pointsCount]*sin(pointsCount*angleSteps);
+            tmpPoint.x = (float)rawPoints.at(pointsCount)*cos(pointsCount*angleSteps*util::RAD);
+            tmpPoint.y = (float)rawPoints.at(pointsCount)*sin(pointsCount*angleSteps*util::RAD);
             rawScanPoints.push_back(tmpPoint);
         }
-
     }
     rawScanPoints.push_back(rawScanPoints.back());
     //con.printf(" number of points:%d",rawPoints.size());
@@ -173,12 +172,13 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
     /** TODO (Ex4.7): Fill the line container to be returned **/
 
     LineContainer lines;
-    for(unsigned int regioncount=0;regioncount<rawScanPoints.size();regioncount++)
+    for(unsigned int regioncount=0;regioncount<pointRegions.size();regioncount++)
     {
         Line tmpLine;
-        tmpLine.first.x = rawScanPoints[regioncount].x;
-        tmpLine.first.y = rawScanPoints[regioncount].y;
-        tmpLine.second= tmpLine.first;
+        tmpLine.first.x = pointRegions;
+        tmpLine.first.y = pointRegions;
+        tmpLine.second.x = pointRegions;
+        tmpLine.second.y = pointRegions;
         lines.push_back(tmpLine);
         //con.printf("x:%f y:%f\r\n",tmpLine.first.x,tmpLine.first.y);
     }
