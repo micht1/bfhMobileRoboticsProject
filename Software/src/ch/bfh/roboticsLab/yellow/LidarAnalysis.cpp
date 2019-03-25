@@ -44,11 +44,12 @@ void LidarAnalysis::getScanPoints(const uint16_t &angleSteps) {
         {
             tmpPoint.x = (float)rawPoints.at(pointsCount)*cos(pointsCount*angleSteps*util::RAD);
             tmpPoint.y = (float)rawPoints.at(pointsCount)*sin(pointsCount*angleSteps*util::RAD);
+
             rawScanPoints.push_back(tmpPoint);
         }
     }
     rawScanPoints.push_back(rawScanPoints.back());
-    //con.printf(" number of points:%d",rawPoints.size());
+    con.printf(" number of points:%d",rawPoints.size());
 
     // TODO: Clear out the member `rawScanPoints` to erase the scan data from the last iteration
     // TODO: Read the scan data from the LIDAR member (at a specified step `angleSteps`)
@@ -81,7 +82,8 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
         tmpContainer.push_back(rawScanPoints[pointCount]);
         //con.printf("loop:%d size:%d\r\n",pointCount,tmpContainer.size());
     }
-    con.printf("regionsize:%d\r\n",pointRegions.size());
+    pointRegions.push_back(tmpContainer);
+    //con.printf("regionsize:%d\r\n",pointRegions.size());
     /*if(distance(pointRegions.front().front(),pointRegions.back().back())<minRangeDistance)
     {
         PointContainer tmpContainer = pointRegions.front();
@@ -152,13 +154,13 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
 
     }
     con.printf(" stage 3 complet ");
-    for(unsigned int rangeCount=0;rangeCount<pointRegions.size();rangeCount++)
+    /*for(unsigned int rangeCount=0;rangeCount<pointRegions.size();rangeCount++)
     {
         if(pointRegions[rangeCount].size()<=4)
         {
             pointRegions.erase(pointRegions.begin()+rangeCount);
         }
-    }
+    }*/
     /** TODO: (optional) 2nd part: You may want to merge consecutive line segments that are "collinear enough"(see maxAngleBetweenLines & maxLineImprecision)
      *
      * Calculate the (smallest) angle between two consecutive line segments
@@ -166,7 +168,24 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
      * ..look for the most distant point..
      * ..and if that point is further away than "maxLineImprecision", merge the line segments.
      **/
+    for(unsigned int lineSegmentCount=1;lineSegmentCount<pointRegions.size();lineSegmentCount++)
+    {
+        if(distance(pointRegions[lineSegmentCount].front(),pointRegions[lineSegmentCount-1].back())>maxLineImprecision)
+        {
+            float lineLengthCurrent = distance(pointRegions[lineSegmentCount].front(),pointRegions[lineSegmentCount].back());
+            float lineLengthPrevious = distance(pointRegions[lineSegmentCount-1].front(),pointRegions[lineSegmentCount-1].back());
 
+            Point vectorLineCurrent = {.x = pointRegions[lineSegmentCount].front().x-pointRegions[lineSegmentCount].back().x,.y=pointRegions[lineSegmentCount].front().y-pointRegions[lineSegmentCount].back().y};
+            Point vectorLinePrevious = {.x = pointRegions[lineSegmentCount-1].front().x-pointRegions[lineSegmentCount-1].back().x,.y=pointRegions[lineSegmentCount-1].front().y-pointRegions[lineSegmentCount-1].back().y};
+
+            float angle = vectorLineCurrent.x*vectorLinePrevious.x+vectorLineCurrent.y*vectorLinePrevious.y/(lineLengthCurrent*lineLengthPrevious);
+            if(angle<maxAngleBetweenLines)
+            {
+
+            }
+        }
+
+    }
 
 
     /** TODO (Ex4.7): Fill the line container to be returned **/
@@ -175,10 +194,8 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
     for(unsigned int regioncount=0;regioncount<pointRegions.size();regioncount++)
     {
         Line tmpLine;
-        tmpLine.first.x = pointRegions;
-        tmpLine.first.y = pointRegions;
-        tmpLine.second.x = pointRegions;
-        tmpLine.second.y = pointRegions;
+        tmpLine.first = pointRegions[regioncount].front();
+        tmpLine.second= pointRegions[regioncount].back();
         lines.push_back(tmpLine);
         //con.printf("x:%f y:%f\r\n",tmpLine.first.x,tmpLine.first.y);
     }
