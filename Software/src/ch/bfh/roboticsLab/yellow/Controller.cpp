@@ -110,7 +110,6 @@ void Controller::run() {
 
       /** TODO (Ex2.2): Calculate the actual speed of the motors in [rpm] **/
       // TODO (Ex5.1): Use the `speedLeftFilter` & `speedRightFilter` members to filter the current wheel motor speeds.
-
       // TODO: Read the current encoder counts
       // TODO: Calculate the encoder counts of the last period
       // TODO: Update the "previous" encoder counts
@@ -122,6 +121,8 @@ void Controller::run() {
       previousValueCounterLeft = encoderCountsLeft;
       previousValueCounterRight = encoderCountsRight;
 
+      actualSpeedLeft=Controller::speedLeftFilter.filter(actualSpeedLeft);
+      actualSpeedRight=Controller::speedRightFilter.filter(actualSpeedRight);
       //Counter overflow might lead to undefined behaviour
 
       /** Calculate the voltage that needs to be applied (with closed loop P-control) **/
