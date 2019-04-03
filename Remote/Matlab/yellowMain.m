@@ -82,7 +82,7 @@ for l=1:1
     tic
     [lStart, lEnd] = getLidarLines(yellow);
     toc
-    figure(l)
+    figure(20)
     clf
     % Draw Robo
     plot([90 90 -120 -120 90], [90 -90 -90 90 90], 'r');
