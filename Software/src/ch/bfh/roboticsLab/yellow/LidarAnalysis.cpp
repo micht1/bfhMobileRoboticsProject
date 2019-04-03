@@ -49,7 +49,7 @@ void LidarAnalysis::getScanPoints(const uint16_t &angleSteps) {
 
     }
     rawScanPoints.push_back(rawScanPoints.back());
-    con.printf(" number of points:%d",rawPoints.size());
+    //con.printf(" number of points:%d",rawPoints.size());
 
     // TODO: Clear out the member `rawScanPoints` to erase the scan data from the last iteration
     // TODO: Read the scan data from the LIDAR member (at a specified step `angleSteps`)
@@ -65,41 +65,53 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
 
     // Make a fresh scan, full resolution (updates member `rawScanPoints`)
     getScanPoints(1);
-
+    con.printf(" number of points:%d",rawScanPoints.size());
     /** TODO (Ex4.5): Split scan points+ in regions/ranges (e.g. left and right wall inside a corridor) **/
     PointRanges pointRegions;
     PointContainer tmpContainer;
-    for(unsigned int pointCount=0;pointCount<rawScanPoints.size()-1;pointCount++)
+    con.printf("data dumb ra points\r\n");
+    for(unsigned int pointCount=1;pointCount<rawScanPoints.size();pointCount++)
     {
-
+        con.printf("%f %f;\r",rawScanPoints.at(pointCount).x,rawScanPoints.at(pointCount).y);
         //con.printf("distance %f\r\n",distance(rawScanPoints[pointCount],rawScanPoints[pointCount+1]));
-        if(distance(rawScanPoints[pointCount],rawScanPoints[pointCount+1])>minRangeDistance)
+        if(distance(rawScanPoints.at(pointCount-1),rawScanPoints.at(pointCount))>minRangeDistance)
         {
             pointRegions.push_back(tmpContainer);
            // con.printf("entered if %d\r\n",pointCount);
             tmpContainer.clear();
         }
-        tmpContainer.push_back(rawScanPoints[pointCount]);
+        tmpContainer.push_back(rawScanPoints.at(pointCount));
         //con.printf("loop:%d size:%d\r\n",pointCount,tmpContainer.size());
     }
     pointRegions.push_back(tmpContainer);
-    //con.printf("regionsize:%d\r\n",pointRegions.size());
-    /*if(distance(pointRegions.front().front(),pointRegions.back().back())<minRangeDistance)
+    //
+    if(distance(pointRegions.front().back(),pointRegions.back().front())<maxLineImprecision)
     {
-        PointContainer tmpContainer = pointRegions.front();
+        pointRegions.front().insert(pointRegions.front().end(),pointRegions.back().begin(),pointRegions.back().end());
+        pointRegions.erase(pointRegions.end());
+    }
 
-        tmpContainer.insert(tmpContainer.end(),pointRegions.back().begin(),pointRegions.back().end());
-    }*/
-    con.printf("stage 1 complet");
+    //con.printf("stage 1 complet");
+    //con.printf("regionsize:%d\r\n",pointRegions.size());
     for(unsigned int rangeCount=0;rangeCount<pointRegions.size();rangeCount++)
     {
+        /*con.printf("first po+
+         * int: x%f y%f\r\n",pointRegions[rangeCount].front().x,pointRegions[rangeCount].front().y);
+        con.printf("second point: x%f y%f\r\n",pointRegions[rangeCount].back().x,pointRegions[rangeCount].back().y);
+        con.printf("size:%d\r\n",pointRegions[rangeCount].size());*/
+        con.printf("Range %d\r\n",rangeCount);
+        for(unsigned int pointCount=0;pointCount<pointRegions.at(rangeCount).size();++pointCount)
+        {
+            con.printf("%f %f;\r",pointRegions.at(rangeCount).at(pointCount).x,pointRegions.at(rangeCount).at(pointCount).y);
+        }
         if(pointRegions[rangeCount].size()<=4)
         {
-            pointRegions.erase(pointRegions.begin()+rangeCount);
+
+            //pointRegions.erase(pointRegions.begin()+rangeCount);
         }
     }
-    con.printf("regionsize2:%d\r\n",pointRegions.size());
-    con.printf(" stage 2 complet ");
+    //con.printf("regionsize 2:%d\r\n",pointRegions.size());
+    //con.printf(" stage 2 complet\r\n \r\n");
     // TODO: Compare scan points next to each other:
     // --> If the points are "near" (use the `minRangeDistance` parameter), put them in the same point range.
     // --> If the points are further away, create a new point range.
@@ -123,37 +135,93 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
         bool doSplit=false;
         do
         {
-           // con.printf("size:%d\r\n",pointRegions[rangeCount].size());
-           // con.printf("loop1:%d\r\n",rangeCount);
+            //con.printf("size:%d\r\n",pointRegions.size());
+             //con.printf("at%d",pointRegions.at(rangeCount).size());
+            //con.printf("loop1:%d\r\n",rangeCount);
             unsigned int farestPoint=0;
-            for(unsigned int pointCount=0;pointCount<pointRegions[rangeCount].size();++pointCount)
+            for(unsigned int pointCount=0;pointCount<pointRegions.at(rangeCount).size();++pointCount)
             {
                 //con.printf("loop2:%d\r\n",pointCount);
-                if(distance(pointRegions[rangeCount].front(),pointRegions[rangeCount].back(),pointRegions[rangeCount][farestPoint])<distance(pointRegions[rangeCount].front(),pointRegions[rangeCount].back(),pointRegions[rangeCount][pointCount]))
+                if(distance(pointRegions.at(rangeCount).front(),pointRegions.at(rangeCount).back(),pointRegions.at(rangeCount).at(farestPoint))<distance(pointRegions.at(rangeCount).front(),pointRegions.at(rangeCount).back(),pointRegions.at(rangeCount).at(pointCount)))
                 {
+                        //con.printf("point distance:%f",distance(pointRegions[rangeCount].front(),pointRegions[rangeCount].back(),pointRegions[rangeCount][pointCount]));
                         farestPoint=pointCount;
-                        //con.printf("in if\r\n");
+
                 }
             }
             //con.printf("point:%d,%d\r\n",farestPoint,pointRegions[rangeCount].size());
-
-            if(distance(pointRegions[rangeCount].front(),pointRegions[rangeCount].back(),pointRegions[rangeCount][farestPoint])>maxLineImprecision)
+            if(pointRegions.at(rangeCount).size()>0)
             {
-                PointContainer tmpContainer;
-                tmpContainer.insert(tmpContainer.end(),pointRegions[rangeCount].begin()+farestPoint,pointRegions[rangeCount].end());
-                pointRegions[rangeCount].erase(pointRegions[rangeCount].begin()+farestPoint+1,pointRegions[rangeCount].end());
-                pointRegions.insert(pointRegions.begin()+rangeCount+1,tmpContainer);
-                tmpContainer.clear();
-                doSplit=true;
+                if(distance(pointRegions.at(rangeCount).front(),pointRegions.at(rangeCount).back(),pointRegions.at(rangeCount).at(farestPoint))>maxLineImprecision)
+                {
+                    //con.printf("split point:X%f y:%f \r\n",pointRegions[rangeCount][farestPoint].x,pointRegions[rangeCount][farestPoint].y);
+                    PointContainer tmpContainer;
+                    //con.printf("l2\n\r");
+                    tmpContainer.insert(tmpContainer.end(),pointRegions.at(rangeCount).begin()+farestPoint,pointRegions.at(rangeCount).end());
+                    //con.printf("l3\n\r");
+                    pointRegions.at(rangeCount).erase(pointRegions.at(rangeCount).begin()+farestPoint,pointRegions.at(rangeCount).end());
+                    //con.printf("l4\n\r");
+                    pointRegions.insert(pointRegions.begin()+rangeCount+1,tmpContainer);
+                    //con.printf("l5\n\r");
+                    tmpContainer.clear();
+                    doSplit=true;
+                }
+                else
+                {
+                    doSplit=false;
+                }
             }
             else
             {
-                doSplit=false;
+                pointRegions.erase(pointRegions.begin()+rangeCount);
             }
         }while(doSplit==true);
 
     }
-    con.printf(" stage 3 complet ");
+    for(unsigned int lineCount=0;lineCount<pointRegions.size();++lineCount)
+    {
+        if(lineCount==0)
+        {
+            if(distance(pointRegions.front().front(),pointRegions.back().back())<maxLineImprecision)
+            {
+                pointRegions.front().insert(pointRegions.front().begin(),pointRegions.back().back());
+            }
+        }
+        else
+        {
+            if(distance(pointRegions.at(lineCount).front(),pointRegions.at(lineCount-1).back())<maxLineImprecision)
+            {
+                pointRegions.at(lineCount).insert(pointRegions.at(lineCount).begin(),pointRegions.at(lineCount-1).back());
+            }
+        }
+    }
+    for(unsigned int rangeCount=0;rangeCount<pointRegions.size();rangeCount++)
+    {
+        if(pointRegions.at(rangeCount).size()<3)
+        {
+            pointRegions.erase(pointRegions.begin()+rangeCount);
+        }
+    }
+    for(unsigned int rangeCount=0;rangeCount<pointRegions.size();rangeCount++)
+    {
+        /*con.printf("first point: x%f y%f\r\n",pointRegions[rangeCount].front().x,pointRegions[rangeCount].front().y);
+        con.printf("second point: x%f y%f\r\n",pointRegions[rangeCount].back().x,pointRegions[rangeCount].back().y);
+        con.printf("size:%d\r\n",pointRegions[rangeCount].size());*/
+        con.printf("Range after Split %d\r\n",rangeCount);
+
+        for(unsigned int pointCount=0;pointCount<pointRegions.at(rangeCount).size();++pointCount)
+        {
+            con.printf("%f %f;\r",pointRegions.at(rangeCount).at(pointCount).x,pointRegions.at(rangeCount).at(pointCount).y);
+        }
+    }
+    //con.printf("stage 3 complet");
+    for(unsigned int tmCount=0;tmCount<pointRegions.size();tmCount++)
+    {
+       // con.printf("first point: x%f y%f\r\n",pointRegions[tmCount].front().x,pointRegions[tmCount].front().y);
+       // con.printf("second point: x%f y%f\r\n",pointRegions[tmCount].back().x,pointRegions[tmCount].back().y);
+    }
+
+    //con.printf(" stage 4 complet\r\n");
     /*for(unsigned int rangeCount=0;rangeCount<pointRegions.size();rangeCount++)
     {
         if(pointRegions[rangeCount].size()<=4)
@@ -168,25 +236,58 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
      * ..look for the most distant point..
      * ..and if that point is further away than "maxLineImprecision", merge the line segments.
      **/
-    for(unsigned int lineSegmentCount=1;lineSegmentCount<pointRegions.size();lineSegmentCount++)
+    for(unsigned int lineSegmentCount=0;lineSegmentCount<pointRegions.size();lineSegmentCount++)
     {
-        if(distance(pointRegions[lineSegmentCount].front(),pointRegions[lineSegmentCount-1].back())>maxLineImprecision)
+        con.printf("merging %d\r\n",lineSegmentCount);
+        if(lineSegmentCount==0)
         {
-            float lineLengthCurrent = distance(pointRegions[lineSegmentCount].front(),pointRegions[lineSegmentCount].back());
-            float lineLengthPrevious = distance(pointRegions[lineSegmentCount-1].front(),pointRegions[lineSegmentCount-1].back());
+            float lineLengthCurrent = distance(pointRegions.front().front(),pointRegions.front().back());
+            float lineLengthPrevious = distance(pointRegions.back().front(),pointRegions.back().back());
 
-            Point vectorLineCurrent = {.x = pointRegions[lineSegmentCount].front().x-pointRegions[lineSegmentCount].back().x,.y=pointRegions[lineSegmentCount].front().y-pointRegions[lineSegmentCount].back().y};
-            Point vectorLinePrevious = {.x = pointRegions[lineSegmentCount-1].front().x-pointRegions[lineSegmentCount-1].back().x,.y=pointRegions[lineSegmentCount-1].front().y-pointRegions[lineSegmentCount-1].back().y};
+            Point vectorLineCurrent = {.x = pointRegions.front().front().x-pointRegions.front().back().x,.y=pointRegions.front().front().y-pointRegions.front().back().y};
+            Point vectorLinePrevious = {.x = pointRegions.back().front().x-pointRegions.back().back().x,.y=pointRegions.back().front().y-pointRegions.back().back().y};
 
-            float angle = vectorLineCurrent.x*vectorLinePrevious*x+vectorLineCurrent.y*vectorLinePrevious.y/(lineLengthCurrent*lineLengthPrevious);
-            if(angle<maxAngleBetweenLines)
+            float angle = (vectorLineCurrent.x*vectorLinePrevious.x+vectorLineCurrent.y*vectorLinePrevious.y)/(lineLengthCurrent*lineLengthPrevious);
+
+            con.printf("merging2 %f\r\n",angle/util::RAD);
+            if(angle>(180-maxAngleBetweenLines)*util::RAD)
             {
+                PointContainer tmpPoints(pointRegions.back());
+                tmpPoints.insert(tmpPoints.end(),pointRegions.front().begin(),pointRegions.front().end());
+                pointRegions.erase(pointRegions.begin());
+                pointRegions.erase(pointRegions.end());
+                pointRegions.insert(pointRegions.end(),tmpPoints);
 
             }
         }
+        else
+        {
 
+            if(distance(pointRegions[lineSegmentCount].front(),pointRegions[lineSegmentCount-1].back())<maxLineImprecision)
+            {
+                float lineLengthCurrent = distance(pointRegions[lineSegmentCount].front(),pointRegions[lineSegmentCount].back());
+                float lineLengthPrevious = distance(pointRegions[lineSegmentCount-1].front(),pointRegions[lineSegmentCount-1].back());
+
+                Point vectorLineCurrent = {.x = pointRegions[lineSegmentCount].front().x-pointRegions[lineSegmentCount].back().x,.y=pointRegions[lineSegmentCount].front().y-pointRegions[lineSegmentCount].back().y};
+                Point vectorLinePrevious = {.x = pointRegions[lineSegmentCount-1].front().x-pointRegions[lineSegmentCount-1].back().x,.y=pointRegions[lineSegmentCount-1].front().y-pointRegions[lineSegmentCount-1].back().y};
+
+                float angle = (vectorLineCurrent.x*vectorLinePrevious.x+vectorLineCurrent.y*vectorLinePrevious.y)/(lineLengthCurrent*lineLengthPrevious);
+
+                con.printf("merging2 %f\r\n",angle/util::RAD);
+                if(angle>(180-maxAngleBetweenLines)*util::RAD)
+                {
+                    PointContainer tmpPoints(pointRegions[lineSegmentCount-1]);
+                    tmpPoints.insert(tmpPoints.end(),pointRegions[lineSegmentCount].begin(),pointRegions[lineSegmentCount].end());
+                    pointRegions.erase(pointRegions.begin()+lineSegmentCount);
+                    pointRegions.erase(pointRegions.begin()+lineSegmentCount-1);
+                    pointRegions.insert(pointRegions.begin()+lineSegmentCount-1,tmpPoints);
+
+                }
+            }
+        }
     }
 
+    //con.printf("stage  5 complet");
 
     /** TODO (Ex4.7): Fill the line container to be returned **/
 
@@ -194,12 +295,20 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
     for(unsigned int regioncount=0;regioncount<pointRegions.size();regioncount++)
     {
         Line tmpLine;
-        tmpLine.first = pointRegions[regioncount].front();
-        tmpLine.second= pointRegions[regioncount].back();
+        tmpLine.first = pointRegions.at(regioncount).front();
+        tmpLine.second= pointRegions.at(regioncount).back();
         lines.push_back(tmpLine);
         //con.printf("x:%f y:%f\r\n",tmpLine.first.x,tmpLine.first.y);
     }
-    con.printf("stage 4 complet");
+    //con.printf("stage 6 complet");
+    /*for(unsigned int pointCount=0;pointCount<rawScanPoints.size();++pointCount)
+    {
+        Line tmpLine;
+        tmpLine.first = rawScanPoints.at(pointCount);
+        tmpLine.second = tmpLine.first;
+        lines.push_back(tmpLine);
+    }*/
+    con.printf("stage 7 complet");
     // TODO: For each line segment inside the `pointRegions` variable you just filled..
     // TODO: .. extract the start and end points..
     // TODO: .. and create a variable of type `Line`.
@@ -224,10 +333,13 @@ inline double LidarAnalysis::distance(const Point &lineStartPoint, const Point &
     /** TODO (Ex4.4): Calculate the orthogonal distance [mm] between a line and a point **/
 
     double distance = 0;
-    Point lineVector={.x=lineEndPoint.x-lineStartPoint.x,.y=lineEndPoint.y-lineStartPoint.y};
+
+    double lineLength = LidarAnalysis::distance(lineStartPoint,lineEndPoint);
+    distance = abs((lineEndPoint.y-lineStartPoint.y)*p.x-(lineEndPoint.x-lineStartPoint.x)*p.y+lineEndPoint.x*lineStartPoint.y-lineEndPoint.y*lineStartPoint.x)/lineLength;
+    /*Point lineVector={.x=lineEndPoint.x-lineStartPoint.x,.y=lineEndPoint.y-lineStartPoint.y};
     Point lineOrtogonalVector = {.x= lineVector.y,.y=-lineVector.x};
     Point projectionVec= {.x=(p.x-lineStartPoint.x),.y=p.y-lineStartPoint.y};
-    distance = (projectionVec.x*lineOrtogonalVector.x+projectionVec.y*lineOrtogonalVector.y)/sqrt(pow(lineOrtogonalVector.x,2)+pow(lineOrtogonalVector.y,2));
+    distance = (projectionVec.x*lineOrtogonalVector.x+projectionVec.y*lineOrtogonalVector.y)/sqrt(pow(lineOrtogonalVector.x,2)+pow(lineOrtogonalVector.y,2));*/
     return distance;
 }
 

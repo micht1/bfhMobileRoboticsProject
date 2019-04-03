@@ -109,8 +109,8 @@ static PwmOut pwmLidar(PA_10);
 static const PinName lidarSerialTx(PA_0);
 /** LIDAR serial interface RX pin */
 static const PinName lidarSerialRx(PA_1);
-/** LIDAR maximal distance to be measured (range up to 6m) [mm] */
-static const uint16_t LIDAR_DISTANCE_THRESHOLD = 6000;
+/** LIDAR maximal distance to be measured (range up to 5m) [mm] */
+static const uint16_t LIDAR_DISTANCE_THRESHOLD = 5000;
 
 
 /***   WiFi   ***/

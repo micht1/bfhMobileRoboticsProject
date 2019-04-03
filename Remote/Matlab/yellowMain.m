@@ -58,16 +58,16 @@ telemetry = yellow.receive;
 
 %% Example usage of getLidar function
 % Retrieve Lidar data for every 2 degrees
-% > yellow.set('requestLidarData: 2');
-%
-% The matlab functin 'getLidar' retrieves Lidar data and assigns the result to an array
-% containing angle, distance and quality of every point.
-
-% Get lidar data and plot
+%  yellow.set('requestLidarData: 1');
+% %
+% % The matlab functin 'getLidar' retrieves Lidar data and assigns the result to an array
+% % containing angle, distance and quality of every point.
+% 
+% % Get lidar data and plot
 % [lAngle, lDistance, lQuality] = getLidar(yellow);
 % x = lDistance.*cos(lAngle*pi/180);
 % y = lDistance.*sin(lAngle*pi/180);
-% figure(1)
+% figure(20)
 % scatter(x, y, 8, lQuality);
 % colorbar
 % grid on
@@ -81,9 +81,9 @@ for l=1:1
     tic
     [lStart, lEnd] = getLidarLines(yellow);
     toc
-    figure(2)
+    figure(l)
     clf
-    % Draw Robot
+    % Draw Robo
     plot([90 90 -120 -120 90], [90 -90 -90 90 90], 'r');
     hold on
     plot([0 120], [0 0], 'r');
