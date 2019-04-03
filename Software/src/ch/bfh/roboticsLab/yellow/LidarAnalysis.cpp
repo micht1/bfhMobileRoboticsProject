@@ -42,11 +42,11 @@ void LidarAnalysis::getScanPoints(const uint16_t &angleSteps) {
         //con.printf("points:%d %d\r\n",rawPoints[pointsCount],pointsCount);
         if(rawPoints[pointsCount]<peripherals::LIDAR_DISTANCE_THRESHOLD && rawPoints[pointsCount]>0)
         {
-            tmpPoint.x = (double)rawPoints[pointsCount]*cos(pointsCount*angleSteps*util::RAD);
-            tmpPoint.y = (double)rawPoints[pointsCount]*sin(pointsCount*angleSteps*util::RAD);
+            tmpPoint.x = (float)rawPoints.at(pointsCount)*cos(pointsCount*angleSteps*util::RAD);
+            tmpPoint.y = (float)rawPoints.at(pointsCount)*sin(pointsCount*angleSteps*util::RAD);
+
             rawScanPoints.push_back(tmpPoint);
         }
-
     }
     rawScanPoints.push_back(rawScanPoints.back());
     //con.printf(" number of points:%d",rawPoints.size());
@@ -248,6 +248,7 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
             Point vectorLinePrevious = {.x = pointRegions.back().front().x-pointRegions.back().back().x,.y=pointRegions.back().front().y-pointRegions.back().back().y};
 
             float angle = (vectorLineCurrent.x*vectorLinePrevious.x+vectorLineCurrent.y*vectorLinePrevious.y)/(lineLengthCurrent*lineLengthPrevious);
+
 
             con.printf("merging2 %f\r\n",angle/util::RAD);
             if(angle>(180-maxAngleBetweenLines)*util::RAD)

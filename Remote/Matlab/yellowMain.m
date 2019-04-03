@@ -42,7 +42,7 @@ telemetry = yellow.receive;
 % Since most commands and parameters are defined as 'optional' you only need to write the commands and parameters you want to change.
 %
 % To change the robot state:
-% yellow.set('state { stateName: OFF }')
+yellow.set('state { stateName: OFF }')
 
 % To drive manual with a given linear and angular speed:
 % > yellow.set('state { stateName: MANUAL}, velocities { linearSpeed: 0.0, angularSpeed: 0.3 }');
@@ -73,6 +73,7 @@ telemetry = yellow.receive;
 % grid on
 % axis equal
 % title("Lidar")
+
 
 
 %% Example usage of getLidarLines function
