@@ -69,40 +69,40 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
     /** TODO (Ex4.5): Split scan points+ in regions/ranges (e.g. left and right wall inside a corridor) **/
     PointRanges pointRegions;
     PointContainer tmpContainer;
-    con.printf("data dumb ra points\r\n");
+   // con.printf("data dumb ra points\r\n");
     for(unsigned int pointCount=1;pointCount<rawScanPoints.size();pointCount++)
     {
-        con.printf("%f %f;\r",rawScanPoints.at(pointCount).x,rawScanPoints.at(pointCount).y);
+        //con.printf("%f %f;\r",rawScanPoints.at(pointCount).x,rawScanPoints.at(pointCount).y);
         //con.printf("distance %f\r\n",distance(rawScanPoints[pointCount],rawScanPoints[pointCount+1]));
         if(distance(rawScanPoints.at(pointCount-1),rawScanPoints.at(pointCount))>minRangeDistance)
         {
             pointRegions.push_back(tmpContainer);
-           // con.printf("entered if %d\r\n",pointCount);
+            con.printf("entered if %d\r\n",pointCount);
             tmpContainer.clear();
         }
         tmpContainer.push_back(rawScanPoints.at(pointCount));
         //con.printf("loop:%d size:%d\r\n",pointCount,tmpContainer.size());
     }
     pointRegions.push_back(tmpContainer);
-    //
-    if(distance(pointRegions.front().back(),pointRegions.back().front())<maxLineImprecision)
+    con.printf("size2:%d\r\n",pointRegions.size());
+    /*if(distance(pointRegions.front().back(),pointRegions.back().front())<minRangeDistance && pointRegions.size()>1)
     {
         pointRegions.front().insert(pointRegions.front().end(),pointRegions.back().begin(),pointRegions.back().end());
         pointRegions.erase(pointRegions.end());
-    }
+    }*/
 
     //con.printf("stage 1 complet");
-    //con.printf("regionsize:%d\r\n",pointRegions.size());
+    con.printf("regionsize:%d\r\n",pointRegions.size());
     for(unsigned int rangeCount=0;rangeCount<pointRegions.size();rangeCount++)
     {
         /*con.printf("first po+
          * int: x%f y%f\r\n",pointRegions[rangeCount].front().x,pointRegions[rangeCount].front().y);
         con.printf("second point: x%f y%f\r\n",pointRegions[rangeCount].back().x,pointRegions[rangeCount].back().y);
         con.printf("size:%d\r\n",pointRegions[rangeCount].size());*/
-        con.printf("Range %d\r\n",rangeCount);
+        //con.printf("Range %d\r\n",rangeCount);
         for(unsigned int pointCount=0;pointCount<pointRegions.at(rangeCount).size();++pointCount)
         {
-            con.printf("%f %f;\r",pointRegions.at(rangeCount).at(pointCount).x,pointRegions.at(rangeCount).at(pointCount).y);
+            //con.printf("%f %f;\r",pointRegions.at(rangeCount).at(pointCount).x,pointRegions.at(rangeCount).at(pointCount).y);
         }
         if(pointRegions[rangeCount].size()<=4)
         {
