@@ -17,6 +17,7 @@ end
 
 %% How to read telemetry from the robot:
 telemetry = yellow.receive;
+telemetry.state
 
 % telemetry now holds the following structure:
 %  int timestamp
@@ -78,28 +79,42 @@ yellow.set('state { stateName: OFF }')
 
 %% Example usage of getLidarLines function
 % Get Lidar lines
-for l=1:1
-    tic
-    [lStart, lEnd] = getLidarLines(yellow);
-    toc
-    figure(20)
-    clf
-    % Draw Robo
-    plot([90 90 -120 -120 90], [90 -90 -90 90 90], 'r');
-    hold on
-    plot([0 120], [0 0], 'r');
-    length(lStart)
-    length(lEnd)
-    for k=1:length(lStart)
-        plot([lStart(k,1) lEnd(k,1)], [lStart(k,2) lEnd(k,2)],'+-r')
-        hold on
-        lStart
-        lEnd
-    end
-    grid on
-    axis equal
-    drawnow
-end
+% for l=1:1
+%     tic
+%     [lStart, lEnd] = getLidarLines(yellow);
+%     toc
+%     figure(20)
+%     clf
+%     % Draw Robo
+%     plot([90 90 -120 -120 90], [90 -90 -90 90 90], 'r');
+%     hold on
+%     plot([0 120], [0 0], 'r');
+%     length(lStart)
+%     length(lEnd)
+%     for k=1:length(lStart)
+%         plot([lStart(k,1) lEnd(k,1)], [lStart(k,2) lEnd(k,2)],'+-r')
+%         hold on
+%         lStart
+%         lEnd
+%     end
+%     grid on
+%     axis equal
+%     drawnow
+% end
 
+%% Hello
 %yellow.set('state { stateName: AUTO_REACTIVE }')
-%yellow.set('state { stateName: OFF }')
+yellow.set('state { stateName: OFF }')
+%yellow.append('state { stateName: ON }')
+
+yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 0.0, y: 0.0, alpha: 0}')
+
+%yellow.append('desiredPose { x: 1, y: 1, alpha: 0}')
+%yellow.set('state { stateName: MANUAL}');
+%yellow.append('velocities{linearSpeed:0.0, angularSpeed:0}')
+%pause(3)
+% for i=1:500
+% telemetry = yellow.receive;
+%telemetry.odometry.pose
+% pause(0.01)
+% end

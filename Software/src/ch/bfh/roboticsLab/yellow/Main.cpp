@@ -109,6 +109,8 @@ private:
 
         while (true) {
           processIncomingTelecommand();
+          console.printf("angle:%f\r\n",stateMachine.monitor1);
+
         }
 
         console.printf("Done\r\n");

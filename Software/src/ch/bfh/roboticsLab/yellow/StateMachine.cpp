@@ -9,6 +9,8 @@
 #include <ch/bfh/roboticsLab/yellow/StateMachine.h>
 #include <ch/bfh/roboticsLab/yellow/Peripherals.h>
 #include <ch/bfh/roboticsLab/util/Util.h>
+#include <ch/bfh/roboticsLab/yellow/Console.h>
+
 
 namespace ch {
 namespace bfh {
@@ -86,6 +88,7 @@ void StateMachine::run() {
     peripherals::enableIRSensors = 1;
     float distance[peripherals::N_IRs];
 
+
     while (waitForNextPeriod()) {
 
         /* TODO (Ex3.2): Read the IR sensors & activate the corresponding LED
@@ -122,6 +125,7 @@ void StateMachine::run() {
                 timer.reset();
 
                 state = State::SWITCH_ON;
+                //con.printf("desired %d\r\n",desiredState);
             }
 
             buttonBefore = buttonNow;
@@ -301,24 +305,28 @@ void StateMachine::run() {
                 monitor2 = 0;
                 */
 
-                float angleOfLane=atan2(yDesired-controller.getY(),xDesired-controller.getX());;
+                float angleOfLane=atan2(yDesired-controller.getY(),xDesired-controller.getX());
+                float deltaAngle=util::unwrap(angleOfLane-controller.getAlpha());
                 float distanceToTarget=0;
                 float orientatonKor=0;
-                monitor1=(float)manuver;
+                monitor1=(float)angleOfLane;
+
+
                 switch (manuver)
                 {
                 case 1:
-                    controller.setRotationalVelocity(((angleOfLane-controller.getAlpha())*K1));
-                    if(abs((angleOfLane-controller.getAlpha())*K1)>maxRotationalVelocity && (angleOfLane-controller.getAlpha())*K1<0)
+                    controller.setRotationalVelocity((deltaAngle)*K1);
+                    if((abs(deltaAngle)*K1)>maxRotationalVelocity && (deltaAngle)*K1<0)
                     {
                         controller.setRotationalVelocity(-maxRotationalVelocity);
+                       // con.printf("angleVel:%f\r\n",abs((angleOfLane-controller.getAlpha())*K1));
                     }
-                    else if(abs((angleOfLane-controller.getAlpha())*K1)>maxRotationalVelocity && (angleOfLane-controller.getAlpha())*K1>0)
+                    else if((abs(deltaAngle)*K1)>maxRotationalVelocity && (deltaAngle)*K1>0)
                     {
                         controller.setRotationalVelocity(maxRotationalVelocity);
                     }
 
-                    if(abs(angleOfLane-controller.getAlpha())<tolerance)
+                    if(abs(deltaAngle)<tolerance)
                     {
                         manuver=2;
                         controller.setRotationalVelocity(0.0f);
@@ -329,12 +337,12 @@ void StateMachine::run() {
 
                     controller.setTranslationalVelocity(distanceToTarget*K2);
 
-                    controller.setRotationalVelocity((angleOfLane-controller.getAlpha())*K3);
-                    if((angleOfLane-controller.getAlpha())*K3>maxRotationalVelocity*0.1 && (angleOfLane-controller.getAlpha())*K3>0)
+                    controller.setRotationalVelocity((deltaAngle)*K3);
+                    if(abs(deltaAngle)*K3>maxRotationalVelocity*0.1 && (deltaAngle)*K3>0)
                     {
                         controller.setRotationalVelocity(maxRotationalVelocity*0.1 );
                     }
-                    if((angleOfLane-controller.getAlpha())*K3>maxRotationalVelocity*0.1 && (angleOfLane-controller.getAlpha())*K3<0)
+                    if(abs(deltaAngle)*K3>maxRotationalVelocity*0.1 && (deltaAngle)*K3<0)
                     {
                         controller.setRotationalVelocity(-maxRotationalVelocity*0.1 );
                     }
@@ -356,7 +364,7 @@ void StateMachine::run() {
                     break;
 
                 case 3:
-                    orientatonKor =  alphaDesired-controller.getAlpha();
+                    orientatonKor =  util::unwrap(alphaDesired-controller.getAlpha());
                     controller.setRotationalVelocity(orientatonKor*K1);
                     if(abs((orientatonKor)*K1)>maxRotationalVelocity && (orientatonKor)*K1<0)
                     {
