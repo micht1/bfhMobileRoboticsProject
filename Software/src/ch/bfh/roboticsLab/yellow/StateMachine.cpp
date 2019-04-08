@@ -87,7 +87,7 @@ void StateMachine::run() {
 
     peripherals::enableIRSensors = 1;
     float distance[peripherals::N_IRs];
-
+    Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
 
     while (waitForNextPeriod()) {
 
@@ -333,6 +333,7 @@ void StateMachine::run() {
                     }
                     break;
                 case 2:
+                    //con.printf("angleOfLane: %f, alpha: %f\r\n",angleOfLane, controller.getAlpha());
                     distanceToTarget=sqrtf(((xDesired-controller.getX())*(xDesired-controller.getX()))+((yDesired-controller.getY())*(yDesired-controller.getY())));
 
                     controller.setTranslationalVelocity(distanceToTarget*K2);
@@ -364,7 +365,7 @@ void StateMachine::run() {
                     break;
 
                 case 3:
-                    orientatonKor =  util::unwrap(alphaDesired-controller.getAlpha());
+                    orientatonKor =  (alphaDesired-controller.getAlpha());
                     controller.setRotationalVelocity(orientatonKor*K1);
                     if(abs((orientatonKor)*K1)>maxRotationalVelocity && (orientatonKor)*K1<0)
                     {

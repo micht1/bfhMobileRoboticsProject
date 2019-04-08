@@ -102,19 +102,36 @@ yellow.set('state { stateName: OFF }')
 %     drawnow
 % end
 
-%% Hello
+%% do Mapping
 %yellow.set('state { stateName: AUTO_REACTIVE }')
+
+% [lStart, lEnd] = getLidarLines(yellow);
+% telemetry = yellow.receive;
+% robotCoordinate = int8(zeros(1,3));
+% robotCoordinate(1,2)= int8(round(telemetry.odometry.pose.x/100));
+% robotCoordinate(1,1)= int8(round(telemetry.odometry.pose.y/100));
+% robotCoordinate(1,3)= (telemetry.odometry.pose.alpha);
+% 
+% lStart1 = round(lStart/100);
+% lEnd1 = round(lEnd/100);
+% gMap = globalMap(lStart1,lEnd1,robotCoordinate);
+% figure(9)
+% imshow(gMap)
+% pause(3)
 yellow.set('state { stateName: OFF }')
 %yellow.append('state { stateName: ON }')
 
-yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 0.0, y: 0.0, alpha: 0}')
-
-%yellow.append('desiredPose { x: 1, y: 1, alpha: 0}')
-%yellow.set('state { stateName: MANUAL}');
-%yellow.append('velocities{linearSpeed:0.0, angularSpeed:0}')
-%pause(3)
-% for i=1:500
+yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: -0.0, y: -1.0, alpha: 0}')
+% pause(5)
+% [lStart, lEnd] = getLidarLines(yellow);
 % telemetry = yellow.receive;
-%telemetry.odometry.pose
-% pause(0.01)
-% end
+% robotCoordinate = int8(zeros(1,3));
+% robotCoordinate(1,2)= 0;%int8(round(telemetry.odometry.pose.x/100));
+% robotCoordinate(1,1)= 10;%int8(round(telemetry.odometry.pose.y/100));
+% robotCoordinate(1,3)= 0;%(telemetry.odometry.pose.alpha);
+% 
+% lStart1 = round(lStart/100);
+% lEnd1 = round(lEnd/100);
+% gMap = globalMap(lStart1,lEnd1,robotCoordinate);
+% figure(10)
+% imshow(gMap)

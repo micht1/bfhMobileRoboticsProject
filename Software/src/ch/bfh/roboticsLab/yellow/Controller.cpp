@@ -193,11 +193,19 @@ void Controller::run() {
       {
           actualTranslationVelocity=oldTranslationalVelocity;
       }
-      else if(abs(actualTranslationVelocity)<1.5)
+      else if(abs(actualTranslationVelocity)<1.5f)
       {
         oldTranslationalVelocity=actualTranslationVelocity;
       }
       float actualRotationVelocity = (1/(WHEEL_DISTANCE)*((actualSpeedRight-actualSpeedLeft)*2*WHEEL_RADIUS*M_PI))/60.0f;
+      /*if(abs(actualRotationVelocity)>1.5f)
+      {
+          actualRotationVelocity=oldRotationalVelocity;
+      }
+      else if(abs(actualTranslationVelocity)<1.5f)
+      {
+        oldRotationalVelocity=actualRotationVelocity;
+      }*/
 
       // TODO: Estimate the global robot pose (x, y & alpha) by integration
       x = x + cos(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;

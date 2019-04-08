@@ -3,14 +3,14 @@
 % lEnd1 = round(lEnd/100);
 % lStart1 = round([-1000 ,-2000;2000,-2000;2000,2000;  100,1500;-600 ,1000;-1000, 1000]/100);
 % lEnd1 =   round([2000  ,-2000;2000, 2000;1500,2000;  500,1500;-1000,1000;-1000,-2000]/100);
-
-  lStart1 = round([-700 ,700; 1400, 700; 2500,-1500; 2500,-2600; -500,-2600; -700,-2600; -200,-1000]/100);
-  lEnd1 =   round([1400 ,700; 1400,-900; 2500,-2600; 2300,-2600; -700,-2600; -700,  700;  900,-1000]/100);
-
-% lStart1=round([1000,1000;-1000,-1000]/100);
-% lEnd1=round([-1000,1000; 1000,-1000]/100);
-
- robotCoordinate = [0,0,0;-25,-25,0;25,25,0;100,100,pi()/2;75,0,pi();0,-50,0];
+% 
+%   lStart1 = round([-700 ,700; 1400, 700; 2500,-1500; 2500,-2600; -500,-2600; -700,-2600; -200,-1000]/100);
+%   lEnd1 =   round([1400 ,700; 1400,-900; 2500,-2600; 2300,-2600; -700,-2600; -700,  700;  900,-1000]/100);
+% 
+% % lStart1=round([1000,1000;-1000,-1000]/100);
+% % lEnd1=round([-1000,1000; 1000,-1000]/100);
+% 
+%  robotCoordinate = [0,0,0;-25,-25,0;25,25,0;100,100,pi()/2;75,0,pi();0,-50,0];
 %globalMap1 = 200;
 %newSize = [0,0];
 
@@ -18,15 +18,15 @@
 %endPoint = [0,0];
 %oldZeroPoint = [0,0];
 %newZeroPoint = [0,0];
-for x = 1:6
-gMap = globalMap2(lStart1,lEnd1,robotCoordinate(x,:));
-figure(10)
-imshow(gMap)
-end
+% for x = 1:6
+% gMap = globalMap2(lStart1,lEnd1,robotCoordinate(x,:));
+% figure(10)
+% imshow(gMap)
+% end
 
 
 
-function globalMap3 = globalMap2(lStart1,lEnd1,robotCoordinate)
+function globalMap3 = globalMap(lStart1,lEnd1,robotCoordinate)
 persistent firstFlag;
 persistent globalMap1;
 persistent globalMapZeroPoint;
@@ -36,8 +36,8 @@ if isempty(firstFlag)
 end
  
 [map,zeroPoint] = localMap(lStart1,lEnd1,robotCoordinate(1,3));
-% figure(1)
-% imshow(map)
+ figure(1)
+ imshow(map)
 
 mapSize=size(map);
 %globalMapSize = size(globalMap1);
@@ -54,15 +54,21 @@ else
 end
 
 if(robotCoordinate(1,1)>=0)   
+    
+        if(globalMapZeroPoint(2)<zeroPoint(2))
+            globalMapZeroPoint(2)=zeroPoint(2);
+        end
     newSize(2) = robotCoordinate(1,1)+mapSize(2)-zeroPoint(2)+globalMapZeroPoint(2);
-        
     startPoint(2)= globalMapZeroPoint(2)+robotCoordinate(1,1)-zeroPoint(2);
     endPoint(2) = globalMapZeroPoint(2)+robotCoordinate(1,1)-zeroPoint(2)+mapSize(2);
 end  
 
 if(robotCoordinate(1,2)>=0)   
-    newSize(1) = robotCoordinate(1,2)+mapSize(1)-zeroPoint(1)+globalMapZeroPoint(1);
     
+    if(globalMapZeroPoint(1)<zeroPoint(1))
+            globalMapZeroPoint(1)=zeroPoint(1);
+    end
+    newSize(1) = robotCoordinate(1,2)+mapSize(1)-zeroPoint(1)+globalMapZeroPoint(1);
     startPoint(1)= globalMapZeroPoint(1)+robotCoordinate(1,2)-zeroPoint(1);
     endPoint(1) = globalMapZeroPoint(1)+robotCoordinate(1,2)-zeroPoint(1)+mapSize(1);   
 end
@@ -70,8 +76,8 @@ end
 
 
 if(robotCoordinate(1,1)<0)   
-    newSize(2) = abs(robotCoordinate(1,1))+zeroPoint(2)+globalMapSize(2)-globalMapZeroPoint(2);  
       
+      newSize(2) = abs(robotCoordinate(1,1))+zeroPoint(2)+globalMapSize(2)-globalMapZeroPoint(2);
     if(globalMapZeroPoint(2)<abs(robotCoordinate(1,1))+zeroPoint(2))
         globalMapZeroPoint(2)=abs(robotCoordinate(1,1))+zeroPoint(2);
 %         newZeroPoint(2) = robotCoordinate(x,1)
@@ -125,6 +131,11 @@ end
 %     
 %     figure(2)
 %     imshow(mapBuffer)
+    startPoint
+    endPoint
+    robotCoordinate
+    zeroPoint
+    globalMapZeroPoint
     
     for c = startPoint(1)+1:endPoint(1)
         for r = startPoint(2)+1:endPoint(2)
