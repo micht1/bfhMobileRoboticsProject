@@ -1,12 +1,9 @@
 
-
-
 point1 = bestSpot1(gMap);
 
 function point = bestSpot1(globalMap)
-t = cputime;
 sizeMap = size(globalMap);
-percent = 20;
+percent = 5;
 imshow(globalMap)
 whitePoint = [0,0];
 cnt = 1;
@@ -28,12 +25,14 @@ sizeR = size(random);
 
 %360° directions
 directions = [0,0];%zeros(360,2);
-for x = 1:1:360
-directions(x,2)=cosd(x); %x
-directions(x,1)=sind(x); %y  
+dCnt = 1;
+for x = 1:2:360
+directions(dCnt,2)=cosd(x); %x
+directions(dCnt,1)=sind(x); %y  
+dCnt = dCnt +1;
 end
 directions = directions/1;
-sizeDirections=size(directions);
+sizeDirections=size(directions)
 greyPoints = zeros(numberOfPoints,1);
 
 for x = 1:sizeR(1)
@@ -71,9 +70,13 @@ if(greyPoints(x)>biggest)
 end
 end
 
+if(biggest == 0)   
+point = [0,0];
+else
 point = whitePoint(random(biggestCnt,:),:);
-time = cputime-t
 globalMap(point(1),point(2))=150;
+end
+
 figure(2)
 imshow(globalMap)
 
