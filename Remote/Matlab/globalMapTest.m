@@ -7,10 +7,10 @@ clearvars; clear all; close all; clc
   lStart1 = round([-700 ,700; 1400, 700; 2500,-1500; 2500,-2600; -500,-2600; -700,-2600; -200,-1000]/100);
   lEnd1 =   round([1400 ,700; 1400,-900; 2500,-2600; 2300,-2600; -700,-2600; -700,  700;  900,-1000]/100);
 
-% lStart1=round([1000,1000;-1000,-1000]/100);
-% lEnd1=round([-1000,1000; 1000,-1000]/100);
+% lStart1=round([1000,1000;-1000, 1000;-1000,-1000;1000,-1000]/100);
+% lEnd1=round([-1000,1000; -1000,-1000; 1000,-1000;1000,1000]/100);
 
- robotCoordinate = [0,0,0;-100,1,pi();25,25,0;100,100,pi()/2;75,0,pi();-50,-50,pi/2];
+ robotCoordinate = [0,0,0;0,0,pi();25,25,0;100,100,pi()/2;75,0,pi();-50,-50,pi/2];
 %globalMap1 = 200;
 %newSize = [0,0];
 
@@ -24,7 +24,7 @@ figure(10)
 imshow(gMap)
 end
 
-
+clear 'globalMap2'
 
 
 function globalMap3 = globalMap2(lStart1,lEnd1,robotCoordinate)
@@ -32,6 +32,7 @@ persistent firstFlag;
 persistent globalMap1;
 persistent globalMapZeroPoint;
 persistent oldGMapZp;
+persistent oldZeroPoint;
 
 if isempty(firstFlag)
         firstFlag = 0;
@@ -41,27 +42,26 @@ end
 figure(1)
 imshow(map)
 
-mapSize=size(map);
-%globalMapSize = size(globalMap1);
-
 if(firstFlag == 0)
   globalMapZeroPoint = zeroPoint;
+  oldZeroPoint = zeroPoint;
   firstFlag = 1;
   globalMapSize = size(map);
-  
   globalMap1 = 200;
   
 else
   globalMapSize = size(globalMap1);
 end
-
+mapSize=size(map);
 oldGMapZp = globalMapZeroPoint;
 if(robotCoordinate(1,1)>=0)   
     
     newSize(2) = robotCoordinate(1,1)+mapSize(2)-(zeroPoint(2)-globalMapZeroPoint(2));
-    if(globalMapZeroPoint(2)+robotCoordinate(1,2)<zeroPoint(2))
-        newSize(2) = robotCoordinate(1,1)+mapSize(2)+(zeroPoint(2)-globalMapZeroPoint(2));
-        globalMapZeroPoint(2) = zeroPoint(2);      
+    gMapStart(2)= globalMapZeroPoint(2)-oldGMapZp(2);
+    if(globalMapZeroPoint(2)+robotCoordinate(1,1)<zeroPoint(2))    
+        globalMapZeroPoint(2) = zeroPoint(2);   
+        newSize(2) = robotCoordinate(1,1)+globalMapZeroPoint(2)+(globalMapSize(2)-oldGMapZp(2));
+        gMapStart(2)= globalMapZeroPoint(2)-oldGMapZp(2)%-robotCoordinate(1,1);
     end
  
     startPoint(2)= globalMapZeroPoint(2)+robotCoordinate(1,1)-zeroPoint(2);
@@ -72,16 +72,17 @@ end
 if(robotCoordinate(1,2)>=0)   
     
     newSize(1) = robotCoordinate(1,2)+mapSize(1)-(zeroPoint(1)-globalMapZeroPoint(1));
-    if(globalMapZeroPoint(1)+robotCoordinate(1,2)<zeroPoint(1))
-        newSize(1) = robotCoordinate(1,2)+mapSize(1)+(zeroPoint(1)-globalMapZeroPoint(1));
+    gMapStart(1)= globalMapZeroPoint(1)-oldGMapZp(1);
+    if(globalMapZeroPoint(1)+robotCoordinate(1,2)<zeroPoint(1))    
         globalMapZeroPoint(1) = zeroPoint(1);     
+        newSize(1) = robotCoordinate(1,2)+globalMapZeroPoint(1)+(globalMapSize(1)-oldGMapZp(1));
+        gMapStart(1)= globalMapZeroPoint(1)-oldGMapZp(1)%-robotCoordinate(1,2);
     end
     
     startPoint(1)= globalMapZeroPoint(1)+robotCoordinate(1,2)-zeroPoint(1);
-    endPoint(1) = globalMapZeroPoint(1)+robotCoordinate(1,2)-zeroPoint(1)+mapSize(1);   
+    endPoint(1) = globalMapZeroPoint(1)+robotCoordinate(1,2)-zeroPoint(1)+mapSize(1);  
+
 end
-
-
 
 if(robotCoordinate(1,1)<0)   
     newSize(2) = abs(robotCoordinate(1,1))+zeroPoint(2)+globalMapSize(2)-globalMapZeroPoint(2);  
@@ -89,9 +90,8 @@ if(robotCoordinate(1,1)<0)
     if(globalMapZeroPoint(2)<abs(robotCoordinate(1,1))+zeroPoint(2))
         globalMapZeroPoint(2)=abs(robotCoordinate(1,1))+zeroPoint(2);
 %         newZeroPoint(2) = robotCoordinate(x,1)
-    end
-    
-     
+    end  
+    gMapStart(2)= globalMapZeroPoint(2)-(oldGMapZp(2))
     startPoint(2)= globalMapZeroPoint(2)+robotCoordinate(1,1)-zeroPoint(2);
     endPoint(2)= globalMapZeroPoint(2)+robotCoordinate(1,1)-zeroPoint(2)+mapSize(2); 
 end  
@@ -103,13 +103,13 @@ if(robotCoordinate(1,2)<0)
         globalMapZeroPoint(1)=abs(robotCoordinate(1,2))+zeroPoint(1);
 %         newZeroPoint(1) = robotCoordinate(x,2);
     end
-    
+    gMapStart(1)= globalMapZeroPoint(1)-(oldGMapZp(1));
     startPoint(1)= globalMapZeroPoint(1)+robotCoordinate(1,2)-zeroPoint(1);
     endPoint(1)= globalMapZeroPoint(1)+robotCoordinate(1,2)-zeroPoint(1)+mapSize(1);
     
 end 
 
-
+   
 if(newSize(1)<globalMapSize(1))
      newSize(1) = globalMapSize(1);        
 end     
@@ -122,22 +122,34 @@ bufferSize = size(mapBuffer);
 figure(3)
 imshow(mapBuffer)
     
-if(robotCoordinate(1,2)>=0)
-    gMapStart(1)= globalMapZeroPoint(1)-(oldGMapZp(1));
-else
-    gMapStart(1)= globalMapZeroPoint(1)-(oldGMapZp(1));
-end
+% if(robotCoordinate(1,2)>=0)
+%     gMapStart(1)= globalMapZeroPoint(1)-oldGMapZp(1)-robotCoordinate(1,2);
+% else
+%     gMapStart(1)= globalMapZeroPoint(1)-(oldGMapZp(1));
+% end
+% 
+% if(robotCoordinate(1,1)>=0)
+%     %
+%     gMapStart(2)= globalMapZeroPoint(2)-oldGMapZp(2)-robotCoordinate(1,1);
+% else
+%     gMapStart(2)= globalMapZeroPoint(2)-(oldGMapZp(2));  %bufferSize(2)-globalMapSize(2);
+% end  
 
-if(robotCoordinate(1,1)>=0)
-    gMapStart(2)= globalMapZeroPoint(2)-(oldGMapZp(2));
-else
-    gMapStart(2)= globalMapZeroPoint(2)-(oldGMapZp(2));  %bufferSize(2)-globalMapSize(2);
-end  
-   
+   oldZeroPoint = zeroPoint;
+
     mapBuffer(gMapStart(1)+1:gMapStart(1)+globalMapSize(1),gMapStart(2)+1:gMapStart(2)+globalMapSize(2)) = globalMap1; 
     %oldZeroPoint = zeroPoint;    
     rcount = 1;
     ccount = 1;
+    
+    
+    if(endPoint(1) >bufferSize(1))
+        endPoint(1) = bufferSize(1);
+    end
+    
+    if(endPoint(2) >bufferSize(2))
+        endPoint(2) = bufferSize(2);
+    end
 %     
     figure(2)
     imshow(mapBuffer)

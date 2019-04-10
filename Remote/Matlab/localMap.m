@@ -123,7 +123,6 @@ for y = 1:sizeMap(1)
     end
 end
 
-
 for k = 1: size(whiteSector)
     surroundings = getSurroundings(sizeKernel,whiteSector(k,:),localMap2);
     if(surroundings(1,:) <255 & surroundings(3,:)<255 & surroundings(2,1) <255 & surroundings(2,3) <255)
