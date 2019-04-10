@@ -19,15 +19,15 @@ R = Rz(orientation-pi())*Rx(pi());
 L = [0,0,0]';
 Tmat=TraMat3D(R,L);
 
-  for x = 1:size(lStart)     
-    rStart = [lStart(x,2),lStart(x,1),0,1]*Tmat;
-    lStart(x,1) = round(rStart(1)); 
-    lStart(x,2) = round(rStart(2)); 
-    
-    rEnd = [lEnd(x,2),lEnd(x,1),0,1]*Tmat;
-    lEnd(x,1) = round(rEnd(1)); 
-    lEnd(x,2) = round(rEnd(2));      
-  end  
+%   for x = 1:size(lStart)     
+%     rStart = [lStart(x,2),lStart(x,1),0,1]*Tmat;
+%     lStart(x,1) = round(rStart(1)); 
+%     lStart(x,2) = round(rStart(2)); 
+%     
+%     rEnd = [lEnd(x,2),lEnd(x,1),0,1]*Tmat;
+%     lEnd(x,1) = round(rEnd(1)); 
+%     lEnd(x,2) = round(rEnd(2));      
+%   end  
 
 if(min(min(lEnd(:,2),lStart(:,2)))<0)
     minX = abs(min(min(lEnd(:,2),lStart(:,2))))+freeSpace;

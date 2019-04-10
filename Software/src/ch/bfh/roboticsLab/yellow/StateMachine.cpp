@@ -339,13 +339,13 @@ void StateMachine::run() {
                     controller.setTranslationalVelocity(distanceToTarget*K2);
 
                     controller.setRotationalVelocity((deltaAngle)*K3);
-                    if(abs(deltaAngle)*K3>maxRotationalVelocity*0.1 && (deltaAngle)*K3>0)
+                    if(abs(deltaAngle)*K3>maxRotationalVelocity && (deltaAngle)*K3>0)
                     {
-                        controller.setRotationalVelocity(maxRotationalVelocity*0.1 );
+                        controller.setRotationalVelocity(maxRotationalVelocity );
                     }
-                    if(abs(deltaAngle)*K3>maxRotationalVelocity*0.1 && (deltaAngle)*K3<0)
+                    if(abs(deltaAngle)*K3>maxRotationalVelocity && (deltaAngle)*K3<0)
                     {
-                        controller.setRotationalVelocity(-maxRotationalVelocity*0.1 );
+                        controller.setRotationalVelocity(-maxRotationalVelocity );
                     }
 
                     if(abs(distanceToTarget*K2)>maxForwardVelocity)

@@ -39,7 +39,7 @@ public:
     static constexpr float MIN_RANGE_DISTANCE_DEFAULT = 200;
 
     /** Default maximum distance from a point to a line, in order for that point to belong to that line [mm]. */
-    static constexpr float MAX_LINE_IMPRECISION_DEFAULT = 150;
+    static constexpr float MAX_LINE_IMPRECISION_DEFAULT = 60;
 
     /** Default maximum angle between lines [deg]. */
     static constexpr float MAX_ANGLE_BETWEEN_LINES_DEFAULT = 170;

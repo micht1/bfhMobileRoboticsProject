@@ -29,7 +29,7 @@ LidarAnalysis::LidarAnalysis() :
 
 void LidarAnalysis::getScanPoints(const uint16_t &angleSteps) {   
     /** TODO (Ex4.2): Read the scan data and transform from polar to cartesian **/
-    Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
+   // Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
 
     rawScanPoints.clear();
     std::vector<int16_t> toAverage[NUMBER_OF_SCANS_TO_AVERAGE];
@@ -44,10 +44,12 @@ void LidarAnalysis::getScanPoints(const uint16_t &angleSteps) {
         for(unsigned int pointCount=0;pointCount<toAverage[numberOfScans].size();++pointCount)
         {
             rawPoints.at(pointCount) +=toAverage[numberOfScans].at(pointCount);
+
         }
+        toAverage[numberOfScans].clear();
     }
     /** Seperate For-Loop after summation because like that the error of dividing an int is smaller than in other methods      */
-    for (unsigned int pointsCount=0; pointsCount<NUMBER_OF_SCANS_TO_AVERAGE; ++pointsCount)
+    for (unsigned int pointsCount=0; pointsCount<rawPoints.size(); ++pointsCount)
     {
         rawPoints.at(pointsCount) = rawPoints.at(pointsCount)/NUMBER_OF_SCANS_TO_AVERAGE;
     }

@@ -103,7 +103,7 @@ private:
   static constexpr float WHEEL_DISTANCE = 0.18f;
   /** radius of wheels, given in [m] */
   static constexpr float WHEEL_RADIUS = 0.0375f;
-  /** frequency of lowpass filter for actual speed values, given in [rpm] */
+  /** frequency of lowpass filter for actual speed values, given in [rad/s] */
   static constexpr float LOWPASS_FILTER_FREQUENCY = 100.0f;
 
   /** Speed controller proportional gain [V/rpm] */
