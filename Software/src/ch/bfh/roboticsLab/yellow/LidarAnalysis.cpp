@@ -29,13 +29,30 @@ LidarAnalysis::LidarAnalysis() :
 
 void LidarAnalysis::getScanPoints(const uint16_t &angleSteps) {   
     /** TODO (Ex4.2): Read the scan data and transform from polar to cartesian **/
-    Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
+   // Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
 
     rawScanPoints.clear();
-    //con.printf("Angle:%d\r\n",angleSteps);
-    auto rawPoints = lidar.getDistances();
-    //con.printf("RAWPOINTsize:%d\r\n",rawPoints.size());
+    std::vector<int16_t> toAverage[NUMBER_OF_SCANS_TO_AVERAGE];
+    for(unsigned int numberOfScans=0;numberOfScans<NUMBER_OF_SCANS_TO_AVERAGE;++numberOfScans)
+    {
+        //con.printf("Angle:%d\r\n",angleSteps);
+        toAverage[numberOfScans] = lidar.getDistances();
+    }
+    auto rawPoints = toAverage[0];
+    for(unsigned int numberOfScans=1;numberOfScans<NUMBER_OF_SCANS_TO_AVERAGE;++numberOfScans)
+    {
+        for(unsigned int pointCount=0;pointCount<toAverage[numberOfScans].size();++pointCount)
+        {
+            rawPoints.at(pointCount) +=toAverage[numberOfScans].at(pointCount);
 
+        }
+        toAverage[numberOfScans].clear();
+    }
+    /** Seperate For-Loop after summation because like that the error of dividing an int is smaller than in other methods      */
+    for (unsigned int pointsCount=0; pointsCount<rawPoints.size(); ++pointsCount)
+    {
+        rawPoints.at(pointsCount) = rawPoints.at(pointsCount)/NUMBER_OF_SCANS_TO_AVERAGE;
+    }
     for(unsigned int pointsCount=0;pointsCount<rawPoints.size();pointsCount++)
     {
         Point tmpPoint;
@@ -84,34 +101,7 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
         //con.printf("loop:%d size:%d\r\n",pointCount,tmpContainer.size());
     }
     pointRegions.push_back(tmpContainer);
-    con.printf("size2:%d\r\n",pointRegions.size());
-    /*if(distance(pointRegions.front().back(),pointRegions.back().front())<minRangeDistance && pointRegions.size()>1)
-    {
-        pointRegions.front().insert(pointRegions.front().end(),pointRegions.back().begin(),pointRegions.back().end());
-        pointRegions.erase(pointRegions.end());
-    }*/
 
-    //con.printf("stage 1 complet");
-    con.printf("regionsize:%d\r\n",pointRegions.size());
-    for(unsigned int rangeCount=0;rangeCount<pointRegions.size();rangeCount++)
-    {
-        /*con.printf("first po+
-         * int: x%f y%f\r\n",pointRegions[rangeCount].front().x,pointRegions[rangeCount].front().y);
-        con.printf("second point: x%f y%f\r\n",pointRegions[rangeCount].back().x,pointRegions[rangeCount].back().y);
-        con.printf("size:%d\r\n",pointRegions[rangeCount].size());*/
-        //con.printf("Range %d\r\n",rangeCount);
-        for(unsigned int pointCount=0;pointCount<pointRegions.at(rangeCount).size();++pointCount)
-        {
-            //con.printf("%f %f;\r",pointRegions.at(rangeCount).at(pointCount).x,pointRegions.at(rangeCount).at(pointCount).y);
-        }
-        if(pointRegions[rangeCount].size()<=4)
-        {
-
-            //pointRegions.erase(pointRegions.begin()+rangeCount);
-        }
-    }
-    //con.printf("regionsize 2:%d\r\n",pointRegions.size());
-    //con.printf(" stage 2 complet\r\n \r\n");
     // TODO: Compare scan points next to each other:
     // --> If the points are "near" (use the `minRangeDistance` parameter), put them in the same point range.
     // --> If the points are further away, create a new point range.
@@ -135,9 +125,6 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
         bool doSplit=false;
         do
         {
-            //con.printf("size:%d\r\n",pointRegions.size());
-             //con.printf("at%d",pointRegions.at(rangeCount).size());
-            //con.printf("loop1:%d\r\n",rangeCount);
             unsigned int farestPoint=0;
             for(unsigned int pointCount=0;pointCount<pointRegions.at(rangeCount).size();++pointCount)
             {
@@ -202,18 +189,7 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
             pointRegions.erase(pointRegions.begin()+rangeCount);
         }
     }
-    for(unsigned int rangeCount=0;rangeCount<pointRegions.size();rangeCount++)
-    {
-        /*con.printf("first point: x%f y%f\r\n",pointRegions[rangeCount].front().x,pointRegions[rangeCount].front().y);
-        con.printf("second point: x%f y%f\r\n",pointRegions[rangeCount].back().x,pointRegions[rangeCount].back().y);
-        con.printf("size:%d\r\n",pointRegions[rangeCount].size());*/
-        con.printf("Range after Split %d\r\n",rangeCount);
 
-        for(unsigned int pointCount=0;pointCount<pointRegions.at(rangeCount).size();++pointCount)
-        {
-            con.printf("%f %f;\r",pointRegions.at(rangeCount).at(pointCount).x,pointRegions.at(rangeCount).at(pointCount).y);
-        }
-    }
     //con.printf("stage 3 complet");
     for(unsigned int tmCount=0;tmCount<pointRegions.size();tmCount++)
     {
@@ -238,7 +214,7 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
      **/
     for(unsigned int lineSegmentCount=0;lineSegmentCount<pointRegions.size();lineSegmentCount++)
     {
-        con.printf("merging %d\r\n",lineSegmentCount);
+        //con.printf("merging %d\r\n",lineSegmentCount);
         if(lineSegmentCount==0)
         {
             float lineLengthCurrent = distance(pointRegions.front().front(),pointRegions.front().back());
@@ -250,7 +226,7 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
             float angle = (vectorLineCurrent.x*vectorLinePrevious.x+vectorLineCurrent.y*vectorLinePrevious.y)/(lineLengthCurrent*lineLengthPrevious);
 
 
-            con.printf("merging2 %f\r\n",angle/util::RAD);
+            //con.printf("merging2 %f\r\n",angle/util::RAD);
             if(angle>(180-maxAngleBetweenLines)*util::RAD)
             {
                 PointContainer tmpPoints(pointRegions.back());
@@ -309,14 +285,14 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
         tmpLine.second = tmpLine.first;
         lines.push_back(tmpLine);
     }*/
-    con.printf("stage 7 complet");
+    //con.printf("stage 7 complet");
     // TODO: For each line segment inside the `pointRegions` variable you just filled..
     // TODO: .. extract the start and end points..
     // TODO: .. and create a variable of type `Line`.
     // TODO: Add those lines to the line container `lines` to be returned at the end of this method.
 
 
-    con.printf("sizeoflines:%d",lines.size());
+    //con.printf("sizeoflines:%d",lines.size());
     return lines;
 }
 

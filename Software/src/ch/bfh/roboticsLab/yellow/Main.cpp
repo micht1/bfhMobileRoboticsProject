@@ -109,6 +109,8 @@ private:
 
         while (true) {
           processIncomingTelecommand();
+          
+
         }
 
         console.printf("Done\r\n");

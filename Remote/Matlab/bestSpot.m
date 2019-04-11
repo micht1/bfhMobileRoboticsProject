@@ -1,10 +1,9 @@
 
-point1 = bestSpot1(gMap);
 
-function point = bestSpot1(globalMap)
+
+function point = bestSpot(globalMap)
 sizeMap = size(globalMap);
 percent = 5;
-imshow(globalMap)
 whitePoint = [0,0];
 cnt = 1;
 for c = 1:sizeMap(1)
@@ -24,16 +23,17 @@ random = randi([1 sizeWP(1)],numberOfPoints,1);
 sizeR = size(random);
 
 %360° directions
-directions = [0,0];%zeros(360,2);
+directions = [0,0];
 dCnt = 1;
-for x = 1:2:360
+for x = 1:10:360
 directions(dCnt,2)=cosd(x); %x
 directions(dCnt,1)=sind(x); %y  
 dCnt = dCnt +1;
 end
 directions = directions/1;
-sizeDirections=size(directions)
+sizeDirections=size(directions);
 greyPoints = zeros(numberOfPoints,1);
+
 
 for x = 1:sizeR(1)
     countGrey = 0;
@@ -43,7 +43,7 @@ for x = 1:sizeR(1)
     new = newPoint;
     old = new;
         while (1) 
-        new=directions(k,:)+new;    
+        new=directions(k,:)+new; 
         newPoint = round(new);      
         if(newPoint(1)<= sizeMap(1) & newPoint(2)<= sizeMap(2) & newPoint(1)>0 & newPoint(2)>0 )
             if(globalMap(newPoint(1),newPoint(2))==0)
@@ -52,7 +52,7 @@ for x = 1:sizeR(1)
                 old = newPoint;
                 countGrey=countGrey+1;
             end
-        else
+        else      
             break;
         end    
         end
@@ -70,14 +70,17 @@ if(greyPoints(x)>biggest)
 end
 end
 
+I = mat2gray(globalMap);
+
 if(biggest == 0)   
-point = [0,0];
+point = [0,0]
 else
-point = whitePoint(random(biggestCnt,:),:);
-globalMap(point(1),point(2))=150;
+point = whitePoint(random(biggestCnt,:),:)
+% globalMap(point(1),point(2))=150;
 end
 
-figure(2)
-imshow(globalMap)
 
+% figure(100)
+% imshow(globalMap)
+% imshow(I)
 end

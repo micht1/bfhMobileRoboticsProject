@@ -10,11 +10,8 @@
 % lStart1=round([1000,1000;-1000, 1000;-1000,-1000;1000,-1000]/100);
 % lEnd1=round([-1000,1000; -1000,-1000; 1000,-1000;1000,1000]/100);
 
-<<<<<<< HEAD:Remote/Matlab/globalMapTest.m
- robotCoordinate = [0,0,0;0,0,pi();25,25,0;100,100,pi()/2;75,0,pi();-50,-50,pi/2];
-=======
+
 %  robotCoordinate = [0,0,0;-100,1,pi();25,25,0;100,100,pi()/2;75,0,pi();-50,-50,pi/2];
->>>>>>> d839660c9e0792d76d526a81a1447a0cc4134b97:Remote/Matlab/globalMap.m
 %globalMap1 = 200;
 %newSize = [0,0];
 
@@ -28,10 +25,8 @@
 % imshow(gMap)
 % end
 
-clear 'globalMap2'
 
-
-function globalMap3 = globalMap2(lStart1,lEnd1,robotCoordinate)
+function globalMap3 = globalMap(lStart1,lEnd1,robotCoordinate,orientation)
 persistent firstFlag;
 persistent globalMap1;
 persistent globalMapZeroPoint;
@@ -42,9 +37,9 @@ if isempty(firstFlag)
         firstFlag = 0;
 end
 
-[map,zeroPoint] = localMap(lStart1,lEnd1,robotCoordinate(1,3));
-figure(1)
-imshow(map)
+[map,zeroPoint] = localMap(lStart1,lEnd1,orientation);
+% figure(1)
+% imshow(map)
 
 if(firstFlag == 0)
   globalMapZeroPoint = zeroPoint;
@@ -62,17 +57,10 @@ if(robotCoordinate(1,1)>=0)
 
     newSize(2) = robotCoordinate(1,1)+mapSize(2)-(zeroPoint(2)-globalMapZeroPoint(2));
     gMapStart(2)= globalMapZeroPoint(2)-oldGMapZp(2);
-<<<<<<< HEAD:Remote/Matlab/globalMapTest.m
-    if(globalMapZeroPoint(2)+robotCoordinate(1,1)<zeroPoint(2))    
-        globalMapZeroPoint(2) = zeroPoint(2);   
-        newSize(2) = robotCoordinate(1,1)+globalMapZeroPoint(2)+(globalMapSize(2)-oldGMapZp(2));
-        gMapStart(2)= globalMapZeroPoint(2)-oldGMapZp(2)%-robotCoordinate(1,1);
-=======
     if(globalMapZeroPoint(2)+robotCoordinate(1,1)<zeroPoint(2))
         globalMapZeroPoint(2) = zeroPoint(2);
         newSize(2) = robotCoordinate(1,1)+globalMapZeroPoint(2)+(globalMapSize(2)-oldGMapZp(2));
         gMapStart(2)= globalMapZeroPoint(2)-oldGMapZp(2);%-robotCoordinate(1,1);
->>>>>>> d839660c9e0792d76d526a81a1447a0cc4134b97:Remote/Matlab/globalMap.m
     end
 
     startPoint(2)= globalMapZeroPoint(2)+robotCoordinate(1,1)-zeroPoint(2);
@@ -81,44 +69,26 @@ if(robotCoordinate(1,1)>=0)
 end
 
 if(robotCoordinate(1,2)>=0)
-
     newSize(1) = robotCoordinate(1,2)+mapSize(1)-(zeroPoint(1)-globalMapZeroPoint(1));
     gMapStart(1)= globalMapZeroPoint(1)-oldGMapZp(1);
-<<<<<<< HEAD:Remote/Matlab/globalMapTest.m
-    if(globalMapZeroPoint(1)+robotCoordinate(1,2)<zeroPoint(1))    
-        globalMapZeroPoint(1) = zeroPoint(1);     
-        newSize(1) = robotCoordinate(1,2)+globalMapZeroPoint(1)+(globalMapSize(1)-oldGMapZp(1));
-        gMapStart(1)= globalMapZeroPoint(1)-oldGMapZp(1)%-robotCoordinate(1,2);
-=======
     if(globalMapZeroPoint(1)+robotCoordinate(1,2)<zeroPoint(1))
         globalMapZeroPoint(1) = zeroPoint(1);
         newSize(1) = robotCoordinate(1,2)+globalMapZeroPoint(1)+(globalMapSize(1)-oldGMapZp(1));
         gMapStart(1)= globalMapZeroPoint(1)-oldGMapZp(1);%-robotCoordinate(1,2);
->>>>>>> d839660c9e0792d76d526a81a1447a0cc4134b97:Remote/Matlab/globalMap.m
     end
 
     startPoint(1)= globalMapZeroPoint(1)+robotCoordinate(1,2)-zeroPoint(1);
-<<<<<<< HEAD:Remote/Matlab/globalMapTest.m
     endPoint(1) = globalMapZeroPoint(1)+robotCoordinate(1,2)-zeroPoint(1)+mapSize(1);  
-
 end
-=======
-    endPoint(1) = globalMapZeroPoint(1)+robotCoordinate(1,2)-zeroPoint(1)+mapSize(1);
 
-end
 
 if(robotCoordinate(1,1)<0)
     newSize(2) = abs(robotCoordinate(1,1))+zeroPoint(2)+globalMapSize(2)-globalMapZeroPoint(2);
->>>>>>> d839660c9e0792d76d526a81a1447a0cc4134b97:Remote/Matlab/globalMap.m
-
     if(globalMapZeroPoint(2)<abs(robotCoordinate(1,1))+zeroPoint(2))
         globalMapZeroPoint(2)=abs(robotCoordinate(1,1))+zeroPoint(2);
 %         newZeroPoint(2) = robotCoordinate(x,1)
-<<<<<<< HEAD:Remote/Matlab/globalMapTest.m
     end  
-=======
-    end
->>>>>>> d839660c9e0792d76d526a81a1447a0cc4134b97:Remote/Matlab/globalMap.m
+
     gMapStart(2)= globalMapZeroPoint(2)-(oldGMapZp(2))
     startPoint(2)= globalMapZeroPoint(2)+robotCoordinate(1,1)-zeroPoint(2);
     endPoint(2)= globalMapZeroPoint(2)+robotCoordinate(1,1)-zeroPoint(2)+mapSize(2);
@@ -147,40 +117,9 @@ end
 
 mapBuffer = uint8(zeros(newSize(1),newSize(2))+200);
 bufferSize = size(mapBuffer);
-figure(3)
-imshow(mapBuffer)
-<<<<<<< HEAD:Remote/Matlab/globalMapTest.m
-    
-% if(robotCoordinate(1,2)>=0)
-%     gMapStart(1)= globalMapZeroPoint(1)-oldGMapZp(1)-robotCoordinate(1,2);
-% else
-%     gMapStart(1)= globalMapZeroPoint(1)-(oldGMapZp(1));
-% end
-% 
-% if(robotCoordinate(1,1)>=0)
-%     %
-%     gMapStart(2)= globalMapZeroPoint(2)-oldGMapZp(2)-robotCoordinate(1,1);
-% else
-%     gMapStart(2)= globalMapZeroPoint(2)-(oldGMapZp(2));  %bufferSize(2)-globalMapSize(2);
-% end  
-
-   oldZeroPoint = zeroPoint;
-
-    mapBuffer(gMapStart(1)+1:gMapStart(1)+globalMapSize(1),gMapStart(2)+1:gMapStart(2)+globalMapSize(2)) = globalMap1; 
-    %oldZeroPoint = zeroPoint;    
-    rcount = 1;
-    ccount = 1;
-    
-    
-    if(endPoint(1) >bufferSize(1))
-        endPoint(1) = bufferSize(1);
-    end
-    
-    if(endPoint(2) >bufferSize(2))
-        endPoint(2) = bufferSize(2);
-    end
-%     
-=======
+% figure(3)
+% imshow(mapBuffer)
+     
 
 % if(robotCoordinate(1,2)>=0)
 %     gMapStart(1)= globalMapZeroPoint(1)-oldGMapZp(1)-robotCoordinate(1,2);
@@ -207,9 +146,9 @@ imshow(mapBuffer)
     if(endPoint(2) > bufferSize(2))
         endPoint(2)=bufferSize(2);
     end
->>>>>>> d839660c9e0792d76d526a81a1447a0cc4134b97:Remote/Matlab/globalMap.m
-    figure(2)
-    imshow(mapBuffer)
+    
+%     figure(2)
+%     imshow(mapBuffer)
     for c = startPoint(1)+1:endPoint(1)
         for r = startPoint(2)+1:endPoint(2)
             if(mapBuffer(c,r) == 200)
