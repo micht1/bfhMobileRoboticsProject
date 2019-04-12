@@ -6,6 +6,8 @@
 
 #include <cmath>
 
+#include <ch/bfh/roboticsLab/yellow/Console.h>
+
 
 #include <ch/bfh/roboticsLab/yellow/Controller.h>
 #include <ch/bfh/roboticsLab/yellow/Peripherals.h>
@@ -22,7 +24,7 @@ Controller& Controller::getInstance() {
 }
 
 Controller::Controller() :
-    RealtimeThread(PERIOD, osPriorityHigh, STACK_SIZE), translationalVelocity(0.0f), rotationalVelocity(0.0f),totalErrorLeft(0.0f),totalErrorRight(0.0f), x(0.0f), y(0.0f),alpha(0.0f),oldTranslationalVelocity(0) {
+    RealtimeThread(PERIOD, osPriorityHigh, STACK_SIZE), translationalVelocity(0.0f), rotationalVelocity(0.0f),totalErrorLeft(0.0f),totalErrorRight(0.0f), x(0.0f), y(0.0f),alpha(0.0f),oldVelocityLeft(0.0f),oldVelocityRight(0.0f){
 
   // Configure PWM
   peripherals::pwmLeft.period(0.00005f);
@@ -95,6 +97,7 @@ float Controller::getAlpha() {
 }
 
 void Controller::run() {
+    Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
 
   while (waitForNextPeriod()) {
 
@@ -114,13 +117,29 @@ void Controller::run() {
       // TODO: Calculate the encoder counts of the last period
       // TODO: Update the "previous" encoder counts
       // TODO: Calculate the current wheel motor speeds in [rpm] ('actualSpeedLeft' & 'actualSpeedRight')
-      float encoderCountsLeft = peripherals::counterLeft.read();
-      float encoderCountsRight = peripherals::counterRight.read();
+      int16_t encoderCountsLeft = peripherals::counterLeft.read();
+      int16_t encoderCountsRight = peripherals::counterRight.read();
       float actualSpeedLeft = ((encoderCountsLeft-previousValueCounterLeft)/(PERIOD*peripherals::COUNTS_PER_TURN))*60.0f;
       float actualSpeedRight = -((encoderCountsRight-previousValueCounterRight)/(PERIOD*peripherals::COUNTS_PER_TURN))*60.0f;
       previousValueCounterLeft = encoderCountsLeft;
       previousValueCounterRight = encoderCountsRight;
-
+      if(abs(oldVelocityLeft-actualSpeedLeft)>1500)
+      {
+        con.printf("%f\r\n",abs(oldVelocityLeft-actualSpeedLeft));
+        actualSpeedLeft = oldVelocityLeft;
+      }
+      else
+      {
+        oldVelocityLeft= actualSpeedLeft;
+      }
+      if(abs(oldVelocityRight-actualSpeedRight)>1500)
+      {
+         actualSpeedRight = oldVelocityRight;
+      }
+      else
+      {
+        oldVelocityRight=actualSpeedRight;
+      }
       actualSpeedLeft=Controller::speedLeftFilter.filter(actualSpeedLeft);
       actualSpeedRight=Controller::speedRightFilter.filter(actualSpeedRight);
       //Counter overflow might lead to undefined behaviour
@@ -189,14 +208,6 @@ void Controller::run() {
 
       // TODO: Calculate the 'actualTranslationalVelocity' and 'actualRotationalVelocity' using the kinematic model
       float actualTranslationVelocity = (0.5f*(actualSpeedLeft+actualSpeedRight)*2*WHEEL_RADIUS*M_PI)/60.0f;
-      if(abs(actualTranslationVelocity)>1.5f)
-      {
-          actualTranslationVelocity=oldTranslationalVelocity;
-      }
-      else if(abs(actualTranslationVelocity)<1.5f)
-      {
-        oldTranslationalVelocity=actualTranslationVelocity;
-      }
       float actualRotationVelocity = (1/(WHEEL_DISTANCE)*((actualSpeedRight-actualSpeedLeft)*2*WHEEL_RADIUS*M_PI))/60.0f;
       /*if(abs(actualRotationVelocity)>1.5f)
       {

@@ -144,9 +144,9 @@ private:
     /** Position control constant K1. */
     static constexpr float K1 = 8.0f;
     /** Position control constant K2. */
-    static constexpr float K2 = 8.0f;
+    static constexpr float K2 = 2.0f;
     /** Position control constant K3. */
-    static constexpr float K3 = 10.0f;
+    static constexpr float K3 = 5.0f;
     /** Position control desired x [m]. */
     float xDesired;
     /** Position control desired y [m]. */

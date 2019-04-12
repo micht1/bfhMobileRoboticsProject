@@ -27,7 +27,7 @@
 
 
 
-function globalMap3 = globalMap2(lStart1,lEnd1,robotCoordinate)
+function globalMap3 = globalMap(lStart1,lEnd1,robotCoordinate)
 persistent firstFlag;
 persistent globalMap1;
 persistent globalMapZeroPoint;

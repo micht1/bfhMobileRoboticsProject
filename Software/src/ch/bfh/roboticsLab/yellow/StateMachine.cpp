@@ -87,7 +87,7 @@ void StateMachine::run() {
 
     peripherals::enableIRSensors = 1;
     float distance[peripherals::N_IRs];
-    Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
+    //Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
 
     while (waitForNextPeriod()) {
 

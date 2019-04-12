@@ -79,29 +79,29 @@ yellow.set('state { stateName: OFF }')
 
 %% Example usage of getLidarLines function
 % Get Lidar lines
-for l=1:1
-    tic
-    [lStart, lEnd] = getLidarLines(yellow);
-    toc
-    figure(20)
-    clf
-    % Draw Robo
-    plot([90 90 -120 -120 90], [90 -90 -90 90 90], 'r');
-    hold on
-    plot([0 120], [0 0], 'r');
-    length(lStart)
-    length(lEnd)
-    for k=1:length(lStart)
-        plot([lStart(k,1) lEnd(k,1)], [lStart(k,2) lEnd(k,2)],'+-r')
-        hold on
-        lStart
-        lEnd
-    end
-    grid on
-    axis equal
-    drawnow
-end
-
+% for l=1:1
+%     tic
+%     [lStart, lEnd] = getLidarLines(yellow);
+%     toc
+%     figure(20)
+%     clf
+%     % Draw Robo
+%     plot([90 90 -120 -120 90], [90 -90 -90 90 90], 'r');
+%     hold on
+%     plot([0 120], [0 0], 'r');
+%     length(lStart)
+%     length(lEnd)
+%     for k=1:length(lStart)
+%         plot([lStart(k,1) lEnd(k,1)], [lStart(k,2) lEnd(k,2)],'+-r')
+%         hold on
+%         lStart
+%         lEnd
+%     end
+%     grid on
+%     axis equal
+%     drawnow
+% end
+%% do map
 %yellow.set('state { stateName: AUTO_REACTIVE }')
 % 
 clear 'globalMap'
@@ -149,3 +149,28 @@ lEnd1 = round(lEnd/100);
 gMap = globalMap(lStart1,lEnd1,robotCoordinate);
 figure(11)
 imshow(gMap)
+
+
+%% Movment test
+
+yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 1, y: 0, alpha: 0}')
+pause(10)
+yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: -1, y: 0, alpha: 0}')
+pause(10)
+yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 0, y: 0, alpha: 0}')
+pause(10)
+yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 0, y: 1, alpha: 0}')
+pause(10)
+yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 0, y: -1, alpha: 0}')
+pause(10)
+yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 0, y: 0, alpha: 0}')
+pause(10)
+
+%% velocitiy test
+yellow.set('state{stateName: MANUAL}')
+
+% You may append commands, so they will be sent to the robot one after the other
+% Set the velocities for manual mode: linear and angular speed
+yellow.append('velocities{linearSpeed:0.5, angularSpeed:0}')
+%test velocity without filter in controller.h, take out the motionplaner in
+%controller

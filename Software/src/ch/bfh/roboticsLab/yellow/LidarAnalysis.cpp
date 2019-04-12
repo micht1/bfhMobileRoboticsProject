@@ -94,7 +94,7 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
         if(distance(rawScanPoints.at(pointCount-1),rawScanPoints.at(pointCount))>minRangeDistance)
         {
             pointRegions.push_back(tmpContainer);
-            con.printf("entered if %d\r\n",pointCount);
+            //con.printf("entered if %d\r\n",pointCount);
             tmpContainer.clear();
         }
         tmpContainer.push_back(rawScanPoints.at(pointCount));
@@ -285,7 +285,7 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
         tmpLine.second = tmpLine.first;
         lines.push_back(tmpLine);
     }*/
-    //con.printf("stage 7 complet");
+    con.printf("stage 7 complet");
     // TODO: For each line segment inside the `pointRegions` variable you just filled..
     // TODO: .. extract the start and end points..
     // TODO: .. and create a variable of type `Line`.
