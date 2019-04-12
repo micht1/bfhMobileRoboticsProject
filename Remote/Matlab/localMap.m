@@ -7,27 +7,29 @@ function [map,zeroPoint] = localMap(lStart,lEnd,orientation)
 load('workspaceVariables.mat')
 freeSpace = 5;
 sizeKernel = 3;
+factor = 1000;
 %imshow(localMap1);
-
 t = cputime;
 robotCoordinate = [0,0];
 
 %% Draw local Map as Matrix
 %angle = atan2(lEnd(1,1)-lStart(1,1),lEnd(1,2)-lStart(1,2));
 %angle = 0;
-R = Rz(orientation-pi())*Rx(pi());
+%orientation = 0;
+% R = Rz(-orientation)*Ry(pi());
+R = Rz(-orientation);
 L = [0,0,0]';
 Tmat=TraMat3D(R,L);
 
-%   for x = 1:size(lStart)     
-%     rStart = [lStart(x,2),lStart(x,1),0,1]*Tmat;
-%     lStart(x,1) = round(rStart(1)); 
-%     lStart(x,2) = round(rStart(2)); 
-%     
-%     rEnd = [lEnd(x,2),lEnd(x,1),0,1]*Tmat;
-%     lEnd(x,1) = round(rEnd(1)); 
-%     lEnd(x,2) = round(rEnd(2));      
-%   end  
+  for x = 1:size(lStart)     
+    rStart = [lStart(x,1),lStart(x,2),0,1]*Tmat;
+    lStart(x,1) = round(rStart(1)); 
+    lStart(x,2) = round(rStart(2)); 
+    
+    rEnd = [lEnd(x,1),lEnd(x,2),0,1]*Tmat;
+    lEnd(x,1) = round(rEnd(1)); 
+    lEnd(x,2) = round(rEnd(2));      
+  end  
 
 if(min(min(lEnd(:,2),lStart(:,2)))<0)
     minX = abs(min(min(lEnd(:,2),lStart(:,2))))+freeSpace;
@@ -47,18 +49,20 @@ lStart(:,2)=lStart(:,2)+abs(minX);
 lEnd(:,1)=lEnd(:,1)+abs(minY);
 lEnd(:,2)=lEnd(:,2)+abs(minX);
 
-robotCoordinate(1) = robotCoordinate(:,1)+abs(minY);
-robotCoordinate(2) = robotCoordinate(:,2)+abs(minX);
+robotCoordinate(1) = round(robotCoordinate(:,1)+abs(minY));
+robotCoordinate(2) = round(robotCoordinate(:,2)+abs(minX));
 
 %minX = min(min(lEnd(:,2),lStart(:,2)))-freeSpace;
 %minY = min(min(lEnd(:,1),lStart(:,1)))-freeSpace;
-maxX = max(max(lEnd(:,2),lStart(:,2)))+freeSpace;
-maxY = max(max(lEnd(:,1),lStart(:,1)))+freeSpace;
+maxX = max(max(lEnd(:,2),lStart(:,2)),robotCoordinate(:,2))+freeSpace;
+maxY = max(max(lEnd(:,1),lStart(:,1)),robotCoordinate(:,1))+freeSpace;
 
-localMap2 = uint8(zeros(maxY,maxX)+200);
+localMap2 = uint8(zeros(max(maxY),max(maxX))+200);
+sizeStart = size(lStart);
 
-for k = 1:size(lStart())
-   direction=(lEnd(k,:)-lStart(k,:))/1000;
+
+for k = 1:sizeStart(1)
+   direction=(lEnd(k,:)-lStart(k,:))/factor;
    newPoint = lStart(k,:);
    %lineArray = zeros(2,2);
    cnt = 1;
@@ -89,7 +93,7 @@ for y = 1:sizeMap(1)
 end
 
 for k = 1:size(linePoints)
-   direction=(robotCoordinate-linePoints(k,:))/1000;
+   direction=(robotCoordinate-linePoints(k,:))/factor;
    newPoint = linePoints(k,:);
    %lineArray = zeros(2,2);
    cnt = 1;
@@ -122,14 +126,13 @@ for y = 1:sizeMap(1)
         end
     end
 end
-
-
-for k = 1: size(whiteSector)
-    surroundings = getSurroundings(sizeKernel,whiteSector(k,:),localMap2);
-    if(surroundings(1,:) <255 & surroundings(3,:)<255 & surroundings(2,1) <255 & surroundings(2,3) <255)
-    localMap2(whiteSector(k,1),whiteSector(k,2))=200;
-    end
-end
+% for k = 1: size(whiteSector)
+%     k
+%     surroundings = getSurroundings(sizeKernel,whiteSector(k,:),localMap2);
+%     if(surroundings(1,:) <255 & surroundings(3,:)<255 & surroundings(2,1) <255 & surroundings(2,3) <255)
+%     localMap2(whiteSector(k,1),whiteSector(k,2))=200;
+%     end
+% end
 
 %localMap2(robotCoordinate(1),robotCoordinate(2)) = 230;
 % time = cputime-t
@@ -145,7 +148,7 @@ end
 function kernel = getSurroundings(sizeKernel,currentPosition,map)
 kernel= zeros(sizeKernel,sizeKernel);
 for n = 1:sizeKernel
-    for i = 1:sizeKernel    
+    for i = 1:sizeKernel       
          kernel(n,i) = map(currentPosition(1)-(sizeKernel-1-n),currentPosition(2)-(sizeKernel-1-i));
     end  
 end
