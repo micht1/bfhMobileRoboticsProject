@@ -37,7 +37,7 @@ if isempty(firstFlag)
         firstFlag = 0;
 end
 
-[map,zeroPoint] = localMap(lStart1,lEnd1,orientation);
+[map,zeroPoint] = localMap(lStart1,lEnd1,orientation,1);
 % figure(1)
 % imshow(map)
 
@@ -89,7 +89,7 @@ if(robotCoordinate(1,1)<0)
 %         newZeroPoint(2) = robotCoordinate(x,1)
     end  
 
-    gMapStart(2)= globalMapZeroPoint(2)-(oldGMapZp(2))
+    gMapStart(2)= globalMapZeroPoint(2)-(oldGMapZp(2));
     startPoint(2)= globalMapZeroPoint(2)+robotCoordinate(1,1)-zeroPoint(2);
     endPoint(2)= globalMapZeroPoint(2)+robotCoordinate(1,1)-zeroPoint(2)+mapSize(2);
 end
@@ -114,6 +114,11 @@ end
 if(newSize(2)<globalMapSize(2))
      newSize(2) = globalMapSize(2);
 end
+
+% newSize(1) = newSize(1)+5;
+% newSize(2) = newSize(2)+5;
+
+
 
 mapBuffer = uint8(zeros(newSize(1),newSize(2))+200);
 bufferSize = size(mapBuffer);

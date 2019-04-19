@@ -58,7 +58,7 @@ yellow.set('state { stateName: OFF }')
 
 
 %% Example usage of getLidar function
-% Retrieve Lidar data for every 2 degrees
+% % Retrieve Lidar data for every 2 degrees
 %  yellow.set('requestLidarData: 1');
 % %
 % % The matlab functin 'getLidar' retrieves Lidar data and assigns the result to an array
@@ -77,115 +77,140 @@ yellow.set('state { stateName: OFF }')
 
 
 
-%% Example usage of getLidarLines function
-% Get Lidar lines
-for l=1:1
-    tic
-    [lStart, lEnd] = getLidarLines(yellow);
-    toc
-    figure(20)
-    clf
-    % Draw Robo
-    plot([90 90 -120 -120 90], [90 -90 -90 90 90], 'r');
-    hold on
-    plot([0 120], [0 0], 'r');
-    length(lStart)
-    length(lEnd)
-    for k=1:length(lStart)
-        plot([lStart(k,1) lEnd(k,1)], [lStart(k,2) lEnd(k,2)],'+-r')
-        hold on
-        lStart
-        lEnd
-    end
-    grid on
-    axis equal
-    drawnow
-end
+% Example usage of getLidarLines function
+%Get Lidar lines
 
-%yellow.set('state { stateName: AUTO_REACTIVE }')
+
+
+
+
+% for l=1:1
+%     tic
+%     [lStart, lEnd] = getLidarLines(yellow);
+%     toc
+%     figure(20)
+%     clf
+%     % Draw Robo
+%     plot([90 90 -120 -120 90], [90 -90 -90 90 90], 'r');
+%     hold on
+%     plot([0 120], [0 0], 'r');
+%     length(lStart)
+%     length(lEnd)
+%     for k=1:length(lStart)
+%         plot([lStart(k,1) lEnd(k,1)], [lStart(k,2) lEnd(k,2)],'+-r')
+%         hold on
+%         lStart
+%         lEnd
+%     end
+%     grid on
+%     axis equal
+%     drawnow
+% end
 % 
-clear 'globalMap'
-[lStart, lEnd] = getLidarLines(yellow);
-telemetry = yellow.receive;
-robotCoordinate = int8(zeros(1,2));
-robotCoordinate(1,2)= int8(round(telemetry.odometry.pose.x*10));
-robotCoordinate(1,1)= int8(round(telemetry.odometry.pose.y*10));
-orientation= (telemetry.odometry.pose.alpha);
+% %
 
-lStart1 = round(lStart/100);
-lEnd1 = round(lEnd/100);
-gMap = globalMap(lStart1,lEnd1,robotCoordinate,orientation);
-
-point = bestSpot(gMap);
-gMap(point(1),point(2))=100;
-
-figure(9)
-imshow(gMap)
-pause(3)
-%yellow.set('state { stateName: OFF }')
-% yellow.append('state { stateName: ON }')
-xPosition =1.0;
-yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 1.0, y: 0, alpha: -1.507}')
-pause(10)
-[lStart, lEnd] = getLidarLines(yellow);
-telemetry = yellow.receive;
-robotCoordinate = int8(zeros(1,2));
-robotCoordinate(1,2)= int8(round(telemetry.odometry.pose.x*10))
-robotCoordinate(1,1)= int8(round(telemetry.odometry.pose.y*10))
-orientation= (telemetry.odometry.pose.alpha)
-
-lStart1 = round(lStart/100);
-lEnd1 = round(lEnd/100);
-gMap = globalMap(lStart1,lEnd1,robotCoordinate,orientation);
-
-point = bestSpot(gMap);
-gMap(point(1),point(2))=100;
-
-figure(10)
-imshow(gMap)
-yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 1, y: -2, alpha: -3.14}')
-pause(10)
-[lStart, lEnd] = getLidarLines(yellow);
-telemetry = yellow.receive;
-robotCoordinate = int8(zeros(1,2));
-robotCoordinate(1,2)= int8(round(telemetry.odometry.pose.x*10))
-robotCoordinate(1,1)= int8(round(telemetry.odometry.pose.y*10))
-orientation= (telemetry.odometry.pose.alpha)
-
-lStart1 = round(lStart/100);
-lEnd1 = round(lEnd/100);
-gMap = globalMap(lStart1,lEnd1,robotCoordinate,orientation);
-
-point = bestSpot(gMap);
-gMap(point(1),point(2))=100;
-
-figure(11)
-imshow(gMap)
-
-yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 0.0, y: -2, alpha: -3.14}')
-pause(10)
-[lStart, lEnd] = getLidarLines(yellow);
-telemetry = yellow.receive;
-robotCoordinate = int8(zeros(1,2));
-robotCoordinate(1,2)= int8(round(telemetry.odometry.pose.x*10))
-robotCoordinate(1,1)= int8(round(telemetry.odometry.pose.y*10))
-orientation= (telemetry.odometry.pose.alpha)
-
-lStart1 = round(lStart/100);
-lEnd1 = round(lEnd/100);
-gMap = globalMap(lStart1,lEnd1,robotCoordinate,orientation);
-figure(12)
-imshow(gMap)
-
-
-% pause(20)
+%load('workspaceVariables.mat')
+% yellow.set('state { stateName: OFF}');
+% % 
+% clear 'globalMap'
+% [lStart, lEnd] = getLidarLines(yellow);
+% telemetry = yellow.receive;
+% robotCoordinate = int8(zeros(1,2));
+% robotCoordinate(1,2)= int8(round(telemetry.odometry.pose.x*10));
+% robotCoordinate(1,1)= int8(round(telemetry.odometry.pose.y*10));
+% orientation= (telemetry.odometry.pose.alpha);
 % 
-% [lStart1, lEnd1] = getLidarLines(yellow);
-% pause(2)
-% [coordinate,alpha] = localisation(lStart1,lEnd1,gMap);
+% lStart1 = round(lStart/100);
+% lEnd1 = round(lEnd/100);
+% gMap = globalMap(lStart1,lEnd1,robotCoordinate,orientation);
 % 
-% gMap(coordinate(2),coordinate(1))=100;
-% alpha
+% point = bestSpot(gMap);
+% gMap(point(1),point(2))=100;
 % 
-% figure(25)
+% figure(9)
 % imshow(gMap)
+% pause(3)
+% %yellow.set('state { stateName: OFF }')
+% % yellow.append('state { stateName: ON }')
+% xPosition =1.0;
+% yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 1.0, y: 0, alpha: -1.507}')
+% pause(10)
+% yellow.set('state { stateName: OFF}');
+% [lStart, lEnd] = getLidarLines(yellow);
+% telemetry = yellow.receive;
+% robotCoordinate = int8(zeros(1,2));
+% robotCoordinate(1,2)= int8(round(telemetry.odometry.pose.x*10))
+% robotCoordinate(1,1)= int8(round(telemetry.odometry.pose.y*10))
+% orientation= (telemetry.odometry.pose.alpha)
+% 
+% lStart1 = round(lStart/100);
+% lEnd1 = round(lEnd/100);
+% gMap = globalMap(lStart1,lEnd1,robotCoordinate,orientation);
+% 
+% point = bestSpot(gMap);
+% gMap(point(1),point(2))=100;
+% 
+% figure(10)
+% imshow(gMap)
+% yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 1, y: -2, alpha: -3.14}')
+% pause(10)
+% yellow.set('state { stateName: OFF}');
+% [lStart, lEnd] = getLidarLines(yellow);
+% telemetry = yellow.receive;
+% robotCoordinate = int8(zeros(1,2));
+% robotCoordinate(1,2)= int8(round(telemetry.odometry.pose.x*10))
+% robotCoordinate(1,1)= int8(round(telemetry.odometry.pose.y*10))
+% orientation= (telemetry.odometry.pose.alpha)
+% 
+% lStart1 = round(lStart/100);
+% lEnd1 = round(lEnd/100);
+% gMap = globalMap(lStart1,lEnd1,robotCoordinate,orientation);
+% 
+% point = bestSpot(gMap);
+% %gMap(point(1),point(2))=100;
+% 
+% figure(11)
+% imshow(gMap)
+% 
+% yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 0.0, y: -2, alpha: -3.14}')
+% pause(10)
+% yellow.set('state { stateName: OFF}');
+% [lStart, lEnd] = getLidarLines(yellow);
+% telemetry = yellow.receive;
+% robotCoordinate = int8(zeros(1,2));
+% robotCoordinate(1,2)= int8(round(telemetry.odometry.pose.x*10))
+% robotCoordinate(1,1)= int8(round(telemetry.odometry.pose.y*10))
+% orientation= (telemetry.odometry.pose.alpha)
+% 
+% lStart1 = round(lStart/100);
+% lEnd1 = round(lEnd/100);
+% gMap = globalMap(lStart1,lEnd1,robotCoordinate,orientation);
+% figure(12)
+% imshow(gMap)
+
+%yellow.set('state { stateName: OFF}');
+%[lStart1, lEnd1] = getLidarLines(yellow);
+% pause(2)
+
+ lStart1 = round([-1000 ,-2000;2000,-2000;2000,2000; 1500,1500;-600 ,1000;-1000, 1000;-600,1000;1500,1500 ]/100);
+ lEnd1 =   round([2000  ,-2000;2000, 2000;1500,2000; -600,1500;-1000,1000;-1000,-2000;-600,1500;1500,2000]/100);
+
+robotCoordinate = [0,0];
+orientation = 0;
+gMap = globalMap(lStart1,lEnd1,robotCoordinate,orientation);
+
+lStart2 = round([  100,1500;-600 ,1000;-1000,1000]);
+lEnd2 =   round([  500,1500;-1000,1000;-1000,100]);
+lStart3 = round(lStart2/100);
+lEnd3 = round(lEnd2/100);
+t = cputime;
+[coordinate,alpha] = localisation(lStart3,lEnd3,gMap);
+time = cputime-t
+
+
+gMap(coordinate(2),coordinate(1))=100;
+alpha
+coordinate
+% 
+figure(25)
+imshow(gMap)
