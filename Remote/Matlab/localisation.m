@@ -56,9 +56,13 @@ end
 end
 
 matchSize=size(match);
-
+posSize = size(possibilityMap);
 for cnt = 1:matchSize(1)
-    possibilityMap(match(cnt,1),match(cnt,2)) = possibilityMap(match(cnt,1),match(cnt,2))+match(cnt,3)*possibilityMap(match(cnt,1),match(cnt,2)); 
+    if((match(cnt,1)>0) & (match(cnt,2)>0))
+        if((match(cnt,1)<posSize(1)) & (match(cnt,2)<posSize(2)))
+            possibilityMap(match(cnt,1),match(cnt,2)) = possibilityMap(match(cnt,1),match(cnt,2))+match(cnt,3)*possibilityMap(match(cnt,1),match(cnt,2));
+        end
+    end
 end
 
 
@@ -83,12 +87,18 @@ possibilityMap = possibilityMap./max(maxP);
 % yoffSet = ypeak-size(localIm,1);
 % xoffSet = xpeak-size(localIm,2);
 
+
 coordinate = [0,0];
 % coordinate(2) = match(column,1);
 % coordinate(1) = match(column,2);
 
 coordinate(2) = yPoint;
 coordinate(1) = xPoint;
+
+% coordinate = zeros(length(column),2);
+% coordinate(:,2) = match(column,1);
+% coordinate(:,1) = match(column,2);
+
 orientation = match(column,4);
 
 end

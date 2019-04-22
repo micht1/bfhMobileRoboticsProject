@@ -82,26 +82,26 @@ yellow.set('state { stateName: OFF }')
 %% Example usage of getLidarLines function
 % Get Lidar lines
 % for l=1:1
-%     tic
-%     [lStart, lEnd] = getLidarLines(yellow);
-%     toc
-%     figure(20)
-%     clf
-%     % Draw Robo
-%     plot([90 90 -120 -120 90], [90 -90 -90 90 90], 'r');
-%     hold on
-%     plot([0 120], [0 0], 'r');
-%     length(lStart)
-%     length(lEnd)
-%     for k=1:length(lStart)
-%         plot([lStart(k,1) lEnd(k,1)], [lStart(k,2) lEnd(k,2)],'+-r')
-%         hold on
-%         lStart
-%         lEnd
-%     end
-%     grid on
-%     axis equal
-%     drawnow
+    tic
+    [lStart, lEnd] = getLidarLines(yellow);
+    toc
+    figure(20)
+    clf
+    % Draw Robo
+    plot([90 90 -120 -120 90], [90 -90 -90 90 90], 'r');
+    hold on
+    plot([0 120], [0 0], 'r');
+    length(lStart)
+    length(lEnd)
+    for k=1:length(lStart)
+        plot([lStart(k,1) lEnd(k,1)], [lStart(k,2) lEnd(k,2)],'+-r')
+        hold on
+        lStart
+        lEnd
+    end
+    grid on
+    axis equal
+    drawnow
 % end
 %% do map
 %yellow.set('state { stateName: AUTO_REACTIVE }')
@@ -265,7 +265,9 @@ yellow.set('state { stateName: OFF }')
 %% Movment test
 
 driveToPosition(1,0,0,yellow);
+
 pause(10)
+
 driveToPosition(-1,0,0,yellow);
 pause(10)
 driveToPosition(0,0,0,yellow);
@@ -326,7 +328,7 @@ while(doMapping==true)
     viaCnt=1;
     matSize=size(viaPoints)
     while(viaCnt<=matSize(1))
-        driveToPosition(viaPoints(viaCnt,2),viaPoints(viaCnt,1),0,yellow);
+        driveToPosition(viaPoints(viaCnt,2),viaPoints(viaCnt,1),viaPoints(viaCnt,3),yellow);
         pause(10)
         viaCnt=viaCnt+1;
     end
@@ -337,21 +339,71 @@ end
 
 
 %% drive to target
-targetPoint=[0 0 0];
-
+clear 'globalMap'
+targetPoint=[0 0];
+targetOrientation =0;
+yellowString = sprintf('correctedPose: { x: %f, y: %f, alpha: %f}',0,0,0);
+yellow.set(yellowString);
+pause(2)
 yellow.set('state{stateName: OFF}')
 pause(2)
 [lStartLoc, lEndLoc] = getLidarLines(yellow);
 telemetry = yellow.receive;
 [coordinateLoc1,orientationLoc1] = localisation(lStartLoc/100,lEndLoc/100,gMap);
 
-driveToPosition(telemetry.odometry.pose.x,telemetry.odometry.pose.y,pi,yellow);
+[lStart, lEnd] = getLidarLines(yellow);
+telemetry = yellow.receive;
+robotCoordinate = int8(zeros(1,2));
+robotCoordinate(1,2)= int8(round(telemetry.odometry.pose.x*10));
+robotCoordinate(1,1)= int8(round(telemetry.odometry.pose.y*10));
+orientation= (telemetry.odometry.pose.alpha);
+
+lStart1 = round(lStart/100);
+lEnd1 = round(lEnd/100);
+[locMap,zeroPointLocMap]= globalMap(lStart1,lEnd1,robotCoordinate,orientation);
+
+se = strel('diamond',1);
+bwLocMap = imerode(double(locMap),se);
+
+title('map in Localization')
+pointLoc = bestSpot(bwLocMap)
+bwLocMap(bwLocMap==200)=0;
+figure(2000)
+imshow(mat2gray(bwLocMap));
+oldOdommetrie = telemetry.odometry
+viaPointsLoc=navToPoint(bwLocMap,double([pointLoc(2) pointLoc(1)]).*0.1,0.1,[zeroPointLocMap(1) zeroPointLocMap(2)].*0.1,[telemetry.odometry.pose.y telemetry.odometry.pose.x])
+
+followPath(viaPointsLoc,yellow)
+
 pause(10)
 yellow.set('state{stateName: OFF}')
 pause(2)
 [lStartLoc, lEndLoc] = getLidarLines(yellow);
 [coordinateLoc2,orientationLoc2] = localisation(lStartLoc/100,lEndLoc/100,gMap);
-coordinateDiff = coordinateLoc1 - coordinateLoc2
-
+% coordinateLoc = (double(coordinateLoc1(1,:)) + double(coordinateLoc2(1,:)))/2;
+% coordinateLoc(1,:) = (coordinateLoc(1,:)-zeroPoint)*0.1
+% orientationLoc = (double(orientationLoc2)+double(orientationLoc2))/2/180*pi
+% xToSend = coordinateLoc(1,2)
+% yToSend = coordinateLoc(1,1)
+% rotToSend = orientationLoc(1)
+% yellowString = sprintf('correctedPose: { x: %f, y: %f, alpha: %f}',xToSend,yToSend,rotToSend)
+% yellow.set(yellowString);
+% pause(2)
+% telemetry = yellow.receive
+% %startPoint = telemetry.
+% se = strel('diamond',1);
+% navMap = imerode(double(gMap),se);
+% navMap(navMap==200)=0;
+% figure(200)
+% imshow(bwDist1)
+% viaPoints = navToPoint(navMap,zeroPoint*0.1,0.1,zeroPoint*0.1,[telemetry.odometry.pose.y,telemetry.odometry.pose.x])
+% matSize=size(viaPoints)
+% viaCnt=1;
+% while(viaCnt<=matSize(1))
+%     driveToPosition(viaPoints(viaCnt,2),viaPoints(viaCnt,1),0,yellow);
+%     pause(10)
+%     viaCnt=viaCnt+1;
+% end
+%driveToPosition(targetPoint(1),targetPoint(2),targetOrientation, yellow)
 
 

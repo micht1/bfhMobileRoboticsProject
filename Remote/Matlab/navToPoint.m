@@ -2,10 +2,13 @@
 %%not included in the returned vector
 
 function viaPoints = navToPoint(Map,target,meterPerPixel,mapCenterPoint,startPoint)
+figure(300)
+%imshow(mat2gray(Map));
 tic
 %mapCenterPoint
 map =Map;
-%startPoint
+startPoint;
+mapCenterPoint;
 startPoint = startPoint+mapCenterPoint;
 target1 = round((target)/meterPerPixel);
 startPoint1 = round((startPoint)/meterPerPixel);
@@ -29,12 +32,14 @@ viaPoints(1,:) = startPoint;
 %imshow(mat2gray(dx.distancemap))
 
 diffPoints= diff(viaPoints);
-pointAngle=atan2(diffPoints(:,2),diffPoints(:,1));
-tmpDiff = circshift(pointAngle,1);
+pointAngle = zeros(length(diffPoints)+1,1);
+pointAngle(2:end)=atan2(diffPoints(:,2),diffPoints(:,1))
+tmpDiff = circshift(pointAngle,-1);
 [wayPoints]=find(~(abs(pointAngle-tmpDiff)<10^-1));
-viaPoints= [viaPoints(wayPoints(2:end),:) circshift(pointAngle(wayPoints(2:end)-1),-1)];
+viaPoints= [viaPoints(wayPoints(2:end),:) circshift(pointAngle(wayPoints(2:end)),0)];
 viaPoints(end,:) = [target 0];
 viaPoints(:,1:2) = viaPoints(:,1:2)-mapCenterPoint
+viaPoints(:,3) =  wrapToPi(viaPoints(:,3)-pi)
 % viaPoints(1:end,1:2)+mapCenterPoint 
 % circshift(pointAngle(waypoints),-1)
 % for pntCnt =2:length(diffPoints)
