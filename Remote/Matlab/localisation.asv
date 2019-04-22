@@ -77,13 +77,11 @@ for y = 1:sizeGmap(1)
 end
 end
 
-figure(222)
-imshow(possibilityMap)
-
-
-
-c = 0;
-match = [0,0,0];
+% figure(222)
+% imshow(possibilityMap)
+% 
+% c = 0;
+match = [0,0,0,0];
 cnt = 1;
 for angle = -180:1:180
 
@@ -104,18 +102,16 @@ kernel = [0.5,0.75,0.5;0.75,1,0.75;0.5,0.75,0.5];
             match(cnt,1)=y+column;
             match(cnt,2)=x+row;
             match(cnt,3)=max(cnew(:))*kernel(column+2,row+2);
+            match(cnt,4) = angle;
             cnt = cnt+1;
         end
     end
-
-% possibilityMap(y,x)=possibilityMap(y,x)*max(cnew(:))*2;
-
 end
-    if(max(cnew(:))>max(c(:)))
-        c = cnew;
-        zeroPoint = localZeroPoint;
-        orientation = angle;
-    end
+%     if(max(cnew(:))>max(c(:)))
+%         c = cnew;
+%         zeroPoint = localZeroPoint;
+%         orientation = angle;
+%     end
 end
 
 matchSize=size(match);
@@ -124,43 +120,33 @@ for cnt = 1:matchSize(1)
     possibilityMap(match(cnt,1),match(cnt,2)) = possibilityMap(match(cnt,1),match(cnt,2))+match(cnt,3)*possibilityMap(match(cnt,1),match(cnt,2)); 
 end
 
+
 maxP = max(possibilityMap);
-possibilityMap = possibilityMap./maxP;
+possibilityMap = possibilityMap./max(maxP);
 
-figure(3)
-imshow(possibilityMap)
+[yPoint,xPoint] = find(possibilityMap==max(max(possibilityMap)));
+%[column,row] = find(match==max(match(:,3)));
 
-[column, row] = find(match==max(match(:,3)));
-
-
+% figure(3)
+% imshow(possibilityMap)
 
 % figure(8), surf(c), shading flat
 % [ypeak, xpeak] = find(c==max(c(:)));
 
-ypeak = match(column,1);
-xpeak = match(column,2);
-
-yoffSet = ypeak-size(localIm,1);
-xoffSet = xpeak-size(localIm,2);
-
+% ypeak = match(column,1);
+% xpeak = match(column,2);
+% 
+% yoffSet = ypeak-size(localIm,1);
+% xoffSet = xpeak-size(localIm,2);
 
 coordinate = [0,0];
-zeroPoint
-coordinate(2) = yoffSet+zeroPoint(1);
-coordinate(1) = xoffSet+zeroPoint(2);
+% coordinate(2) = match(column,1);
+% coordinate(1) = match(column,2);
 
-
-
-
+coordinate(2) = yPoint;
+coordinate(1) = xPoint;
+orientation = match(column,4);
 
 end
 
-function kernel = getSurroundings(sizeKernel,currentPosition,map)
-kernel= zeros(sizeKernel,sizeKernel);
-for n = 1:sizeKernel
-    for i = 1:sizeKernel       
-         kernel(n,i) = map(currentPosition(1)-(sizeKernel-1-n),currentPosition(2)-(sizeKernel-1-i));
-    end  
-end
-end
 
