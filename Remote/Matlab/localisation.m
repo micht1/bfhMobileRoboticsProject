@@ -120,13 +120,18 @@ for cnt = 1:matchSize(1)
     possibilityMap(match(cnt,1),match(cnt,2)) = possibilityMap(match(cnt,1),match(cnt,2))+match(cnt,3)*possibilityMap(match(cnt,1),match(cnt,2)); 
 end
 
+
 maxP = max(possibilityMap);
-possibilityMap = possibilityMap./maxP;
+possibilityMap = possibilityMap./max(maxP);
+
+[yPoint,xPoint] = find(possibilityMap==max(max(possibilityMap)));
+[column,row] = find(match==max(match(:,3)));
+
+
+
 
 % figure(3)
 % imshow(possibilityMap)
-
-[column,row] = find(match==max(match(:,3)));
 
 % figure(8), surf(c), shading flat
 % [ypeak, xpeak] = find(c==max(c(:)));
@@ -138,8 +143,11 @@ possibilityMap = possibilityMap./maxP;
 % xoffSet = xpeak-size(localIm,2);
 
 coordinate = [0,0];
-coordinate(2) = match(column,1);
-coordinate(1) = match(column,2);
+% coordinate(2) = match(column,1);
+% coordinate(1) = match(column,2);
+
+coordinate(2) = yPoint;
+coordinate(1) = xPoint;
 orientation = match(column,4);
 
 end
