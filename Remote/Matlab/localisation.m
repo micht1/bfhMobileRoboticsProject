@@ -79,8 +79,6 @@ end
 
 % figure(222)
 % imshow(possibilityMap)
-
-
 % 
 % c = 0;
 match = [0,0,0,0];
@@ -139,9 +137,7 @@ possibilityMap = possibilityMap./maxP;
 % yoffSet = ypeak-size(localIm,1);
 % xoffSet = xpeak-size(localIm,2);
 
-
 coordinate = [0,0];
-%zeroPoint
 coordinate(2) = match(column,1);
 coordinate(1) = match(column,2);
 orientation = match(column,4);
