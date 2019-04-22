@@ -351,35 +351,46 @@ pause(2)
 telemetry = yellow.receive;
 [coordinateLoc1,orientationLoc1] = localisation(lStartLoc/100,lEndLoc/100,gMap);
 
-[lStart, lEnd] = getLidarLines(yellow);
-telemetry = yellow.receive;
-robotCoordinate = int8(zeros(1,2));
-robotCoordinate(1,2)= int8(round(telemetry.odometry.pose.x*10));
-robotCoordinate(1,1)= int8(round(telemetry.odometry.pose.y*10));
-orientation= (telemetry.odometry.pose.alpha);
+% %***** untested
+% yellowString = sprintf('correctedPose: { x: %f, y: %f, alpha: %f}',coordinateLoc1(1),coordinateLoc1(2),orientationLoc1(1));
+% yellow.set(yellowString);
+% pause(2)
+% %*****
+% [lStart, lEnd] = getLidarLines(yellow);
+% telemetry = yellow.receive;
+% robotCoordinate = int8(zeros(1,2));
+% robotCoordinate(1,2)= int8(round(telemetry.odometry.pose.x*10));
+% robotCoordinate(1,1)= int8(round(telemetry.odometry.pose.y*10));
+% orientation= (telemetry.odometry.pose.alpha);
+% 
+% lStart1 = round(lStart/100);
+% lEnd1 = round(lEnd/100);
+% [locMap,zeroPointLocMap]= globalMap(lStart1,lEnd1,robotCoordinate,orientation);
+% 
+% se = strel('diamond',1);
+% bwLocMap = imerode(double(locMap),se);
+% 
+% title('map in Localization')
+% pointLoc = bestSpot(bwLocMap)
+% bwLocMap(bwLocMap==200)=0;
+% figure(2000)
+% imshow(mat2gray(bwLocMap));
+% oldOdommetrie = telemetry.odometry
+% viaPointsLoc=navToPoint(bwLocMap,double([pointLoc(2) pointLoc(1)]).*0.1,0.1,[zeroPointLocMap(1) zeroPointLocMap(2)].*0.1,[telemetry.odometry.pose.y telemetry.odometry.pose.x])
+% followSize=size(viaPoints)
+% followPath(viaPointsLoc(1:round(followSize/2),:),yellow)
 
-lStart1 = round(lStart/100);
-lEnd1 = round(lEnd/100);
-[locMap,zeroPointLocMap]= globalMap(lStart1,lEnd1,robotCoordinate,orientation);
-
-se = strel('diamond',1);
-bwLocMap = imerode(double(locMap),se);
-
-title('map in Localization')
-pointLoc = bestSpot(bwLocMap)
-bwLocMap(bwLocMap==200)=0;
-figure(2000)
-imshow(mat2gray(bwLocMap));
-oldOdommetrie = telemetry.odometry
-viaPointsLoc=navToPoint(bwLocMap,double([pointLoc(2) pointLoc(1)]).*0.1,0.1,[zeroPointLocMap(1) zeroPointLocMap(2)].*0.1,[telemetry.odometry.pose.y telemetry.odometry.pose.x])
-
-followPath(viaPointsLoc,yellow)
+driveToPosition(0,0,pi,yellow);
 
 pause(10)
 yellow.set('state{stateName: OFF}')
 pause(2)
-[lStartLoc, lEndLoc] = getLidarLines(yellow);
-[coordinateLoc2,orientationLoc2] = localisation(lStartLoc/100,lEndLoc/100,gMap);
+[lStartLoc2, lEndLoc2] = getLidarLines(yellow);
+clear possibilityMap
+[coordinateLoc2,orientationLoc2] = localisation(lStartLoc2/100,lEndLoc2/100,gMap);
+
+
+
 % coordinateLoc = (double(coordinateLoc1(1,:)) + double(coordinateLoc2(1,:)))/2;
 % coordinateLoc(1,:) = (coordinateLoc(1,:)-zeroPoint)*0.1
 % orientationLoc = (double(orientationLoc2)+double(orientationLoc2))/2/180*pi
