@@ -26,7 +26,7 @@
 % end
 
 
-function globalMap3 = globalMap(lStart1,lEnd1,robotCoordinate,orientation)
+function [globalMap3,globalMapZeroPoint1] = globalMap(lStart1,lEnd1,robotCoordinate,orientation)
 
 persistent firstFlag;
 persistent globalMap1;
@@ -115,6 +115,8 @@ end
 if(newSize(2)<globalMapSize(2))
      newSize(2) = globalMapSize(2);
 end
+newSize(1) = newSize(1)+5;
+newSize(2) = newSize(2)+5;
 
 % newSize(1) = newSize(1)+5;
 % newSize(2) = newSize(2)+5;
@@ -174,6 +176,7 @@ globalMap1 = mapBuffer;
 % figure(4)
 % imshow(globalMap1)
 globalMap3 = globalMap1;
+globalMapZeroPoint1=[globalMapZeroPoint(2) globalMapZeroPoint(1)];
 
 
 end
