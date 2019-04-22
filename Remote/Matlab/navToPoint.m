@@ -3,15 +3,13 @@
 
 function viaPoints = navToPoint(Map,target,meterPerPixel,mapCenterPoint,startPoint)
 tic
+%mapCenterPoint
 map =Map;
-target = target+mapCenterPoint;
+%startPoint
 startPoint = startPoint+mapCenterPoint;
 target1 = round((target)/meterPerPixel);
 startPoint1 = round((startPoint)/meterPerPixel);
-se = strel('diamond',1);
-bwDist = imerode(~double(map),se);
-figure(2)
-imshow(mat2gray(bwDist));
+
 
 
 % prm = PRM(map);
@@ -19,24 +17,24 @@ imshow(mat2gray(bwDist));
 % pathVector = prm.query(startPoint1,target1);
 % prm.plot()
 figure(1)
-dx = DXform(~bwDist);   % create navigation object
+dx = DXform(~map);   % create navigation object
 dx.plan(target1);       % create plan for specified goal
 pathVector=dx.query(startPoint1,'animate');
 
 % 
 viaPoints= pathVector*meterPerPixel;
 viaPoints(1,:) = startPoint;
-viaPoints(end,:) = target
+
 %figure(200)
 %imshow(mat2gray(dx.distancemap))
 
 diffPoints= diff(viaPoints);
 pointAngle=atan2(diffPoints(:,2),diffPoints(:,1));
 tmpDiff = circshift(pointAngle,1);
-[pointAngle tmpDiff];
-[wayPoints]=find(~(abs(pointAngle-tmpDiff)<10^-5));
-viaPoints= [viaPoints(wayPoints(2:end),:) circshift(pointAngle(wayPoints(2:end)-1),-1)]
-
+[wayPoints]=find(~(abs(pointAngle-tmpDiff)<10^-1));
+viaPoints= [viaPoints(wayPoints(2:end),:) circshift(pointAngle(wayPoints(2:end)-1),-1)];
+viaPoints(end,:) = [target 0];
+viaPoints(:,1:2) = viaPoints(:,1:2)-mapCenterPoint
 % viaPoints(1:end,1:2)+mapCenterPoint 
 % circshift(pointAngle(waypoints),-1)
 % for pntCnt =2:length(diffPoints)

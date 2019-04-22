@@ -141,8 +141,7 @@ yellow.set('state { stateName: OFF }')
 %     drawnow
 % end
 % 
-% %
-
+% 
 %load('workspaceVariables.mat')
 % yellow.set('state { stateName: OFF}');
 % % 
@@ -218,55 +217,64 @@ yellow.set('state { stateName: OFF }')
 % 
 % lStart1 = round(lStart/100);
 % lEnd1 = round(lEnd/100);
-% gMap = globalMap(lStart1,lEnd1,robotCoordinate,orientation);
-% figure(12)
-% imshow(gMap)
-
-%yellow.set('state { stateName: OFF}');
-%[lStart1, lEnd1] = getLidarLines(yellow);
-% pause(2)
-
- lStart1 = round([-1000 ,-2000;2000,-2000;2000,2000; 1500,1500;-600 ,1000;-1000, 1000;-600,1000;1500,1500 ]/100);
- lEnd1 =   round([2000  ,-2000;2000, 2000;1500,2000; -600,1500;-1000,1000;-1000,-2000;-600,1500;1500,2000]/100);
-
-robotCoordinate = [0,0];
-orientation = 0;
-gMap = globalMap(lStart1,lEnd1,robotCoordinate,orientation);
-
-filename = 'yellow.mat';
-save(filename)
-
-lStart2 = round([  100,1500;-600 ,1000;-1000,1000]);
-lEnd2 =   round([  500,1500;-1000,1000;-1000,100]);
-lStart3 = round(lStart2/100);
-lEnd3 = round(lEnd2/100);
-t = cputime;
-[coordinate,alpha] = localisation(lStart3,lEnd3,gMap);
-time = cputime-t
-
-
-gMap(coordinate(2),coordinate(1))=100;
-alpha
-coordinate
+% % gMap = globalMap(lStart1,lEnd1,robotCoordinate,orientation);
+% % figure(12)
+% % imshow(gMap)
 % 
-figure(25)
-imshow(gMap)
+% yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 1, y: -2, alpha: -3.14}')
+% pause(10)
+% [lStart, lEnd] = getLidarLines(yellow);
+% telemetry = yellow.receive;
+% robotCoordinate = int8(zeros(1,2));
+% robotCoordinate(1,2)= int8(round(telemetry.odometry.pose.x*10))
+% robotCoordinate(1,1)= int8(round(telemetry.odometry.pose.y*10))
+% orientation= (telemetry.odometry.pose.alpha)
+% 
+% %yellow.set('state { stateName: OFF}');
+% %[lStart1, lEnd1] = getLidarLines(yellow);
+% % pause(2)
+% 
+%  lStart1 = round([-1000 ,-2000;2000,-2000;2000,2000; 1500,1500;-600 ,1000;-1000, 1000;-600,1000;1500,1500 ]/100);
+%  lEnd1 =   round([2000  ,-2000;2000, 2000;1500,2000; -600,1500;-1000,1000;-1000,-2000;-600,1500;1500,2000]/100);
+% 
+% robotCoordinate = [0,0];
+% orientation = 0;
+% gMap = globalMap(lStart1,lEnd1,robotCoordinate,orientation);
+% 
+% filename = 'yellow.mat';
+% save(filename)
+% 
+% lStart2 = round([  100,1500;-600 ,1000;-1000,1000]);
+% lEnd2 =   round([  500,1500;-1000,1000;-1000,100]);
+% lStart3 = round(lStart2/100);
+% lEnd3 = round(lEnd2/100);
+% t = cputime;
+% [coordinate,alpha] = localisation(lStart3,lEnd3,gMap);
+% time = cputime-t
+% 
+% 
+% gMap(coordinate(2),coordinate(1))=100;
+% alpha
+% coordinate
+% % 
+% figure(25)
+% imshow(gMap)
 
 
 
 %% Movment test
 
-yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 1, y: 0, alpha: 0}')
+driveToPosition(1,0,0,yellow);
 pause(10)
-yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: -1, y: 0, alpha: 0}')
+driveToPosition(-1,0,0,yellow);
 pause(10)
-yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 0, y: 0, alpha: 0}')
+driveToPosition(0,0,0,yellow);
 pause(10)
-yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 0, y: 1, alpha: 0}')
+driveToPosition(0,-1,0,yellow);
 pause(10)
-yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 0, y: -1, alpha: 0}')
+driveToPosition(0,1,0,yellow);
 pause(10)
-yellow.set('state { stateName: AUTO_POSITION },desiredPose { x: 0, y: 0, alpha: 0}')
+driveToPosition(0,0,0,yellow);
 pause(10)
 
 %% velocitiy test
@@ -277,3 +285,73 @@ yellow.set('state{stateName: MANUAL}')
 yellow.append('velocities{linearSpeed:0.5, angularSpeed:0}')
 %test velocity without filter in controller.h, take out the motionplaner in
 %controller
+
+%% mapping
+clear 'globalMap'
+doMapping = true
+while(doMapping==true)
+    yellow.set('state{stateName: OFF}')
+    pause(2)
+    [lStart, lEnd] = getLidarLines(yellow);
+    telemetry = yellow.receive;
+    robotCoordinate = int8(zeros(1,2));
+    robotCoordinate(1,2)= int8(round(telemetry.odometry.pose.x*10));
+    robotCoordinate(1,1)= int8(round(telemetry.odometry.pose.y*10));
+    orientation= (telemetry.odometry.pose.alpha);
+    
+    lStart1 = round(lStart/100);
+    lEnd1 = round(lEnd/100);
+    [gMap,zeroPoint]= globalMap(lStart1,lEnd1,robotCoordinate,orientation);
+    bwDist = gMap;
+    bwDist(bwDist==200)=0;
+    se = strel('diamond',1);
+    bwDist1 = imerode(double(gMap),se);
+    bwDist2 = bwDist1;
+    bwDist2(bwDist1==200)=0;
+    figure(2000)
+    imshow(mat2gray(bwDist1));
+    title('map in navigation')
+    point = bestSpot(bwDist1)
+    if(point(1)==0)
+        if(point(2)==0)
+            doMapping=false;
+            break;
+        end
+    end
+%     bwDist(point(1),point(2))=100;
+% %     figure(1000)
+% %     imshow(bwDist)
+    viaPoints=navToPoint(bwDist2,double([point(2) point(1)]).*0.1,0.1,[zeroPoint(1) zeroPoint(2)].*0.1,[telemetry.odometry.pose.y telemetry.odometry.pose.x])
+    
+    viaCnt=1;
+    matSize=size(viaPoints)
+    while(viaCnt<=matSize(1))
+        driveToPosition(viaPoints(viaCnt,2),viaPoints(viaCnt,1),0,yellow);
+        pause(10)
+        viaCnt=viaCnt+1;
+    end
+    
+    %doMapping=false;
+    
+end
+
+
+%% drive to target
+targetPoint=[0 0 0];
+
+yellow.set('state{stateName: OFF}')
+pause(2)
+[lStartLoc, lEndLoc] = getLidarLines(yellow);
+telemetry = yellow.receive;
+[coordinateLoc1,orientationLoc1] = localisation(lStartLoc/100,lEndLoc/100,gMap);
+
+driveToPosition(telemetry.odometry.pose.x,telemetry.odometry.pose.y,pi,yellow);
+pause(10)
+yellow.set('state{stateName: OFF}')
+pause(2)
+[lStartLoc, lEndLoc] = getLidarLines(yellow);
+[coordinateLoc2,orientationLoc2] = localisation(lStartLoc/100,lEndLoc/100,gMap);
+coordinateDiff = coordinateLoc1 - coordinateLoc2
+
+
+
