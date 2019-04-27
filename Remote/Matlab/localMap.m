@@ -21,8 +21,6 @@ robotCoordinate = [0,0];
 %angle = 0;
 %orientation = 0;
 % R = Rz(-orientation)*Ry(pi());
-
-
 % R = Rz(-orientation);
 
 R = [cos(-orientation),-sin(-orientation),0;sin(-orientation),cos(-orientation),0;0,0,1];

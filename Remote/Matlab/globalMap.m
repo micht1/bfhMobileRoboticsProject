@@ -1,31 +1,3 @@
-% clearvars; clear all; close all; clc
-% lStart1 = round(lStart/100);
-% lEnd1 = round(lEnd/100);
-% lStart1 = round([-1000 ,-2000;2000,-2000;2000,2000;  100,1500;-600 ,1000;-1000, 1000]/100);
-% lEnd1 =   round([2000  ,-2000;2000, 2000;1500,2000;  500,1500;-1000,1000;-1000,-2000]/100);
-
-%   lStart1 = round([-700 ,700; 1400, 700; 2500,-1500; 2500,-2600; -500,-2600; -700,-2600; -200,-1000]/100);
-%   lEnd1 =   round([1400 ,700; 1400,-900; 2500,-2600; 2300,-2600; -700,-2600; -700,  700;  900,-1000]/100);
-
-% lStart1=round([1000,1000;-1000, 1000;-1000,-1000;1000,-1000]/100);
-% lEnd1=round([-1000,1000; -1000,-1000; 1000,-1000;1000,1000]/100);
-
-
-%  robotCoordinate = [0,0,0;-100,1,pi();25,25,0;100,100,pi()/2;75,0,pi();-50,-50,pi/2];
-%globalMap1 = 200;
-%newSize = [0,0];
-
-%startPoint = [0,0];
-%endPoint = [0,0];
-%oldZeroPoint = [0,0];
-%newZeroPoint = [0,0];
-% for x = 1:2
-% gMap = globalMap2(lStart1,lEnd1,robotCoordinate(x,:));
-% figure(10)
-% imshow(gMap)
-% end
-
-
 function [globalMap3,globalMapZeroPoint1] = globalMap(lStart1,lEnd1,robotCoordinate,orientation)
 
 persistent firstFlag;
@@ -57,6 +29,10 @@ oldGMapZp = globalMapZeroPoint;
 if(robotCoordinate(1,1)>=0)
 
     newSize(2) = robotCoordinate(1,1)+mapSize(2)-(zeroPoint(2)-globalMapZeroPoint(2));
+    
+    %test
+    newSize(2) = globalMapZeroPoint(2)+robotCoordinate(1,1)+(mapSize(2)-zeroPoint(2));
+    
     gMapStart(2)= globalMapZeroPoint(2)-oldGMapZp(2);
     if(globalMapZeroPoint(2)+robotCoordinate(1,1)<zeroPoint(2))
         globalMapZeroPoint(2) = zeroPoint(2);
@@ -71,6 +47,10 @@ end
 
 if(robotCoordinate(1,2)>=0)
     newSize(1) = robotCoordinate(1,2)+mapSize(1)-(zeroPoint(1)-globalMapZeroPoint(1));
+    
+    %test
+    newSize(1) = globalMapZeroPoint(1)+robotCoordinate(1,2)+(mapSize(1)-zeroPoint(1));
+    
     gMapStart(1)= globalMapZeroPoint(1)-oldGMapZp(1);
     if(globalMapZeroPoint(1)+robotCoordinate(1,2)<zeroPoint(1))
         globalMapZeroPoint(1) = zeroPoint(1);
@@ -115,13 +95,9 @@ end
 if(newSize(2)<globalMapSize(2))
      newSize(2) = globalMapSize(2);
 end
+
 newSize(1) = newSize(1)+5;
 newSize(2) = newSize(2)+5;
-
-% newSize(1) = newSize(1)+5;
-% newSize(2) = newSize(2)+5;
-
-
 
 mapBuffer = uint8(zeros(newSize(1),newSize(2))+200);
 bufferSize = size(mapBuffer);
