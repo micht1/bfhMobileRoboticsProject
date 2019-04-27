@@ -53,6 +53,22 @@ function YellowGUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to YellowGUI (see VARARGIN)
 
 % Choose default command line output for YellowGUI
+
+
+% if(~exist('yellow'))
+%     
+%     % Add our classes to the Matlab Java path
+%     
+%     dpath = {'./YellowInterface.jar', './protobuf-java-3.4.0.jar'};
+%     javaclasspath(dpath);
+%     import ch.bfh.roboticsLab.yellow.*;
+%         
+%     % Connect to the robot
+%     yellow = SerialClient.getInstance;
+%     
+% end
+
+
 handles.output = hObject;
 % load('yellow.mat')
 im = imread('noMap.png');
@@ -63,7 +79,6 @@ axis off
 axes(handles.axes4);
 imshow(im)
 axis off
-
 set(handles.status,'String','Standby')
 
 
@@ -262,7 +277,7 @@ function speed_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
-speed = round(get(hObject,'Value')*10)/10
+
 
 
 
@@ -278,35 +293,29 @@ if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColo
 end
 
 
-% --- Executes on slider movement.
-function rotation_Callback(hObject, eventdata, handles)
-% hObject    handle to rotation (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'Value') returns position of slider
-%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
-rotation = round(get(hObject,'Value')*10)/10
-
-% --- Executes during object creation, after setting all properties.
-function rotation_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to rotation (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: slider controls usually have a light gray background.
-if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor',[.9 .9 .9]);
-end
-
-
-
 
 % --- Executes on button press in autoStart.
 function autoStart_Callback(hObject, eventdata, handles)
 % hObject    handle to autoStart (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+if(~exist('yellow'))
+    
+    % Add our classes to the Matlab Java path
+    dpath = {'./YellowInterface.jar', './protobuf-java-3.4.0.jar'};
+    javaclasspath(dpath);
+    import ch.bfh.roboticsLab.yellow.*;
+        
+    % Connect to the robot
+    yellow = SerialClient.getInstance;
+    
+end
+
+speed = num2str(round(get(hObject,'Value')*10)/10)
+str1 = 'reactiveParameters { translationalVelocity: ';
+message = [str1 speed];
+yellow.set(message);
+yellow.set('state { stateName: AUTO_REACTIVE }')
 
 
 % --- Executes on button press in autoStop.
@@ -315,6 +324,18 @@ function autoStop_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+if(~exist('yellow'))
+    
+    % Add our classes to the Matlab Java path
+    dpath = {'./YellowInterface.jar', './protobuf-java-3.4.0.jar'};
+    javaclasspath(dpath);
+    import ch.bfh.roboticsLab.yellow.*;
+        
+    % Connect to the robot
+    yellow = SerialClient.getInstance;
+    
+end
+yellow.set('state { stateName: OFF }')
 
 % --- Executes on button press in mapStart.
 function mapStart_Callback(hObject, eventdata, handles)
@@ -323,11 +344,19 @@ function mapStart_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.status,'String','In Progress')
 %call mapping function
+
+lMap = getMap;
 axes(handles.axes4);
-% imshow(im)
+imshow(lMap)
 axis off
 
+clear mapping
+gMap = mapping;
 
+axes(handles.axes2);
+imshow(gMap)
+axis off
+set(handles.status,'String','Done')
 
 
 % --- Executes on button press in mapReset.
@@ -336,4 +365,15 @@ function mapReset_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 set(handles.status,'String','Standby')
-%clear all mapping stuff
+clear mapping
+clear globalMap
+
+im = imread('noMap.png');
+axes(handles.axes2);
+imshow(im)
+axis off
+
+axes(handles.axes4);
+imshow(im)
+axis off
+
