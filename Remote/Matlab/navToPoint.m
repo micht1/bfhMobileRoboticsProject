@@ -39,7 +39,7 @@ tmpDiff = circshift(pointAngle,-1);
 viaPoints= [viaPoints(wayPoints(2:end),:) circshift(pointAngle(wayPoints(2:end)),0)];
 viaPoints(end,:) = [target 0];
 viaPoints(:,1:2) = viaPoints(:,1:2)-mapCenterPoint
-viaPoints(:,3) =  wrapToPi(viaPoints(:,3)-pi)
+viaPoints(:,3) =  wrapToPi(viaPoints(:,3)-pi/4)
 % viaPoints(1:end,1:2)+mapCenterPoint 
 % circshift(pointAngle(waypoints),-1)
 % for pntCnt =2:length(diffPoints)
