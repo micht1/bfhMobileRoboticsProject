@@ -1,8 +1,5 @@
 
 function [coordinate,orientation] = localisation(lStart,lEnd,globalMap)
-
-%orientation = 0;
-
 sizeGmap = size(globalMap);
 globalIm = mat2gray(globalMap);
 persistent possibilityMap
@@ -18,10 +15,6 @@ for y = 1:sizeGmap(1)
 end
 end
 
-% figure(222)
-% imshow(possibilityMap)
-% 
-% c = 0;
 match = [0,0,0,0];
 cnt = 1;
 for angle = -180:1:180
@@ -48,11 +41,6 @@ kernel = [0.5,0.75,0.5;0.75,1,0.75;0.5,0.75,0.5];
         end
     end
 end
-%     if(max(cnew(:))>max(c(:)))
-%         c = cnew;
-%         zeroPoint = localZeroPoint;
-%         orientation = angle;
-%     end
 end
 
 matchSize=size(match);
@@ -65,39 +53,16 @@ for cnt = 1:matchSize(1)
     end
 end
 
-
 maxP = max(possibilityMap);
 possibilityMap = possibilityMap./max(maxP);
 
 [yPoint,xPoint] = find(possibilityMap==max(max(possibilityMap)));
 [column,row] = find(match==max(match(:,3)));
 
-
-
-
-% figure(3)
-% imshow(possibilityMap)
-
-% figure(8), surf(c), shading flat
-% [ypeak, xpeak] = find(c==max(c(:)));
-
-% ypeak = match(column,1);
-% xpeak = match(column,2);
-% 
-% yoffSet = ypeak-size(localIm,1);
-% xoffSet = xpeak-size(localIm,2);
-
-
 coordinate = [0,0];
-% coordinate(2) = match(column,1);
-% coordinate(1) = match(column,2);
 
 coordinate(2) = yPoint;
 coordinate(1) = xPoint;
-
-% coordinate = zeros(length(column),2);
-% coordinate(:,2) = match(column,1);
-% coordinate(:,1) = match(column,2);
 
 orientation = match(column,4);
 

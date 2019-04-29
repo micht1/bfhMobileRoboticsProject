@@ -123,9 +123,12 @@ function localize_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 %call localize function
-x = num2str(5);
-y = num2str(5);
-a = num2str(5);
+
+
+[coordinate,orientation]= guiLocalization;
+x = num2str(coordinate(1));
+y = num2str(coordinate(2));
+a = num2str(orientation);
 
 set(handles.startX,'String',x)
 set(handles.startY,'String',y)
@@ -353,10 +356,14 @@ axis off
 clear mapping
 gMap = mapping;
 
+loadedMap = imcomplement(imread("occupancyGrid_1.bmp"));
+
 axes(handles.axes2);
 imshow(gMap)
 axis off
+
 set(handles.status,'String','Done')
+save('mapFile','gMap','loadedMap')
 
 
 % --- Executes on button press in mapReset.
