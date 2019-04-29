@@ -11,91 +11,52 @@ startPoint;
 mapCenterPoint;
 startPoint = startPoint+mapCenterPoint;
 target1 = round((target)/meterPerPixel);
-startPoint1 = round((startPoint)/meterPerPixel);
+startPoint1 = round((startPoint)/meterPerPixel)
+map(startPoint1(2),startPoint1(1))=1;
+%map(startpoint1(2)-1:startpoint1(2)+1,startpoint1(1)-1:startpoint1(1)+1)=[1 1 1; 1 1 1; 1 1 1];
 
 
-
-% prm = PRM(map);
-% prm.plan('npoints',60,'distthresh',40);
-% pathVector = prm.query(startPoint1,target1);
-% prm.plot()
-figure(1)
-dx = DXform(~map);   % create navigation object
-dx.plan(target1);       % create plan for specified goal
-pathVector=dx.query(startPoint1,'animate');
+prm = PRM(~map);
+prm.plan('npoints',100,'distthresh',30);
+pathVector = prm.query(startPoint1,target1);
+prm.plot()
+% figure(1)
+% dx = DXform(~map);   % create navigation object
+% dx.plan(target1);       % create plan for specified goal
+% pathVector=dx.query(startPoint1)
 
 % 
 viaPoints= pathVector*meterPerPixel;
-viaPoints(1,:) = startPoint;
+%viaPoints(1,:) = startPoint;
 
 %figure(200)
 %imshow(mat2gray(dx.distancemap))
 
 diffPoints= diff(viaPoints);
 pointAngle = zeros(length(diffPoints)+1,1);
-pointAngle(2:end)=atan2(diffPoints(:,2),diffPoints(:,1))
-tmpDiff = circshift(pointAngle,-1);
-[wayPoints]=find(~(abs(pointAngle-tmpDiff)<10^-1));
-viaPoints= [viaPoints(wayPoints(2:end),:) circshift(pointAngle(wayPoints(2:end)),0)];
-viaPoints(end,:) = [target 0];
-viaPoints(:,1:2) = viaPoints(:,1:2)-mapCenterPoint
-viaPoints(:,3) =  wrapToPi(viaPoints(:,3)-pi)
-% viaPoints(1:end,1:2)+mapCenterPoint 
+%pointAngle(1:end-1)=atan2(diffPoints(:,2),diffPoints(:,1))
+% tmpDiff = circshift(pointAngle,-1);
+% 
+% [foundWayPoints]=find(~(abs(pointAngle-tmpDiff)<10^-1));
+% wayPoints = zeros(length(foundWayPoints)+1,1);
+% wayPoints(1:end-1) = foundWayPoints;
+% wayPoints(end)=length(pointAngle)
+% if(isempty(wayPoints))
+%     wayPoints=[1 0]
+% end
+% viaPoints= [viaPoints(wayPoints(2:end),:) circshift(pointAngle(wayPoints(2:end)),0)];
+% viaPoints(end,:) = [target 0];
+% 
+% viaPoints(:,3) = (viaPoints(:,3))
+
 % circshift(pointAngle(waypoints),-1)
 % for pntCnt =2:length(diffPoints)
 %     if()
 %     end
 % end
-
-
-
-
-% tmpMap =double((~(Map)*inf));
-% 
-% tmpMap(isnan(tmpMap))=1;
-
-% bwDist=mat2gray(bwDist);
-% % %bwDist=bwulterode(Map)
-% % % showMap=tmpMap;
-% % % showMap(isinf(showMap))=255
-% % figure(202)
-% % title('original')
-% % imshow(mat2gray(Map))
-% % figure(201)
-% % imshow(mat2gray(tmpMap))
-% % figure(200)
-% % imshow(mat2gray(bwDist))
-% % sizes=size(Map);
-% % 
-% % [row,col]=find(bwDist>0.9);
-% % 
-% % pointsToChoose = randperm(length(row),20)
-% % indexVector = [row(pointsToChoose) col(pointsToChoose)]
-% %bwDist()
-% 
-% % targetx =int8(target(1,1)/10);
-% % targety = int8(target(1,2)/10);
-% % 
-% % xtmp =  double([targetx:-1:1 0 1:1:(sizes(2)-targetx-1)]);
-% % ytmp =  double([targety:-1:1 0 1:1:(sizes(1)-targety-1)]);
-% % 
-% % 
-% % distanzMatrixTmp1 = ones(sizes);
-% % distanzMatrixTmp1 = ytmp'.*distanzMatrixTmp1;
-% 
-% % distanzMatrixTmp2 = ones(sizes);
-% % distanzMatrixTmp2 = xtmp.*distanzMatrixTmp2;
-% % 
-% % distanzMatrixTmp = sqrt(distanzMatrixTmp1.^2 + distanzMatrixTmp2.^2);
-% % distanzMap = distanzMatrixTmp .*tmpMap
-% % %distanzMatrixTmp = xtmp.*distanzMatrixTmp
-% % %distanzMatrixTmp1(targety,targetx) = 1;
-% % showMap = (distanzMap)*4;
-% % showMap(isinf(showMap))=255
-% % figure(2)
-% % imshow(showMap./255)
-% % %imshow(distanzMap)
-
+viaPoints= [viaPoints pointAngle]
+viaPoints(:,1:2) = viaPoints(:,1:2)-mapCenterPoint
+%viaPoints(1:end,1:2)+mapCenterPoint 
 
 toc
 %dx.plot()

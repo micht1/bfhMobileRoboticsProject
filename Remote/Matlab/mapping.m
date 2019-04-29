@@ -12,9 +12,12 @@ if(~exist('yellow'))
     
 end
 
+%% mapping
 clear 'globalMap'
 doMapping = true
 while(doMapping==true)
+    yellow.set('state{stateName: OFF}')
+    pause(2)
     [lStart, lEnd] = getLidarLines(yellow);
     telemetry = yellow.receive;
     robotCoordinate = int8(zeros(1,2));
@@ -26,9 +29,10 @@ while(doMapping==true)
     lEnd1 = round(lEnd/100);
     [gMap,zeroPoint]= globalMap(lStart1,lEnd1,robotCoordinate,orientation);
     bwDist = gMap;
-    bwDist(bwDist==200)=0;
-    se = strel('diamond',1);
-    bwDist1 = imerode(double(gMap),se);
+    bwDist(bwDist==200)=255;
+    se = strel('square',4);
+    bwDist1 = imerode(double(bwDist),se);
+    bwDist1(gMap==200)=200;
     bwDist2 = bwDist1;
     bwDist2(bwDist1==200)=0;
     figure(2000)
@@ -38,7 +42,6 @@ while(doMapping==true)
     if(point(1)==0)
         if(point(2)==0)
             doMapping=false;
-            map = gMap
             break;
         end
     end

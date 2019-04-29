@@ -82,14 +82,14 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
 
     // Make a fresh scan, full resolution (updates member `rawScanPoints`)
     getScanPoints(1);
-    con.printf(" number of points:%d",rawScanPoints.size());
+    //con.printf(" number of points:%d",rawScanPoints.size());
     /** TODO (Ex4.5): Split scan points+ in regions/ranges (e.g. left and right wall inside a corridor) **/
     PointRanges pointRegions;
     PointContainer tmpContainer;
    // con.printf("data dumb ra points\r\n");
     for(unsigned int pointCount=1;pointCount<rawScanPoints.size();pointCount++)
     {
-        //con.printf("%f %f;\r",rawScanPoints.at(pointCount).x,rawScanPoints.at(pointCount).y);
+        con.printf("%f %f;\r",rawScanPoints.at(pointCount).x,rawScanPoints.at(pointCount).y);
         //con.printf("distance %f\r\n",distance(rawScanPoints[pointCount],rawScanPoints[pointCount+1]));
         if(distance(rawScanPoints.at(pointCount-1),rawScanPoints.at(pointCount))>minRangeDistance)
         {
@@ -165,6 +165,16 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
         }while(doSplit==true);
 
     }
+    //dumb data over serial
+    /*for(unsigned int dumbOne=0;dumbOne<pointRegions.size();++dumbOne)
+    {
+        con.printf("dumb: %d\n\r \n\n",dumbOne);
+        for(unsigned int dumbTwo=0;dumbTwo<pointRegions.at(dumbOne).size();++dumbTwo)
+        {
+            con.printf("%f %f;\r",pointRegions.at(dumbOne).at(dumbTwo).x,pointRegions.at(dumbOne).at(dumbTwo).y);
+        }
+    }*/
+
     for(unsigned int lineCount=0;lineCount<pointRegions.size();++lineCount)
     {
         if(lineCount==0)
@@ -189,7 +199,15 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
             pointRegions.erase(pointRegions.begin()+rangeCount);
         }
     }
-
+    con.printf("after split dumb");
+    for(unsigned int dumbOne=0;dumbOne<pointRegions.size();++dumbOne)
+    {
+        con.printf("dumb: %d\n\r \n\n",dumbOne);
+        for(unsigned int dumbTwo=0;dumbTwo<pointRegions.at(dumbOne).size();++dumbTwo)
+        {
+            con.printf("%f %f;\r",pointRegions.at(dumbOne).at(dumbTwo).x,pointRegions.at(dumbOne).at(dumbTwo).y);
+        }
+    }
     //con.printf("stage 3 complet");
     for(unsigned int tmCount=0;tmCount<pointRegions.size();tmCount++)
     {
@@ -217,24 +235,27 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
         //con.printf("merging %d\r\n",lineSegmentCount);
         if(lineSegmentCount==0)
         {
-            float lineLengthCurrent = distance(pointRegions.front().front(),pointRegions.front().back());
-            float lineLengthPrevious = distance(pointRegions.back().front(),pointRegions.back().back());
-
-            Point vectorLineCurrent = {.x = pointRegions.front().front().x-pointRegions.front().back().x,.y=pointRegions.front().front().y-pointRegions.front().back().y};
-            Point vectorLinePrevious = {.x = pointRegions.back().front().x-pointRegions.back().back().x,.y=pointRegions.back().front().y-pointRegions.back().back().y};
-
-            float angle = (vectorLineCurrent.x*vectorLinePrevious.x+vectorLineCurrent.y*vectorLinePrevious.y)/(lineLengthCurrent*lineLengthPrevious);
-
-
-            //con.printf("merging2 %f\r\n",angle/util::RAD);
-            if(angle>(180-maxAngleBetweenLines)*util::RAD)
+            if(distance(pointRegions.front().front(),pointRegions.back().back())<maxLineImprecision)
             {
-                PointContainer tmpPoints(pointRegions.back());
-                tmpPoints.insert(tmpPoints.end(),pointRegions.front().begin(),pointRegions.front().end());
-                pointRegions.erase(pointRegions.begin());
-                pointRegions.erase(pointRegions.end());
-                pointRegions.insert(pointRegions.end(),tmpPoints);
+                float lineLengthCurrent = distance(pointRegions.front().front(),pointRegions.front().back());
+                float lineLengthPrevious = distance(pointRegions.back().front(),pointRegions.back().back());
 
+                Point vectorLineCurrent = {.x = pointRegions.front().front().x-pointRegions.front().back().x,.y=pointRegions.front().front().y-pointRegions.front().back().y};
+                Point vectorLinePrevious = {.x = pointRegions.back().front().x-pointRegions.back().back().x,.y=pointRegions.back().front().y-pointRegions.back().back().y};
+
+                float angle = (vectorLineCurrent.x*vectorLinePrevious.x+vectorLineCurrent.y*vectorLinePrevious.y)/(lineLengthCurrent*lineLengthPrevious);
+
+
+                //con.printf("merging2 %f\r\n",angle/util::RAD);
+                if(angle>(180-maxAngleBetweenLines)*util::RAD)
+                {
+                    PointContainer tmpPoints(pointRegions.back());
+                    tmpPoints.insert(tmpPoints.end(),pointRegions.front().begin(),pointRegions.front().end());
+                    pointRegions.erase(pointRegions.begin());
+                    pointRegions.erase(pointRegions.end());
+                    pointRegions.insert(pointRegions.end(),tmpPoints);
+
+                }
             }
         }
         else
@@ -263,7 +284,15 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
             }
         }
     }
-
+    con.printf("after merge dumb");
+    for(unsigned int dumbOne=0;dumbOne<pointRegions.size();++dumbOne)
+    {
+        con.printf("dumb: %d\n\r \n\n",dumbOne);
+        for(unsigned int dumbTwo=0;dumbTwo<pointRegions.at(dumbOne).size();++dumbTwo)
+        {
+            con.printf("%f %f;\r",pointRegions.at(dumbOne).at(dumbTwo).x,pointRegions.at(dumbOne).at(dumbTwo).y);
+        }
+    }
     //con.printf("stage  5 complet");
 
     /** TODO (Ex4.7): Fill the line container to be returned **/

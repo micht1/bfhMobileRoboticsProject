@@ -307,7 +307,7 @@ void StateMachine::run() {
 
                 float angleOfLane=atan2(yDesired-controller.getY(),xDesired-controller.getX());
                 float deltaAngle=util::unwrap(angleOfLane-controller.getAlpha());
-                float distanceToTarget=0;
+                float distanceToTarget=sqrtf(((xDesired-controller.getX())*(xDesired-controller.getX()))+((yDesired-controller.getY())*(yDesired-controller.getY())));
                 float orientatonKor=0;
                 monitor1=(float)angleOfLane;
 
@@ -325,8 +325,14 @@ void StateMachine::run() {
                     {
                         controller.setRotationalVelocity(maxRotationalVelocity);
                     }
+                    if(distanceToTarget<tolerance)
+                    {
+                        manuver=3;
+                        controller.setRotationalVelocity(0.0f);
+                        controller.setTranslationalVelocity(0.0f);
 
-                    if(abs(deltaAngle)<tolerance)
+                    }
+                    else if(abs(deltaAngle)<tolerance)
                     {
                         manuver=2;
                         controller.setRotationalVelocity(0.0f);
@@ -334,7 +340,6 @@ void StateMachine::run() {
                     break;
                 case 2:
                     //con.printf("angleOfLane: %f, alpha: %f\r\n",angleOfLane, controller.getAlpha());
-                    distanceToTarget=sqrtf(((xDesired-controller.getX())*(xDesired-controller.getX()))+((yDesired-controller.getY())*(yDesired-controller.getY())));
 
                     controller.setTranslationalVelocity(distanceToTarget*K2);
 

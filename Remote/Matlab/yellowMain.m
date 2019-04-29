@@ -306,9 +306,10 @@ while(doMapping==true)
     lEnd1 = round(lEnd/100);
     [gMap,zeroPoint]= globalMap(lStart1,lEnd1,robotCoordinate,orientation);
     bwDist = gMap;
-    bwDist(bwDist==200)=0;
-    se = strel('diamond',1);
-    bwDist1 = imerode(double(gMap),se);
+    bwDist(bwDist==200)=255;
+    se = strel('square',5);
+    bwDist1 = imerode(double(bwDist),se);
+    bwDist1(gMap==200)=200;
     bwDist2 = bwDist1;
     bwDist2(bwDist1==200)=0;
     figure(2000)
@@ -330,7 +331,9 @@ while(doMapping==true)
     matSize=size(viaPoints)
     while(viaCnt<=matSize(1))
         driveToPosition(viaPoints(viaCnt,2),viaPoints(viaCnt,1),viaPoints(viaCnt,3),yellow);
-        pause(10)
+        while(isAtPosition(viaPoints(viaCnt,2),viaPoints(viaCnt,1),viaPoints(viaCnt,3),0.1,yellow)==false)
+            pause(0.1);
+        end
         viaCnt=viaCnt+1;
     end
     
@@ -339,7 +342,7 @@ while(doMapping==true)
 end
 
 
-%% drive to target
+%% drive to target with  localisation
 clear 'globalMap'
 targetPoint=[0 0];
 targetOrientation =0;
