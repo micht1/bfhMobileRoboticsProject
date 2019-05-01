@@ -1,5 +1,5 @@
 function followPath(pathVector,yellow)
-viaCnt=1;
+ viaCnt=1;
 matSize=size(pathVector)
 while(viaCnt<=matSize(1))
     pause(0.5);

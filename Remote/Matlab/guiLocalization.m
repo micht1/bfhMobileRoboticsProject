@@ -22,11 +22,11 @@ yellow.set('state{stateName: OFF}')
 pause(2)
 [lStartLoc, lEndLoc] = getLidarLines(yellow);
 %telemetry = yellow.receive;
-<<<<<<< Updated upstream
 xDrive = 0;
 yDrive = 0;
 [coordinateLoc1,orientationLoc1] = localisation(lStartLoc/100,lEndLoc/100,gMap,xDrive,yDrive);
 %driveToPosition(0,0,pi,yellow);
+
 % % this section needs testing
 %     telemetry = yellow.receive;
 %     robotCoordinate = int8(zeros(1,2));
