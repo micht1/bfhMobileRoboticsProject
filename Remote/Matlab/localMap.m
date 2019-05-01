@@ -148,7 +148,8 @@ if(whiteSectorFlag == 1)
 
 %     localMap2(robotCoordinate(1),robotCoordinate(2)) = 230;
 %     time = cputime-t;
-%     imshow(localMap2)
+figure(1000)
+imshow(localMap2)
 end
     timeLocalMap = cputime-t;
     map = localMap2;

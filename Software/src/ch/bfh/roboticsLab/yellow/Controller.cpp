@@ -166,8 +166,8 @@ void Controller::run() {
       else if(totalErrorRight<=-maxError)
       {
           totalErrorRight=-maxError;
-      }
-      */
+      }*/
+
       // Calculate the motor phase voltages (with P-controller closed loop)
       float voltageLeft = (desiredSpeedLeft > 0.0 ? KP_POS : KP_NEG) * (speedErrorLeft) + desiredSpeedLeft / peripherals::KN;//+Ki*totalErrorLeft;
       float voltageRight = (desiredSpeedRight > 0.0 ? KP_POS : KP_NEG) * (speedErrorRight) + desiredSpeedRight / peripherals::KN;//+Ki*totalErrorRight;

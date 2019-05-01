@@ -12,7 +12,11 @@ mapCenterPoint;
 startPoint = startPoint+mapCenterPoint;
 target1 = round((target)/meterPerPixel);
 startPoint1 = round((startPoint)/meterPerPixel)
-map(startPoint1(2),startPoint1(1))=1;
+changedToWhite = false;
+if(~(map(startPoint1(2),startPoint1(1))==1))
+    map(startPoint1(2),startPoint1(1))=1;
+    changedToWhite=true;
+end
 %map(startpoint1(2)-1:startpoint1(2)+1,startpoint1(1)-1:startpoint1(1)+1)=[1 1 1; 1 1 1; 1 1 1];
 
 
@@ -33,7 +37,10 @@ viaPoints= pathVector*meterPerPixel;
 %imshow(mat2gray(dx.distancemap))
 
 diffPoints= diff(viaPoints);
-pointAngle = zeros(length(diffPoints)+1,1);
+pointAngle = ones(length(diffPoints)+1,1)*123456;
+
+pointAngle(1)=0;
+pointAngle(end)=0;
 %pointAngle(1:end-1)=atan2(diffPoints(:,2),diffPoints(:,1))
 % tmpDiff = circshift(pointAngle,-1);
 % 
@@ -54,8 +61,12 @@ pointAngle = zeros(length(diffPoints)+1,1);
 %     if()
 %     end
 % end
-viaPoints= [viaPoints pointAngle]
-viaPoints(:,1:2) = viaPoints(:,1:2)-mapCenterPoint
+viaPoints= [viaPoints pointAngle];
+viaPoints(:,1:2) = viaPoints(:,1:2)-mapCenterPoint;
+
+if(changedToWhite==true)
+    map(startPoint1(2),startPoint1(1))=0;
+end
 %viaPoints(1:end,1:2)+mapCenterPoint 
 
 toc

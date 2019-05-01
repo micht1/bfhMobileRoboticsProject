@@ -89,7 +89,7 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
    // con.printf("data dumb ra points\r\n");
     for(unsigned int pointCount=1;pointCount<rawScanPoints.size();pointCount++)
     {
-        con.printf("%f %f;\r",rawScanPoints.at(pointCount).x,rawScanPoints.at(pointCount).y);
+        //con.printf("%f %f;\r",rawScanPoints.at(pointCount).x,rawScanPoints.at(pointCount).y);
         //con.printf("distance %f\r\n",distance(rawScanPoints[pointCount],rawScanPoints[pointCount+1]));
         if(distance(rawScanPoints.at(pointCount-1),rawScanPoints.at(pointCount))>minRangeDistance)
         {
@@ -199,15 +199,6 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
             pointRegions.erase(pointRegions.begin()+rangeCount);
         }
     }
-    con.printf("after split dumb");
-    for(unsigned int dumbOne=0;dumbOne<pointRegions.size();++dumbOne)
-    {
-        con.printf("dumb: %d\n\r \n\n",dumbOne);
-        for(unsigned int dumbTwo=0;dumbTwo<pointRegions.at(dumbOne).size();++dumbTwo)
-        {
-            con.printf("%f %f;\r",pointRegions.at(dumbOne).at(dumbTwo).x,pointRegions.at(dumbOne).at(dumbTwo).y);
-        }
-    }
     //con.printf("stage 3 complet");
     for(unsigned int tmCount=0;tmCount<pointRegions.size();tmCount++)
     {
@@ -271,7 +262,7 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
 
                 float angle = (vectorLineCurrent.x*vectorLinePrevious.x+vectorLineCurrent.y*vectorLinePrevious.y)/(lineLengthCurrent*lineLengthPrevious);
 
-                con.printf("merging2 %f\r\n",angle/util::RAD);
+                //con.printf("merging2 %f\r\n",angle/util::RAD);
                 if(angle>(180-maxAngleBetweenLines)*util::RAD)
                 {
                     PointContainer tmpPoints(pointRegions[lineSegmentCount-1]);
@@ -284,15 +275,15 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
             }
         }
     }
-    con.printf("after merge dumb");
-    for(unsigned int dumbOne=0;dumbOne<pointRegions.size();++dumbOne)
+    //con.printf("after merge dumb");
+    /*for(unsigned int dumbOne=0;dumbOne<pointRegions.size();++dumbOne)
     {
         con.printf("dumb: %d\n\r \n\n",dumbOne);
         for(unsigned int dumbTwo=0;dumbTwo<pointRegions.at(dumbOne).size();++dumbTwo)
         {
             con.printf("%f %f;\r",pointRegions.at(dumbOne).at(dumbTwo).x,pointRegions.at(dumbOne).at(dumbTwo).y);
         }
-    }
+    }*/
     //con.printf("stage  5 complet");
 
     /** TODO (Ex4.7): Fill the line container to be returned **/

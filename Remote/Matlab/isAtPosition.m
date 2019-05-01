@@ -1,10 +1,13 @@
 function atPos = isAtPosition(x,y,alpha,tolerance,yellow)
 telemetry = yellow.receive;
-if((abs(telemetry.odometry.pose.x-x)<tolerance) & (abs(telemetry.odometry.pose.y-y)<tolerance))
-    if(abs(telemetry.odometry.pose.alpha-alpha)<tolerance)
-        atPos=true;
+atPos=false;
+stateStr = telemetry.state.toString;
+if(strcmp(stateStr,'State = OFF'))
+    if((abs(telemetry.odometry.pose.x-x)<tolerance) & (abs(telemetry.odometry.pose.y-y)<tolerance))
+        %if(abs(telemetry.odometry.pose.alpha-alpha)<tolerance*1.2)
+            atPos=true;
+        %end   
     end
-else
-    atPos=false;
 end
+
 end

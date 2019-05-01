@@ -284,12 +284,15 @@ yellow.set('state{stateName: MANUAL}')
 
 % You may append commands, so they will be sent to the robot one after the other
 % Set the velocities for manual mode: linear and angular speed
-yellow.append('velocities{linearSpeed:0.5, angularSpeed:0}')
+yellow.append('velocities{linearSpeed:0.0, angularSpeed:0.1}')
 %test velocity without filter in controller.h, take out the motionplaner in
 %controller
 
 %% mapping
 clear 'globalMap'
+yellowString = sprintf('correctedPose: { x: %f, y: %f, alpha: %f}',0,0,0);
+yellow.set(yellowString);
+pause(2);
 doMapping = true
 while(doMapping==true)
     yellow.set('state{stateName: OFF}')
@@ -299,13 +302,13 @@ while(doMapping==true)
     robotCoordinate = int8(zeros(1,2));
     robotCoordinate(1,2)= int8(round(telemetry.odometry.pose.x*10));
     robotCoordinate(1,1)= int8(round(telemetry.odometry.pose.y*10));
-    orientation= (telemetry.odometry.pose.alpha);
+    orientation= (telemetry.odometry.pose.alpha)
     
     lStart1 = round(lStart/100);
     lEnd1 = round(lEnd/100);
     [gMap,zeroPoint]= globalMap(lStart1,lEnd1,robotCoordinate,orientation);
     bwDist = gMap;
-    bwDist(bwDist==200)=255;
+    %bwDist(bwDist==200)=255;
     se = strel('square',5);
     bwDist1 = imerode(double(bwDist),se);
     bwDist1(gMap==200)=200;
@@ -329,9 +332,14 @@ while(doMapping==true)
     viaCnt=1;
     matSize=size(viaPoints)
     while(viaCnt<=matSize(1))
+        pause(0.5);
         driveToPosition(viaPoints(viaCnt,2),viaPoints(viaCnt,1),viaPoints(viaCnt,3),yellow);
-        while(isAtPosition(viaPoints(viaCnt,2),viaPoints(viaCnt,1),viaPoints(viaCnt,3),0.1,yellow)==false)
-            pause(0.1);
+        atPos = false;
+        %pause(10);
+        while(atPos==false)
+            
+            atPos=isAtPosition(viaPoints(viaCnt,2),viaPoints(viaCnt,1),viaPoints(viaCnt,3),0.05,yellow);
+            pause(0.5);
         end
         viaCnt=viaCnt+1;
     end
