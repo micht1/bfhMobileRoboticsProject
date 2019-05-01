@@ -18,8 +18,8 @@ yellow.set('state{stateName: OFF}')
 pause(2)
 [lStartLoc, lEndLoc] = getLidarLines(yellow);
 %telemetry = yellow.receive;
-[coordinateLoc1,orientationLoc1] = localisation(lStartLoc/100,lEndLoc/100,gMap);
-driveToPosition(0,0,pi,yellow);
+[coordinateLoc1,orientationLoc1] = localisation(lStartLoc/100,lEndLoc/100,gMap,xDrive,yDrive);
+%driveToPosition(0,0,pi,yellow);
 
 end
 

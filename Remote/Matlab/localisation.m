@@ -1,5 +1,5 @@
 
-function [coordinate,orientation] = localisation(lStart,lEnd,globalMap)
+function [coordinate,orientation] = localisation(lStart,lEnd,globalMap,xDrive,yDrive)
 sizeGmap = size(globalMap);
 globalIm = mat2gray(globalMap);
 persistent possibilityMap
@@ -13,6 +13,16 @@ for y = 1:sizeGmap(1)
        end
     end
 end
+end
+
+for y = 1:sizeGmap(1)
+    for x = 1:sizeGmap(2)
+        
+        if(y+yDrive > 0  & x+xDrive > 0 & y+yDrive < sizeGmap(1)  & x+xDrive > sizeGmap(2))        
+        possibilityMap(y,x) = possibilityMap(y+yDrive,x+xDrive);       
+        possibilityMap(y+yDrive,x+xDrive) = 0; 
+        end
+    end    
 end
 
 match = [0,0,0,0];
