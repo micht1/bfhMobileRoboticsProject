@@ -10,14 +10,17 @@ if(~exist('yellow'))
     % Connect to the robot
     yellow = SerialClient.getInstance;   
 end
+load('mapFile')
+% load('mapFile','gMap')
+% load('mapFile','loadedMap')
 
-gMap = load('mapFile','gMap')
-loadedMap = load('mapFile','loadedMap')
 
 yellow.set('state{stateName: OFF}')
 pause(2)
 [lStartLoc, lEndLoc] = getLidarLines(yellow);
 %telemetry = yellow.receive;
+xDrive = 0;
+yDrive = 0;
 [coordinateLoc1,orientationLoc1] = localisation(lStartLoc/100,lEndLoc/100,gMap,xDrive,yDrive);
 %driveToPosition(0,0,pi,yellow);
 

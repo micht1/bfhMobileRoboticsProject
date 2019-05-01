@@ -124,15 +124,23 @@ function localize_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 %call localize function
 
-
+clear 'localisation'
 [coordinate,orientation]= guiLocalization;
 x = num2str(coordinate(1));
 y = num2str(coordinate(2));
 a = num2str(orientation);
 
+load('mapFile')
+tempMap = gMap;
+tempMap(coordinate(2),coordinate(1))= 100;
+
 set(handles.startX,'String',x)
 set(handles.startY,'String',y)
 set(handles.startA,'String',a)
+
+axes(handles.axes2);
+imshow(tempMap)
+axis off
 
 
 function startX_Callback(hObject, eventdata, handles)
@@ -354,7 +362,7 @@ imshow(lMap)
 axis off
 
 clear mapping
-gMap = mapping;
+[gMap,mapZeroPoint] = mapping;
 
 loadedMap = imcomplement(imread("occupancyGrid_1.bmp"));
 
@@ -363,7 +371,7 @@ imshow(gMap)
 axis off
 
 set(handles.status,'String','Done')
-save('mapFile','gMap','loadedMap')
+save('mapFile','gMap','loadedMap','mapZeropoint')
 
 
 % --- Executes on button press in mapReset.

@@ -1,4 +1,4 @@
-function [map,mapZeroPoint] = mapping
+function map = mapping
 
 if(~exist('yellow'))
     
@@ -46,7 +46,7 @@ while(doMapping==true)
         if(point(2)==0)
             doMapping=false;
             map = gMap;
-            mapZeroPoint = zeroPoint;
+            mapZeroPoint = zeropoint
             break;
         end
     end
