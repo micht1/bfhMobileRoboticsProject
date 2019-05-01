@@ -1,4 +1,4 @@
-function atPos = isAtPosition(x,y,alpha,tolerance,yellow)
+function [atPos,telemetry] = isAtPosition(x,y,alpha,tolerance,yellow)
 telemetry = yellow.receive;
 atPos=false;
 stateStr = telemetry.state.toString;

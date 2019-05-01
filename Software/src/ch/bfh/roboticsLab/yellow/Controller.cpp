@@ -97,7 +97,7 @@ float Controller::getAlpha() {
 }
 
 void Controller::run() {
-    Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
+
 
   while (waitForNextPeriod()) {
 
@@ -125,7 +125,6 @@ void Controller::run() {
       previousValueCounterRight = encoderCountsRight;
       if(abs(oldVelocityLeft-actualSpeedLeft)>1500)
       {
-        con.printf("%f\r\n",abs(oldVelocityLeft-actualSpeedLeft));
         actualSpeedLeft = oldVelocityLeft;
       }
       else

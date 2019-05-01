@@ -310,7 +310,7 @@ while(doMapping==true)
     [gMap,zeroPoint]= globalMap(lStart1,lEnd1,robotCoordinate,orientation);
     bwDist = gMap;
     %bwDist(bwDist==200)=255;
-    se = strel('square',5);
+    se = strel('square',3);
     bwDist1 = imerode(double(bwDist),se);
     bwDist1(gMap==200)=200;
     bwDist2 = bwDist1;
@@ -332,15 +332,28 @@ while(doMapping==true)
     
     viaCnt=1;
     matSize=size(viaPoints)
+    
+    oldPose = [0 0 0];
     while(viaCnt<=matSize(1))
         pause(0.5);
+        telemetry = yellow.receive;
+        oldPose = [telemetry.odometry.pose.x telemetry.odometry.pose.y telemetry.odometry.pose.alpha];
         driveToPosition(viaPoints(viaCnt,2),viaPoints(viaCnt,1),viaPoints(viaCnt,3),yellow);
+        waitForResending = 3;
         atPos = false;
+        
         %pause(10);
         while(atPos==false)
             
-            atPos=isAtPosition(viaPoints(viaCnt,2),viaPoints(viaCnt,1),viaPoints(viaCnt,3),0.05,yellow);
+            [atPos,telemetry]=isAtPosition(viaPoints(viaCnt,2),viaPoints(viaCnt,1),viaPoints(viaCnt,3),0.05,yellow);
             pause(0.5);
+            actualPose = [telemetry.odometry.pose.x telemetry.odometry.pose.y telemetry.odometry.pose.alpha]
+            if(waitForResending<1 & (norm(actualPose(1:2)-oldPose(1:2)))<0.01)
+                driveToPosition(viaPoints(viaCnt,2),viaPoints(viaCnt,1),viaPoints(viaCnt,3),yellow);
+                waitForResending = 3;
+            else
+                waitForResending = waitForResending-1;
+            end
         end
         viaCnt=viaCnt+1;
     end

@@ -327,7 +327,7 @@ void StateMachine::run() {
                     if((abs(deltaAngle)*K1)>maxRotationalVelocity && (deltaAngle)*K1<0)
                     {
                         controller.setRotationalVelocity(-maxRotationalVelocity);
-                       // con.printf("angleVel:%f\r\n",abs((angleOfLane-controller.getAlpha())*K1));
+
                     }
                     else if((abs(deltaAngle)*K1)>maxRotationalVelocity && (deltaAngle)*K1>0)
                     {
@@ -347,7 +347,7 @@ void StateMachine::run() {
                     }
                     break;
                 case 2:
-                    //con.printf("angleOfLane: %f, alpha: %f\r\n",angleOfLane, controller.getAlpha());
+
 
                     controller.setTranslationalVelocity(distanceToTarget*K2);
 
