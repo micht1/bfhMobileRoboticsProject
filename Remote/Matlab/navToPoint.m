@@ -10,12 +10,14 @@ map =Map;
 startPoint;
 mapCenterPoint;
 startPoint = startPoint+mapCenterPoint;
-target1 = round((target)/meterPerPixel);
+target1 = round((target)/meterPerPixel)
 startPoint1 = round((startPoint)/meterPerPixel)
 changedToWhite = false;
-if(~(map(startPoint1(2),startPoint1(1))==1))
-    map(startPoint1(2),startPoint1(1))=1;
-    changedToWhite=true;
+if(startPoint1(1) > 0 && startPoint1(2) > 0) 
+    if(~(map(startPoint1(2),startPoint1(1))==1))
+        map(startPoint1(2),startPoint1(1))=1;
+        changedToWhite=true;
+    end
 end
 %map(startpoint1(2)-1:startpoint1(2)+1,startpoint1(1)-1:startpoint1(1)+1)=[1 1 1; 1 1 1; 1 1 1];
 

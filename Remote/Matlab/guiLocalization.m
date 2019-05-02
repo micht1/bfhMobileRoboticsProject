@@ -34,9 +34,11 @@ yDrive = 0;
 %     robotCoordinate(1,1)= int8(round(telemetry.odometry.pose.y*10));
 %     orientation= (telemetry.odometry.pose.alpha)
 %     
-%     lStart = round(lStart/100);
-%     lEnd = round(lEnd/100);
+%     lStart = round(lStartLoc/100);
+%     lEnd = round(lEndLoc/100);
 %     [LocLMap,LocZeroPoint]= localMap(lStart,lEnd,orientation,1);
+%     yellowString = sprintf('correctedPose: { x: %f, y: %f, alpha: %f}',LocZeroPoint(2)*0.1,LocZeroPoint(1)*0.1,0);
+%     yellow.set(yellowString);
 %     bwDist = LocLMap;
 %     %bwDist(bwDist==200)=255;
 %     se = strel('square',3);
@@ -57,8 +59,11 @@ yDrive = 0;
 %     [lStartLoc, lEndLoc] = getLidarLines(yellow);
 %     [coordinateLoc1,orientationLoc1] = localisation(lStartLoc/100,lEndLoc/100,gMap,xDrive,yDrive);
 %     %until here needs testing
-    coordinateLoc1 = coordinateLoc1*0.1;
-    yellowString = sprintf('correctedPose: { x: %f, y: %f, alpha: %f}',coordinateLoc1(2),coordinateLoc1(1),(orientationLoc1/180 *pi));
+
+
+
+    coordinateLoc2 = coordinateLoc1*0.1;
+    yellowString = sprintf('correctedPose: { x: %f, y: %f, alpha: %f}',coordinateLoc2(2),coordinateLoc2(1),(orientationLoc1/180 *pi));
     yellow.set(yellowString);
     
 

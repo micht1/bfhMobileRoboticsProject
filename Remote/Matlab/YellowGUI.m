@@ -126,12 +126,14 @@ a = str2num(get(handles.endA,'String'));
 %print Map with end coordinate
 sX = str2num(get(handles.startX,'String'));
 sY = str2num(get(handles.startY,'String'));
-sA = str2num(get(handles.startA,'String'));
+sA = degtorad(str2num(get(handles.startA,'String')));
 
 load('mapFile')
 
 %yellow set new Position and Orienatation
-
+yellowString = sprintf('correctedPose: { x: %f, y: %f, alpha: %f}',sY*0.1,sX*0.1,sA);
+yellow.set(yellowString);
+pause(2);
 
 
 
@@ -142,8 +144,8 @@ load('mapFile')
     bwDist1(gMap==200)=200;
     bwDist2 = bwDist1;
     bwDist2(bwDist1==200)=0;
-
-    viaPoints=navToPoint(bwDist2,double([y x]).*0.1,0.1,[mapZeroPoint(1) mapZeroPoint(2)].*0.1,[telemetry.odometry.pose.y telemetry.odometry.pose.x])
+ telemetry = yellow.receive;
+    viaPoints=navToPoint(bwDist2,double([x y]).*0.1,0.1,[0 0].*0.1,[telemetry.odometry.pose.y telemetry.odometry.pose.x])
     
     viaCnt=1;
     matSize=size(viaPoints)
@@ -204,6 +206,7 @@ set(handles.startX,'String',x)
 set(handles.startY,'String',y)
 set(handles.startA,'String',a)
 
+tempMap = showMap(tempMap);
 axes(handles.axes2);
 imshow(tempMap)
 axis off
@@ -432,7 +435,7 @@ if(~exist('yellow'))
     
 end
 
-speed = num2str(round(get(hObject,'Value')*10)/10)
+speed = num2str(round(get(handles.speed,'Value')*10)/10)
 str1 = 'reactiveParameters { translationalVelocity: ';
 message = [str1 speed];
 yellow.set(message);
