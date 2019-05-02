@@ -2,27 +2,14 @@
 % load('workspaceVariables.mat')
 
 function [map,zeroPoint] = localMap(lStart,lEnd,orientation,whiteSectorFlag) 
-% localMap1 = imread("occupancyGrid_1.bmp");
-% localMap1 = imcomplement(localMap1);
+
 t = cputime;
-
-% load('workspaceVariables.mat')
-
-
 freeSpace = 5;
 sizeKernel = 3;
 factor = 1000;
-%imshow(localMap1);
-
 robotCoordinate = [0,0];
 
-%% Draw local Map as Matrix
-%angle = atan2(lEnd(1,1)-lStart(1,1),lEnd(1,2)-lStart(1,2));
-%angle = 0;
-%orientation = 0;
-% R = Rz(-orientation)*Ry(pi());
-% R = Rz(-orientation);
-
+%% Draw local Map as Matrix and Calculate size of local Map and its center point
 R = [cos(-orientation),-sin(-orientation),0;sin(-orientation),cos(-orientation),0;0,0,1];
 L = [0,0,0]';
 Tmat=TraMat3D(R,L);
@@ -66,7 +53,7 @@ maxY = max(max(lEnd(:,1),lStart(:,1)),robotCoordinate(:,1))+freeSpace;
 localMap2 = uint8(zeros(max(maxY),max(maxX))+200);
 sizeStart = size(lStart);
 
-%Draw black Lines
+%% Draw black Lines
 
 for k = 1:sizeStart(1)
    direction=(lEnd(k,:)-lStart(k,:))/factor;
@@ -88,7 +75,7 @@ end
 
 
 if(whiteSectorFlag == 1)
-    %search black Points
+%% search black Points
     linePoints = zeros(2,2);   
     cnt = 1;
     sizeMap = size(localMap2);
@@ -102,7 +89,7 @@ if(whiteSectorFlag == 1)
         end
     end
 
-    %Draw white sector
+%% Draw white sector
     for k = 1:size(linePoints)
        direction=(robotCoordinate-linePoints(k,:))/factor;
        newPoint = linePoints(k,:);
@@ -125,7 +112,7 @@ if(whiteSectorFlag == 1)
        end
     end
 
-    %search white Points
+%% search white Points
     cnt = 1;
     whiteSector = zeros(2,2);
     for y = 1:sizeMap(1)
@@ -138,7 +125,7 @@ if(whiteSectorFlag == 1)
         end
     end
 
-    %delete white points outside the lines
+%% delete white points outside the lines
     for k = 1: size(whiteSector)
         surroundings = getSurroundings(sizeKernel,whiteSector(k,:),localMap2);
         if(surroundings(1,:) <255 & surroundings(3,:)<255 & surroundings(2,1) <255 & surroundings(2,3) <255)
