@@ -1,3 +1,4 @@
+%checks if robot is at specified position. x,y in [m] alpha in [rad]
 function [atPos,telemetry] = isAtPosition(x,y,alpha,tolerance,yellow)
 telemetry = yellow.receive;
 atPos=false;

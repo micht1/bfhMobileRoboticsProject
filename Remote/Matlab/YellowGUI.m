@@ -105,7 +105,7 @@ function navigate_Callback(hObject, eventdata, handles)
 % hObject    handle to navigate (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+%navigates on button press from start point to target point
 if(~exist('yellow'))
     
     % Add our classes to the Matlab Java path

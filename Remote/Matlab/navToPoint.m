@@ -1,5 +1,6 @@
-%%returns viaPoints between start and endPoints. Start adn end point are
-%%not included in the returned vector
+%%returns viaPoints between start and endPoints. target is in picture
+%%refrence frame but startpoint is in frame which is at robot starting
+%%position
 
 function viaPoints = navToPoint(Map,target,meterPerPixel,mapCenterPoint,startPoint)
 figure(300)

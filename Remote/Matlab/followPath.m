@@ -1,4 +1,5 @@
 %follows path. pathVector is a 3xN Vector containing[x y alpha]. And the Object of the Yellow
+%resends move command when robot hasnt moved
 function followPath(pathVector,yellow)
  viaCnt=1;
 matSize=size(pathVector)
