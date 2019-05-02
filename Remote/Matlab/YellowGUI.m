@@ -81,9 +81,6 @@ imshow(im)
 axis off
 set(handles.status,'String','Standby')
 
-
-
-
 % Update handles structure
 guidata(hObject, handles);
 
@@ -108,6 +105,21 @@ function navigate_Callback(hObject, eventdata, handles)
 % hObject    handle to navigate (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+if(~exist('yellow'))
+    
+    % Add our classes to the Matlab Java path
+    
+    dpath = {'./YellowInterface.jar', './protobuf-java-3.4.0.jar'};
+    javaclasspath(dpath);
+    import ch.bfh.roboticsLab.yellow.*;
+        
+    % Connect to the robot
+    yellow = SerialClient.getInstance;
+    
+end
+
+
 x = str2num(get(handles.endX,'String'));
 y = str2num(get(handles.endY,'String'));
 a = str2num(get(handles.endA,'String'));
@@ -115,6 +127,60 @@ a = str2num(get(handles.endA,'String'));
 sX = str2num(get(handles.startX,'String'));
 sY = str2num(get(handles.startY,'String'));
 sA = str2num(get(handles.startA,'String'));
+
+load('mapFile')
+
+%yellow set new Position and Orienatation
+
+
+
+
+    bwDist = gMap;
+    %bwDist(bwDist==200)=255;
+    se = strel('square',3);
+    bwDist1 = imerode(double(bwDist),se);
+    bwDist1(gMap==200)=200;
+    bwDist2 = bwDist1;
+    bwDist2(bwDist1==200)=0;
+
+    viaPoints=navToPoint(bwDist2,double([y x]).*0.1,0.1,[mapZeroPoint(1) mapZeroPoint(2)].*0.1,[telemetry.odometry.pose.y telemetry.odometry.pose.x])
+    
+    viaCnt=1;
+    matSize=size(viaPoints)
+    
+    oldPose = [0 0 0];
+    while(viaCnt<=matSize(1))
+        pause(0.5);
+        telemetry = yellow.receive;
+        oldPose = [telemetry.odometry.pose.x telemetry.odometry.pose.y telemetry.odometry.pose.alpha];
+        driveToPosition(viaPoints(viaCnt,2),viaPoints(viaCnt,1),viaPoints(viaCnt,3),yellow);
+        waitForResending = 3;
+        atPos = false;
+        
+        %pause(10);
+        while(atPos==false)
+            
+            [atPos,telemetry]=isAtPosition(viaPoints(viaCnt,2),viaPoints(viaCnt,1),viaPoints(viaCnt,3),0.05,yellow);
+            pause(0.5);
+            actualPose = [telemetry.odometry.pose.x telemetry.odometry.pose.y telemetry.odometry.pose.alpha]
+            if(waitForResending<1 & (norm(actualPose(1:2)-oldPose(1:2)))<0.01)
+                driveToPosition(viaPoints(viaCnt,2),viaPoints(viaCnt,1),viaPoints(viaCnt,3),yellow);
+                waitForResending = 3;
+            else
+                waitForResending = waitForResending-1;
+            end
+        end
+        viaCnt=viaCnt+1;
+    end
+
+
+
+
+
+
+
+
+
 
 
 % --- Executes on button press in localize.
@@ -219,6 +285,21 @@ function endX_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of endX as text
 %        str2double(get(hObject,'String')) returns contents of endX as a double
+load('mapFile')
+X = str2num(get(handles.endX,'String'));
+Y = str2num(get(handles.endY,'String'));
+
+sX = str2num(get(handles.startX,'String'));
+sY = str2num(get(handles.startY,'String')); 
+
+tempMap = gMap;
+tempMap(Y,X)= 220;
+tempMap(sY,sX)= 140;
+tempMap = showMap(tempMap);
+
+axes(handles.axes2);
+imshow(tempMap)
+axis off
 
 
 % --- Executes during object creation, after setting all properties.
@@ -242,7 +323,21 @@ function endY_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of endY as text
 %        str2double(get(hObject,'String')) returns contents of endY as a double
+load('mapFile')
+X = str2num(get(handles.endX,'String'));
+Y = str2num(get(handles.endY,'String'));
 
+sX = str2num(get(handles.startX,'String'));
+sY = str2num(get(handles.startY,'String')); 
+
+tempMap = gMap;
+tempMap(Y,X)= 220;
+tempMap(sY,sX)= 140;
+tempMap = showMap(tempMap);
+
+axes(handles.axes2);
+imshow(tempMap)
+axis off
 
 % --- Executes during object creation, after setting all properties.
 function endY_CreateFcn(hObject, eventdata, handles)
@@ -265,6 +360,21 @@ function endA_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of endA as text
 %        str2double(get(hObject,'String')) returns contents of endA as a double
+load('mapFile')
+X = str2num(get(handles.endX,'String'));
+Y = str2num(get(handles.endY,'String'));
+
+sX = str2num(get(handles.startX,'String'));
+sY = str2num(get(handles.startY,'String')); 
+
+tempMap = gMap;
+tempMap(Y,X)= 220;
+tempMap(sY,sX)= 140;
+tempMap = showMap(tempMap);
+
+axes(handles.axes2);
+imshow(tempMap)
+axis off
 
 
 % --- Executes during object creation, after setting all properties.
@@ -365,13 +475,16 @@ clear mapping
 [gMap,mapZeroPoint] = mapping;
 
 loadedMap = imcomplement(imread("occupancyGrid_1.bmp"));
+[tempMap,frontX,frontY] = showMap(gMap);
+
+save('frontFile','frontX','frontY')
 
 axes(handles.axes2);
-imshow(gMap)
+imshow(tempMap)
 axis off
 
 set(handles.status,'String','Done')
-save('mapFile','gMap','loadedMap','mapZeropoint')
+save('mapFile','gMap','loadedMap','mapZeroPoint')
 
 
 % --- Executes on button press in mapReset.
