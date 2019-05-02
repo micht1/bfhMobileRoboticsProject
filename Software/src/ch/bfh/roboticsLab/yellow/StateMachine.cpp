@@ -39,8 +39,7 @@ StateMachine::StateMachine()
       yDesired(0.0f),
       alphaDesired(0.0f),
       velocity(0.2),
-      tolerance(0.009),
-      yDiffPrevious(0)
+      tolerance(0.009)
 {
     peripherals::enableMotorDriver = 0;
 
@@ -87,16 +86,10 @@ void StateMachine::run() {
 
     peripherals::enableIRSensors = 1;
     float distance[peripherals::N_IRs];
-    Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
 
     while (waitForNextPeriod()) {
 
-        /* TODO (Ex3.2): Read the IR sensors & activate the corresponding LED
-         * Read the IR sensors and fill the `distance` array.
-         * Turn on and off the corresponding LED.
-         * NOTE: Use the member variables `minDistance` / `maxDistance`.
-         * NOTE: Use your code from Ex1.4 & 1.5.
-         */
+        //read IR-Sensors and light LEDS if distance is under threshold
         peripherals::enableIRSensors = 1;
 
         for(int cnt = 0; cnt <peripherals::N_IRs; ++cnt){
@@ -112,6 +105,7 @@ void StateMachine::run() {
 
         // handle state machine
         switch (state) {
+
 
         case State::OFF:
 
@@ -190,7 +184,7 @@ void StateMachine::run() {
             break;
 
         case State::MANUAL:
-
+        //drives robot with speeds transmitted by  wirless comunication
             if (desiredState <= State::ON) {
 
                 controller.setTranslationalVelocity(0.0f);
@@ -200,9 +194,6 @@ void StateMachine::run() {
 
             } else {
 
-                /* TODO (Ex3.3): Complete the MANUAL state
-                 * Let Yellow drive at the desired translational / rotational velocities.
-                 */
                 controller.setTranslationalVelocity(translationalVelocity);
                 controller.setRotationalVelocity(rotationalVelocity);
             }
@@ -210,7 +201,7 @@ void StateMachine::run() {
             break;
 
         case State::AUTO_REACTIVE:
-
+        // navigates robot around objects with ir-distance sensors
             buttonNow = peripherals::userButton;
             if (buttonNow && !buttonBefore)
                 desiredState = State::OFF;
@@ -224,13 +215,9 @@ void StateMachine::run() {
 
             } else {
 
-                /* TODO (Ex3.4): Implement Reactive navigation
-                 * Set the translational and rotational velocity based on the distances to an obstacle.
-                 * NOTE: Use the `distance` array created and filled (Ex3.2) at the beginning of this `StateMachine::run` method.
-                 * NOTE: Again, use the member variables `minDistance` / `maxDistance`.
-                 * Request desired velocities to the controller.
-                 */
-                maxDistance = 0.6f / 1.5f *translationalProfileVelocity;
+                //distance array is read out and translation and rotation velocity is set, according to the formula, except when all three frontsensor
+                //senses a distance smaller than minimum threshhold or when difference between outer sensor is too small
+                maxDistance = 0.9f / 1.5f *translationalProfileVelocity;
 
 
                 if(distance[0]>=maxDistance && distance[1]>=maxDistance && distance[5]>=maxDistance){
@@ -238,13 +225,13 @@ void StateMachine::run() {
                     controller.setRotationalVelocity(0.0f);
                 }
                 else if(distance[0]<=minDistance || distance[1]<=minDistance || distance[5]<=minDistance){
-                    controller.setTranslationalVelocity(-0.2*translationalProfileVelocity);
+                    controller.setTranslationalVelocity(-0.1*translationalProfileVelocity);
                     controller.setRotationalVelocity(0.0f);
                 }
                 else {
-                    controller.setTranslationalVelocity(translationalProfileVelocity*(distance[0]/maxDistance)*(distance[1]+distance[5])/(2.0f*maxDistance));
-                    if(abs(distance[1]-distance[5])>0.02){
-                        controller.setRotationalVelocity(maxRotationalVelocity*((distance[5]/maxDistance)-(distance[1]/maxDistance)));
+                    controller.setTranslationalVelocity(0.3+8.0f*translationalProfileVelocity*(distance[0]/maxDistance)*(distance[1]+distance[5])/(2.0f*maxDistance));
+                    if(abs(distance[1]-distance[5])>0.00){
+                        controller.setRotationalVelocity(0.1+10.0f*maxRotationalVelocity*((distance[5]/maxDistance)-(distance[1]/maxDistance)));
                     }
                     else {
                         controller.setRotationalVelocity(0.0f);
@@ -266,53 +253,13 @@ void StateMachine::run() {
 
             } else {
 
-                /* TODO (Ex3.5): Implement position control (Step-wise maneuver)
-                 * Use a step-wise maneuver to drive the robot to a desired pose.
-                 * Rotate the robot so that its forward direction is oriented towards the goal position.
-                 * Translate straight ahead to the goal position.
-                 * Rotate the robot to the goal orientation.
-                 */
 
-                /*
-                float distanceToTarget=sqrtf(((xDesired-controller.getX())*(xDesired-controller.getX()))+((yDesired-controller.getY())*(yDesired-controller.getY())));
-                float angleToTargetPos = atan2f(yDesired-controller.getY(),xDesired-controller.getX())-controller.getAlpha();
-                if(abs(controller.getAlpha()-M_PI)<0.1 && controller.getAlpha()<0)
-                {
-                    angleToTargetPos = atan2f(yDesired-controller.getY(),xDesired-controller.getX())-(-1)*controller.getAlpha();
-                }
-
-                float angleCorrection=angleToTargetPos+controller.getAlpha()-alphaDesired;
-                float vel = K1*distanceToTarget*cosf(angleToTargetPos);
-                if(abs(vel)>maxForwardVelocity)
-                {
-                        if(vel>0)
-                        {
-                            vel = maxForwardVelocity;
-                        }
-                        else
-                        {
-                            vel = -maxForwardVelocity;
-                        }
-                }
-
-                if(abs(distanceToTarget)>0.001f)
-                {
-                    controller.setTranslationalVelocity(vel);
-                }
-                if(abs(angleToTargetPos)>0.001f){
-                    angularVelPrevious= K2*angleToTargetPos+K1*sinf(angleToTargetPos)*cosf(angleToTargetPos)*((angleToTargetPos+K3*angleCorrection)/angleToTargetPos);
-                    controller.setRotationalVelocity(angularVelPrevious);
-                }
-
-                monitor1 = angleCorrection;
-                monitor2 = 0;
-                */
                 bool dontRot=false;
-                if(alphaDesired==123456)
+                if(alphaDesired==123456) // angle 123456 is indicator, that the robot should ignore the angle indication
                 {
                     dontRot=true;
                 }
-
+                //direkt manuver to reach a requested location
                 float angleOfLane=atan2(yDesired-controller.getY(),xDesired-controller.getX());
                 float deltaAngle=util::unwrap(angleOfLane-controller.getAlpha());
                 float distanceToTarget=sqrtf(((xDesired-controller.getX())*(xDesired-controller.getX()))+((yDesired-controller.getY())*(yDesired-controller.getY())));
@@ -323,6 +270,7 @@ void StateMachine::run() {
                 switch (manuver)
                 {
                 case 1:
+                    //rotate Robot in the direction it needs to drive to reach target position
                     controller.setRotationalVelocity((deltaAngle)*K1);
                     if((abs(deltaAngle)*K1)>maxRotationalVelocity && (deltaAngle)*K1<0)
                     {
@@ -347,7 +295,7 @@ void StateMachine::run() {
                     }
                     break;
                 case 2:
-
+                    //travel along line between points. Correct if direction is to far of
 
                     controller.setTranslationalVelocity(distanceToTarget*K2);
 
@@ -387,6 +335,7 @@ void StateMachine::run() {
                     break;
 
                 case 3:
+                    //orient robot into the desired direction
                     if(dontRot==false)
                     {
                         orientatonKor =  (alphaDesired-controller.getAlpha());
@@ -400,9 +349,10 @@ void StateMachine::run() {
                         {
                             korVel = maxRotationalVelocity;
                         }
+                        // didnt implement fully fleged i part, but when error is under a certion level and the speed is very low.
+                        //set speed onto a level at which the robot still turns
                         if(abs(controller.getAlpha()-alphaDesired)>=tolerance*0.5 && abs(korVel)<0.5)
                         {
-                            //con.printf("vel: %f\r\n",orientatonKor*K1);
                             if(orientatonKor*K1<0)
                             {
                                 korVel = -0.5;
@@ -413,7 +363,7 @@ void StateMachine::run() {
                             }
                         }
                         controller.setRotationalVelocity(korVel);
-                        con.printf("anlge diff: %f\r\n",controller.getAlpha()-alphaDesired);
+                        //con.printf("anlge diff: %f\r\n",controller.getAlpha()-alphaDesired);
                         if(abs(controller.getAlpha()-alphaDesired)<tolerance*0.5)
                         {
 

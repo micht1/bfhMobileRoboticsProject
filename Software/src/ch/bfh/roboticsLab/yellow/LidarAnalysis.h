@@ -43,7 +43,7 @@ public:
 
     /** Default maximum angle between lines [deg]. */
     static constexpr float MAX_ANGLE_BETWEEN_LINES_DEFAULT = 170;
-
+    /** Default number of scans to average when lidar lines are generated */
     static constexpr unsigned int NUMBER_OF_SCANS_TO_AVERAGE = 5;
 
     /** Retrieve the singleton of the LidarAnalysis object. */

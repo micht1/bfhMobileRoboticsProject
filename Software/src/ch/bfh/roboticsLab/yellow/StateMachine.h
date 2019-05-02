@@ -157,15 +157,13 @@ private:
     float velocity;
     /** Position control arrival tolerance radius [m]. */
     float tolerance;
-    float yDiffPrevious;
-    float Iangle;
-
+    /** state variable for manuver state event */
     unsigned int manuver;
 
 
-
+    /** maximum velocity for robot in auto position */
     static constexpr float maxForwardVelocity = 0.5f;
-    static constexpr float maxBackwardVelocity = -0.5f;
+    /** maximum rotation velocity for autoposition and ractive navigation **/
     static constexpr float maxRotationalVelocity = 4.0f;
 
     /** A timer used to switch states automatically based on time delays. */

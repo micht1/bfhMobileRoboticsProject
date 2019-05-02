@@ -29,7 +29,7 @@ class Controller: public RealtimeThread {
 public:
 
   /** Translational velocity for profiled motion planner [m/s]. */
-  static constexpr float TRANSLATIONAL_PROFILE_VELOCITY = 1.5f;
+  static constexpr float TRANSLATIONAL_PROFILE_VELOCITY = 4.0f;
   /** Rotational velocity for profiled motion planner [rad/s]. */
   static constexpr float ROTATIONAL_PROFILE_VELOCITY = 3.0f;
 
@@ -88,8 +88,6 @@ public:
    */
   float getAlpha();
 
-  float monitor1;
-  float monitor2;
 
 private:
 
@@ -109,8 +107,7 @@ private:
   /** Speed controller proportional gain [V/rpm] */
   static constexpr float KP_POS = 0.2f;
   static constexpr float KP_NEG = 0.1f;
-  static constexpr float Ki=0.2f;
-  static constexpr float maxError=2;
+
 
   /** Motion planner for translation */
   Motion translationalMotion;
