@@ -135,7 +135,7 @@ yellowString = sprintf('correctedPose: { x: %f, y: %f, alpha: %f}',sY*0.1,sX*0.1
 yellow.set(yellowString);
 pause(2);
 
-
+%generate enlarged walls map and fedd navigation algorythm with it
 
     bwDist = gMap;
     %bwDist(bwDist==200)=255;
@@ -151,6 +151,7 @@ pause(2);
     matSize=size(viaPoints)
     
     oldPose = [0 0 0];
+    %follow path
     while(viaCnt<=matSize(1))
         pause(0.5);
         telemetry = yellow.receive;

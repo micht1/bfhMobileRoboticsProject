@@ -3,6 +3,7 @@
 function followPath(pathVector,yellow)
  viaCnt=1;
 matSize=size(pathVector)
+%for all points in pathVector drive to point
 while(viaCnt<=matSize(1))
     pause(0.5);
     telemetry = yellow.receive;
@@ -11,7 +12,8 @@ while(viaCnt<=matSize(1))
     waitForResending = 3;
     atPos = false;
     
-    %pause(10);
+    %when not at target pos wait and check if robot is moving. if not send
+    %move command again
     while(atPos==false)
         
         [atPos,telemetry]=isAtPosition(pathVector(viaCnt,2),pathVector(viaCnt,1),pathVector(viaCnt,3),0.05,yellow);

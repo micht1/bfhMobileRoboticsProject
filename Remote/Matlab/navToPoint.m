@@ -7,6 +7,9 @@ figure(300)
 %imshow(mat2gray(Map));
 tic
 %mapCenterPoint
+
+%transform the target and startpoint into right refrenceframe and make
+%shure robot is not on a occupied position
 map =Map;
 startPoint;
 mapCenterPoint;
@@ -22,7 +25,7 @@ if(startPoint1(1) > 0 && startPoint1(2) > 0)
 end
 %map(startpoint1(2)-1:startpoint1(2)+1,startpoint1(1)-1:startpoint1(1)+1)=[1 1 1; 1 1 1; 1 1 1];
 
-
+%make prm happen
 prm = PRM(~map);
 prm.plan('npoints',100,'distthresh',30);
 pathVector = prm.query(startPoint1,target1);
@@ -33,6 +36,9 @@ prm.plot()
 % pathVector=dx.query(startPoint1)
 
 % 
+
+
+%generate proper path vector with orientation
 viaPoints= pathVector*meterPerPixel;
 %viaPoints(1,:) = startPoint;
 
