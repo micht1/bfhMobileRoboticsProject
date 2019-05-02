@@ -32,6 +32,8 @@ void LidarAnalysis::getScanPoints(const uint16_t &angleSteps) {
    // Console& con = ch::bfh::roboticsLab::yellow::Console::getInstance();
 
     rawScanPoints.clear();
+
+    //get lidar points 5 times and save them. after that average that
     std::vector<int16_t> toAverage[NUMBER_OF_SCANS_TO_AVERAGE];
     for(unsigned int numberOfScans=0;numberOfScans<NUMBER_OF_SCANS_TO_AVERAGE;++numberOfScans)
     {
@@ -48,11 +50,13 @@ void LidarAnalysis::getScanPoints(const uint16_t &angleSteps) {
         }
         toAverage[numberOfScans].clear();
     }
-    /** Seperate For-Loop after summation because like that the error of dividing an int is smaller than in other methods      */
+
+    /** Seperate For-Loop after summation because like that the error of dividing an int is smaller than in if its done in other loop      */
     for (unsigned int pointsCount=0; pointsCount<rawPoints.size(); ++pointsCount)
     {
         rawPoints.at(pointsCount) = rawPoints.at(pointsCount)/NUMBER_OF_SCANS_TO_AVERAGE;
     }
+    // check if the mesured point is in the valid range
     for(unsigned int pointsCount=0;pointsCount<rawPoints.size();pointsCount++)
     {
         Point tmpPoint;
@@ -61,20 +65,10 @@ void LidarAnalysis::getScanPoints(const uint16_t &angleSteps) {
         {
             tmpPoint.x = (float)rawPoints.at(pointsCount)*cos(pointsCount*angleSteps*util::RAD);
             tmpPoint.y = (float)rawPoints.at(pointsCount)*sin(pointsCount*angleSteps*util::RAD);
-
             rawScanPoints.push_back(tmpPoint);
         }
     }
     rawScanPoints.push_back(rawScanPoints.back());
-    //con.printf(" number of points:%d",rawPoints.size());
-
-    // TODO: Clear out the member `rawScanPoints` to erase the scan data from the last iteration
-    // TODO: Read the scan data from the LIDAR member (at a specified step `angleSteps`)
-    // TODO: Transform the scan measurements from the polar (distance & angle) to the cartesian space (x,y) in the robot frame.
-    // TODO: Add the scan points (now in cartesian space) to the `rawScanPoints` member.
-    // NOTE: Ignore all scan data points which are too far away. Refer to the max range of the lidar (peripherals::LIDAR_DISTANCE_THRESHOLD).
-
-
 }
 
 LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDistance, const double& maxLineImprecision, const double& maxAngleBetweenLines) {
@@ -82,15 +76,12 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
 
     // Make a fresh scan, full resolution (updates member `rawScanPoints`)
     getScanPoints(1);
-    //con.printf(" number of points:%d",rawScanPoints.size());
-    /** TODO (Ex4.5): Split scan points+ in regions/ranges (e.g. left and right wall inside a corridor) **/
+    // seperate raw data into regions which belong together
     PointRanges pointRegions;
     PointContainer tmpContainer;
-   // con.printf("data dumb ra points\r\n");
     for(unsigned int pointCount=1;pointCount<rawScanPoints.size();pointCount++)
     {
-        //con.printf("%f %f;\r",rawScanPoints.at(pointCount).x,rawScanPoints.at(pointCount).y);
-        //con.printf("distance %f\r\n",distance(rawScanPoints[pointCount],rawScanPoints[pointCount+1]));
+        // check distance, if distance is grater than specified, seperate
         if(distance(rawScanPoints.at(pointCount-1),rawScanPoints.at(pointCount))>minRangeDistance)
         {
             pointRegions.push_back(tmpContainer);
@@ -102,24 +93,8 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
     }
     pointRegions.push_back(tmpContainer);
 
-    // TODO: Compare scan points next to each other:
-    // --> If the points are "near" (use the `minRangeDistance` parameter), put them in the same point range.
-    // --> If the points are further away, create a new point range.
-    // NOTE: Use the `distance` method to get the distance between two scan points.
-
-    // TODO: Eventually you can merge the first and last point range. (Again use `minRangeDistance`)
-    // TODO: (optional) You may want to erase point ranges with 4 or less scan points.
-
-
-
     /** Find lines with split&merge algorithm **/
-
-    /** TODO (Ex4.6): 1st part: Split point regions into line segments **/
-
-    // TODO: For each range..
-    // TODO: .. search for the farest point away from the line between range start and end point.
-    // TODO: .. if the furthest point is not "near" enough (see maxLineImprecision), split the range into two ranges.
-    // NOTE: Each range will represent a line segment at the end.
+    //split
     for(unsigned int rangeCount=0;rangeCount<pointRegions.size();++rangeCount)
     {
         bool doSplit=false;
@@ -128,15 +103,15 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
             unsigned int farestPoint=0;
             for(unsigned int pointCount=0;pointCount<pointRegions.at(rangeCount).size();++pointCount)
             {
-                //con.printf("loop2:%d\r\n",pointCount);
+
                 if(distance(pointRegions.at(rangeCount).front(),pointRegions.at(rangeCount).back(),pointRegions.at(rangeCount).at(farestPoint))<distance(pointRegions.at(rangeCount).front(),pointRegions.at(rangeCount).back(),pointRegions.at(rangeCount).at(pointCount)))
                 {
-                        //con.printf("point distance:%f",distance(pointRegions[rangeCount].front(),pointRegions[rangeCount].back(),pointRegions[rangeCount][pointCount]));
+
                         farestPoint=pointCount;
 
                 }
             }
-            //con.printf("point:%d,%d\r\n",farestPoint,pointRegions[rangeCount].size());
+
             if(pointRegions.at(rangeCount).size()>0)
             {
                 if(distance(pointRegions.at(rangeCount).front(),pointRegions.at(rangeCount).back(),pointRegions.at(rangeCount).at(farestPoint))>maxLineImprecision)
@@ -165,15 +140,7 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
         }while(doSplit==true);
 
     }
-    //dumb data over serial
-    /*for(unsigned int dumbOne=0;dumbOne<pointRegions.size();++dumbOne)
-    {
-        con.printf("dumb: %d\n\r \n\n",dumbOne);
-        for(unsigned int dumbTwo=0;dumbTwo<pointRegions.at(dumbOne).size();++dumbTwo)
-        {
-            con.printf("%f %f;\r",pointRegions.at(dumbOne).at(dumbTwo).x,pointRegions.at(dumbOne).at(dumbTwo).y);
-        }
-    }*/
+
 
     for(unsigned int lineCount=0;lineCount<pointRegions.size();++lineCount)
     {
@@ -192,6 +159,7 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
             }
         }
     }
+    // erase region with 3 points or less
     for(unsigned int rangeCount=0;rangeCount<pointRegions.size();rangeCount++)
     {
         if(pointRegions.at(rangeCount).size()<3)
@@ -199,31 +167,12 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
             pointRegions.erase(pointRegions.begin()+rangeCount);
         }
     }
-    //con.printf("stage 3 complet");
-    for(unsigned int tmCount=0;tmCount<pointRegions.size();tmCount++)
-    {
-       // con.printf("first point: x%f y%f\r\n",pointRegions[tmCount].front().x,pointRegions[tmCount].front().y);
-       // con.printf("second point: x%f y%f\r\n",pointRegions[tmCount].back().x,pointRegions[tmCount].back().y);
-    }
 
-    //con.printf(" stage 4 complet\r\n");
-    /*for(unsigned int rangeCount=0;rangeCount<pointRegions.size();rangeCount++)
-    {
-        if(pointRegions[rangeCount].size()<=4)
-        {
-            pointRegions.erase(pointRegions.begin()+rangeCount);
-        }
-    }*/
-    /** TODO: (optional) 2nd part: You may want to merge consecutive line segments that are "collinear enough"(see maxAngleBetweenLines & maxLineImprecision)
-     *
-     * Calculate the (smallest) angle between two consecutive line segments
-     * If the consecutive lines are almost collinear (see maxAngleBetweenLines)..
-     * ..look for the most distant point..
-     * ..and if that point is further away than "maxLineImprecision", merge the line segments.
-     **/
+    // calculates the angle between consecutive lines. merges them into one when the angle is less than the angle specieifed in: MAX_ANGLE_BETWEEN_LINES_DEFAULT
     for(unsigned int lineSegmentCount=0;lineSegmentCount<pointRegions.size();lineSegmentCount++)
     {
         //con.printf("merging %d\r\n",lineSegmentCount);
+        // first and last line
         if(lineSegmentCount==0)
         {
             if(distance(pointRegions.front().front(),pointRegions.back().back())<maxLineImprecision)
@@ -251,7 +200,7 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
         }
         else
         {
-
+            //other lines
             if(distance(pointRegions[lineSegmentCount].front(),pointRegions[lineSegmentCount-1].back())<maxLineImprecision)
             {
                 float lineLengthCurrent = distance(pointRegions[lineSegmentCount].front(),pointRegions[lineSegmentCount].back());
@@ -275,18 +224,9 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
             }
         }
     }
-    //con.printf("after merge dumb");
-    /*for(unsigned int dumbOne=0;dumbOne<pointRegions.size();++dumbOne)
-    {
-        con.printf("dumb: %d\n\r \n\n",dumbOne);
-        for(unsigned int dumbTwo=0;dumbTwo<pointRegions.at(dumbOne).size();++dumbTwo)
-        {
-            con.printf("%f %f;\r",pointRegions.at(dumbOne).at(dumbTwo).x,pointRegions.at(dumbOne).at(dumbTwo).y);
-        }
-    }*/
-    //con.printf("stage  5 complet");
 
-    /** TODO (Ex4.7): Fill the line container to be returned **/
+
+    /** Fill the line container to be returned **/
 
     LineContainer lines;
     for(unsigned int regioncount=0;regioncount<pointRegions.size();regioncount++)
@@ -297,28 +237,14 @@ LidarAnalysis::LineContainer LidarAnalysis::getLines(const double& minRangeDista
         lines.push_back(tmpLine);
         //con.printf("x:%f y:%f\r\n",tmpLine.first.x,tmpLine.first.y);
     }
-    //con.printf("stage 6 complet");
-    /*for(unsigned int pointCount=0;pointCount<rawScanPoints.size();++pointCount)
-    {
-        Line tmpLine;
-        tmpLine.first = rawScanPoints.at(pointCount);
-        tmpLine.second = tmpLine.first;
-        lines.push_back(tmpLine);
-    }*/
     con.printf("stage 7 complet");
-    // TODO: For each line segment inside the `pointRegions` variable you just filled..
-    // TODO: .. extract the start and end points..
-    // TODO: .. and create a variable of type `Line`.
-    // TODO: Add those lines to the line container `lines` to be returned at the end of this method.
-
-
     //con.printf("sizeoflines:%d",lines.size());
     return lines;
 }
 
 inline double LidarAnalysis::distance(const Point &p1, const Point &p2) {
 
-    /** TODO (Ex4.3): Calculate the euclidian distance [mm] between the points p1 and p2 **/
+    /** Calculate the euclidian distance [mm] between the points p1 and p2 **/
 
     double distance = 0;
     distance = sqrt(pow((p1.x-p2.x),2)+pow((p1.y-p2.y),2));
@@ -327,16 +253,12 @@ inline double LidarAnalysis::distance(const Point &p1, const Point &p2) {
 
 inline double LidarAnalysis::distance(const Point &lineStartPoint, const Point &lineEndPoint, const Point &p) {
 
-    /** TODO (Ex4.4): Calculate the orthogonal distance [mm] between a line and a point **/
+    /** Calculate the orthogonal distance [mm] between a line and a point **/
 
     double distance = 0;
 
     double lineLength = LidarAnalysis::distance(lineStartPoint,lineEndPoint);
     distance = abs((lineEndPoint.y-lineStartPoint.y)*p.x-(lineEndPoint.x-lineStartPoint.x)*p.y+lineEndPoint.x*lineStartPoint.y-lineEndPoint.y*lineStartPoint.x)/lineLength;
-    /*Point lineVector={.x=lineEndPoint.x-lineStartPoint.x,.y=lineEndPoint.y-lineStartPoint.y};
-    Point lineOrtogonalVector = {.x= lineVector.y,.y=-lineVector.x};
-    Point projectionVec= {.x=(p.x-lineStartPoint.x),.y=p.y-lineStartPoint.y};
-    distance = (projectionVec.x*lineOrtogonalVector.x+projectionVec.y*lineOrtogonalVector.y)/sqrt(pow(lineOrtogonalVector.x,2)+pow(lineOrtogonalVector.y,2));*/
     return distance;
 }
 

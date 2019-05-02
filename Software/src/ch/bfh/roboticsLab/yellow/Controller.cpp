@@ -24,7 +24,7 @@ Controller& Controller::getInstance() {
 }
 
 Controller::Controller() :
-    RealtimeThread(PERIOD, osPriorityHigh, STACK_SIZE), translationalVelocity(0.0f), rotationalVelocity(0.0f),totalErrorLeft(0.0f),totalErrorRight(0.0f), x(0.0f), y(0.0f),alpha(0.0f),oldVelocityLeft(0.0f),oldVelocityRight(0.0f){
+    RealtimeThread(PERIOD, osPriorityHigh, STACK_SIZE), translationalVelocity(0.0f), rotationalVelocity(0.0f),totalErrorLeft(0.0f),totalErrorRight(0.0f),oldVelocityLeft(0.0f),oldVelocityRight(0.0f), x(0.0f), y(0.0f),alpha(0.0f){
 
   // Configure PWM
   peripherals::pwmLeft.period(0.00005f);
@@ -111,18 +111,15 @@ void Controller::run() {
       float desiredSpeedLeft = ((translationalMotion.velocity-WHEEL_DISTANCE/2*rotationalMotion.velocity)/(WHEEL_RADIUS*2*M_PI))*60.0f;     // TODO: Replace with calculation
       float desiredSpeedRight = ((translationalMotion.velocity+WHEEL_DISTANCE/2*rotationalMotion.velocity)/(WHEEL_RADIUS*2*M_PI))*60.0f;     // TODO: Replace with calculation
 
-      /** TODO (Ex2.2): Calculate the actual speed of the motors in [rpm] **/
-      // TODO (Ex5.1): Use the `speedLeftFilter` & `speedRightFilter` members to filter the current wheel motor speeds.
-      // TODO: Read the current encoder counts
-      // TODO: Calculate the encoder counts of the last period
-      // TODO: Update the "previous" encoder counts
-      // TODO: Calculate the current wheel motor speeds in [rpm] ('actualSpeedLeft' & 'actualSpeedRight')
+      /** calculate the acutal speed of the Wheels. Encoder data is read and in combination with the
+       * Thread Executiontime  the speeds can be calculated **/
       int16_t encoderCountsLeft = peripherals::counterLeft.read();
       int16_t encoderCountsRight = peripherals::counterRight.read();
       float actualSpeedLeft = ((encoderCountsLeft-previousValueCounterLeft)/(PERIOD*peripherals::COUNTS_PER_TURN))*60.0f;
       float actualSpeedRight = -((encoderCountsRight-previousValueCounterRight)/(PERIOD*peripherals::COUNTS_PER_TURN))*60.0f;
       previousValueCounterLeft = encoderCountsLeft;
       previousValueCounterRight = encoderCountsRight;
+      /** code strucktur to prevent an encoder overflow from disrupting odometrie. **/
       if(abs(oldVelocityLeft-actualSpeedLeft)>1500)
       {
         actualSpeedLeft = oldVelocityLeft;
@@ -139,14 +136,15 @@ void Controller::run() {
       {
         oldVelocityRight=actualSpeedRight;
       }
+      /** filter speed with given filter method **/
       actualSpeedLeft=Controller::speedLeftFilter.filter(actualSpeedLeft);
       actualSpeedRight=Controller::speedRightFilter.filter(actualSpeedRight);
-      //Counter overflow might lead to undefined behaviour
 
       /** Calculate the voltage that needs to be applied (with closed loop P-control) **/
       // Calculate the error between the desired and the actual speed in [rpm]
       float speedErrorLeft = desiredSpeedLeft - actualSpeedLeft;
       float speedErrorRight = desiredSpeedRight - actualSpeedRight;
+      /**Code snipped of not implemented I-Part of Controller */
       /*
       totalErrorLeft += speedErrorLeft;
       totalErrorRight +=speedErrorRight;
@@ -170,11 +168,10 @@ void Controller::run() {
       // Calculate the motor phase voltages (with P-controller closed loop)
       float voltageLeft = (desiredSpeedLeft > 0.0 ? KP_POS : KP_NEG) * (speedErrorLeft) + desiredSpeedLeft / peripherals::KN;//+Ki*totalErrorLeft;
       float voltageRight = (desiredSpeedRight > 0.0 ? KP_POS : KP_NEG) * (speedErrorRight) + desiredSpeedRight / peripherals::KN;//+Ki*totalErrorRight;
-      /** TODO (Ex2.4): Set corresponding PWM **/
-
-      // TODO: Calculate duty cycle
-      // TODO: Limit the PWM duty cycle
-      // TODO: Set the duty cycle on the corresponding PWM
+      /*
+        * PWM calculation. The Motors used +-12V -> to scale it to 0.5 the calculated voltage need to be divided by 24
+        * Pwm Method of motor drives takes a 0 - 1 PWM. 0.5 is stop ->desiredPWM need to be shifted by 0.5
+        */
        float desiredPwmLeft=voltageLeft/24.0f+0.5;
        if(desiredPwmLeft>=peripherals::MAX_DUTY_CYCLE)
        {
@@ -185,9 +182,10 @@ void Controller::run() {
            desiredPwmLeft=peripherals::MIN_DUTY_CYCLE;
        }
 
-       //desiredPwmLeft = ((desiredPwmLeft < peripherals::MIN_DUTY_CYCLE ? peripherals::MIN_DUTY_CYCLE : desiredPwmLeft));
 
-       float desiredPwmRight=(-voltageRight)/24.0f+0.5;
+
+       float desiredPwmRight=(-voltageRight)/24.0f+0.5; // voltage is negative since the weelmotor is mirrored
+       //limit the PWM so it is in the range of the driver method
        if(desiredPwmRight>=peripherals::MAX_DUTY_CYCLE)
        {
            desiredPwmRight=peripherals::MAX_DUTY_CYCLE;
@@ -203,9 +201,7 @@ void Controller::run() {
 
 
 
-      /** TODO (Ex2.5): Estimate global position from odometry **/
-
-      // TODO: Calculate the 'actualTranslationalVelocity' and 'actualRotationalVelocity' using the kinematic model
+      // calculates the speed of the robot with the encoder data
       float actualTranslationVelocity = (0.5f*(actualSpeedLeft+actualSpeedRight)*2*WHEEL_RADIUS*M_PI)/60.0f;
       float actualRotationVelocity = (1/(WHEEL_DISTANCE)*((actualSpeedRight-actualSpeedLeft)*2*WHEEL_RADIUS*M_PI))/60.0f;
       /*if(abs(actualRotationVelocity)>1.5f)
@@ -217,22 +213,14 @@ void Controller::run() {
         oldRotationalVelocity=actualRotationVelocity;
       }*/
 
-      // TODO: Estimate the global robot pose (x, y & alpha) by integration
+      // Estimate the global robot pose (x, y & alpha) by integration
       x = x + cos(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;
       y = y + sin(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;
-      monitor1 = cos(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;
-      monitor2 = sin(alpha+actualRotationVelocity*PERIOD)*actualTranslationVelocity*PERIOD;
+
       alpha = alpha+actualRotationVelocity*PERIOD;
-     /*if(abs((fmod(alpha,2*M_PI)))>M_PI){
-        alpha = -M_PI-(M_PI-fmod(alpha,2*M_PI));
-     }
-     else{
-        alpha = fmod(alpha,2*M_PI);
-     }*/
+      // Unwrap alpha (Make sure alpha is inside the range ]-pi,pi] )
       alpha = util::unwrap(alpha);
 
-
-      // TODO: Unwrap alpha (Make sure alpha is inside the range ]-pi,pi] )
 
   }
 }
