@@ -1,3 +1,4 @@
+%follows path. pathVector is a 3xN Vector containing[x y alpha]. And the Object of the Yellow
 function followPath(pathVector,yellow)
  viaCnt=1;
 matSize=size(pathVector)

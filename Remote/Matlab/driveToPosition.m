@@ -1,3 +1,4 @@
+%% sends the pose the robot should directly assume.no object avoidance
 function driveToPosition(xPos,yPos,alpha, yellow)
 clear constString s2
 constString = 'state { stateName: AUTO_POSITION },desiredPose ';
