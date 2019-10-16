@@ -470,6 +470,7 @@ function mapStart_Callback(hObject, eventdata, handles)
 set(handles.status,'String','In Progress')
 %call mapping function
 
+
 lMap = getMap;
 axes(handles.axes4);
 imshow(lMap)
@@ -478,7 +479,7 @@ axis off
 clear mapping
 [gMap,mapZeroPoint] = mapping;
 
-loadedMap = imcomplement(imread("occupancyGrid_1.bmp"));
+% loadedMap = imcomplement(imread("occupancyGrid_1.bmp"));
 [tempMap,frontX,frontY] = showMap(gMap);
 
 save('frontFile','frontX','frontY')
@@ -488,7 +489,8 @@ imshow(tempMap)
 axis off
 
 set(handles.status,'String','Done')
-save('mapFile','gMap','loadedMap','mapZeroPoint')
+% save('mapFile','gMap','loadedMap','mapZeroPoint')
+save('mapFile','gMap','mapZeroPoint')
 
 
 % --- Executes on button press in mapReset.
