@@ -25,7 +25,7 @@ while(doMapping==true)
     robotCoordinate = int8(zeros(1,2));
     robotCoordinate(1,2)= int8(round(telemetry.odometry.pose.x*10));
     robotCoordinate(1,1)= int8(round(telemetry.odometry.pose.y*10));
-    orientation= (telemetry.odometry.pose.alpha)
+    orientation= (telemetry.odometry.pose.alpha);
     
     lStart1 = round(lStart/100);
     lEnd1 = round(lEnd/100);
@@ -52,10 +52,10 @@ while(doMapping==true)
 %     bwDist(point(1),point(2))=100;
 % %     figure(1000)
 % %     imshow(bwDist)
-    viaPoints=navToPoint(bwDist2,double([point(2) point(1)]).*0.1,0.1,[zeroPoint(1) zeroPoint(2)].*0.1,[telemetry.odometry.pose.y telemetry.odometry.pose.x])
+    viaPoints=navToPoint(bwDist2,double([point(2) point(1)]).*0.1,0.1,[zeroPoint(1) zeroPoint(2)].*0.1,[telemetry.odometry.pose.y telemetry.odometry.pose.x]);
     
     viaCnt=1;
-    matSize=size(viaPoints)
+    matSize=size(viaPoints);
     
     oldPose = [0 0 0];
     while(viaCnt<=matSize(1))
@@ -71,7 +71,7 @@ while(doMapping==true)
             
             [atPos,telemetry]=isAtPosition(viaPoints(viaCnt,2),viaPoints(viaCnt,1),viaPoints(viaCnt,3),0.05,yellow);
             pause(0.5);
-            actualPose = [telemetry.odometry.pose.x telemetry.odometry.pose.y telemetry.odometry.pose.alpha]
+            actualPose = [telemetry.odometry.pose.x telemetry.odometry.pose.y telemetry.odometry.pose.alpha];
             if(waitForResending<1 & (norm(actualPose(1:2)-oldPose(1:2)))<0.01)
                 driveToPosition(viaPoints(viaCnt,2),viaPoints(viaCnt,1),viaPoints(viaCnt,3),yellow);
                 waitForResending = 3;

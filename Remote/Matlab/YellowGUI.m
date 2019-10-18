@@ -470,6 +470,7 @@ function mapStart_Callback(hObject, eventdata, handles)
 set(handles.status,'String','In Progress')
 %call mapping function
 
+%Connection to Yellow allready done in the different functions
 
 lMap = getMap;
 axes(handles.axes4);
